@@ -1,0 +1,7 @@
+{
+    "require": {
+        "slim/slim": "^3.0",
+        "mongodb/mongodb": "^1.1",
+        "akrabat/rka-ip-address-middleware": "^0.5.0"
+    }
+}

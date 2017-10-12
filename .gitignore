@@ -1,5 +1,6 @@
 .DS_Store
-config/*.php
+config/auth.php
+config/mongo.php
 !config/autoload.php
 vendor/*
 logs/*

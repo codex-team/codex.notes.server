@@ -27,7 +27,7 @@ $app->get('/{apiVer}/user/create', function(Request $request, Response $response
  * @param  GET   userId
  * @return JSON  
  */
-$app->get('/{apiVer}/user/get/{userId}', function(Request $request, Response $response) {
+$app->post('/{apiVer}/user/get/{userId}', function(Request $request, Response $response) {
 
     $user = new Api\User($request, $response);
     $user->get();
@@ -38,7 +38,7 @@ $app->get('/{apiVer}/user/get/{userId}', function(Request $request, Response $re
 /**
  * Site's index page
  */
-$app->get('/', function(Request $request, Response $response) {
+$app->post('/', function(Request $request, Response $response) {
 
     global $messages;
 

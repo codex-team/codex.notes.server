@@ -119,6 +119,8 @@ class User
         global $messages;
 
         if (!$userId) {
+            $logger->error("{$messages['auth']['userId']['empty']}");
+
             return $messages['auth']['userId']['empty'];
         }
 

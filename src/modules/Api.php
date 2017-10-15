@@ -12,7 +12,16 @@ use \Psr\Http\Message\ResponseInterface as Response;
  */
 class Api
 {
+	/**
+	 * Contain Slim request
+	 * @var \Psr\Http\Message\ServerRequestInterface
+	 */
 	protected $request;
+
+	/**
+	 * Contain Slim response
+	 * @var \Psr\Http\Message\ResponseInterface
+	 */
 	protected $response;
 
 	/**
@@ -20,12 +29,6 @@ class Api
 	 * @var array
 	 */
 	protected $_response;
-
-	/**
-	 * Contain last API result;
-	 * @var [type]
-	 */
-	protected $_result;
 
 	/**
 	 * Used in uri /v{$version}/<method>

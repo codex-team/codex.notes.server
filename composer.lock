@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "21d5c1e2a11a9d09dec8b8033d9d18fd",
+    "content-hash": "2494d05784202fb4f6931da0833eb63f",
     "packages": [
         {
             "name": "akrabat/rka-ip-address-middleware",
@@ -84,6 +84,56 @@
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
             "time": "2017-02-14T19:40:03+00:00"
+        },
+        {
+            "name": "katzgrau/klogger",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/katzgrau/KLogger.git",
+                "reference": "64d6c554dcb66643810c0300cd95f9649627690e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/katzgrau/KLogger/zipball/64d6c554dcb66643810c0300cd95f9649627690e",
+                "reference": "64d6c554dcb66643810c0300cd95f9649627690e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "psr/log": "^1.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Katzgrau\\KLogger\\": "src/"
+                },
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kenny Katzgrau",
+                    "email": "katzgrau@gmail.com"
+                },
+                {
+                    "name": "Dan Horrigan",
+                    "email": "dan@dhorrigan.com"
+                }
+            ],
+            "description": "A Simple Logging Class",
+            "keywords": [
+                "logging"
+            ],
+            "time": "2017-06-21T15:11:16+00:00"
         },
         {
             "name": "mongodb/mongodb",
@@ -336,6 +386,53 @@
             "time": "2016-08-06T14:39:51+00:00"
         },
         {
+            "name": "psr/log",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2016-10-10T12:19:37+00:00"
+        },
+        {
             "name": "slim/slim",
             "version": "3.8.1",
             "source": {
@@ -410,7 +507,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "katzgrau/klogger": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

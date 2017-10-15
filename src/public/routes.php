@@ -3,64 +3,46 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+use App\Modules\Api;
+
 global $app;
 
 /**
  * Создание пользователя
- * @param   GET  $password
+ * @param   GET   apiVer
+ * @param   POST  password
  * @return  JSON
  */
-$app->post('/user/create', function(Request $request, Response $response) {
+$app->get('/{apiVer}/user/create', function(Request $request, Response $response) {
 
-    global $messages;
-
-    $pass = $request->getParam('password');
-    $ip   = $request->getAttribute('ip_address');
-
-    if (!$pass) {
-
-        return $response->withJson([
-            'success' => FALSE,
-               'result' => $messages['auth']['password']['empty']
-        ], 400);
-    }
-    else {
-
-        $user = new Models\User();
-
-        return $response->withJson([
-            'success' => TRUE,
-               'result' => $user->create($ip, $pass)
-        ], 200);
-
-    }
+    $user = new Api\User($request, $response);
+    $user->create();
+    
+    return $user->sendResponse();
 });
 
-$app->post('/user/get/{userId}', function(Request $request, Response $response) {
+/**
+ * Return user info by userId
+ * @param  GET   apiVer
+ * @param  GET   userId
+ * @return JSON  
+ */
+$app->get('/{apiVer}/user/get/{userId}', function(Request $request, Response $response) {
 
-    global $messages;
+    $user = new Api\User($request, $response);
+    $user->get();
 
-    $userId = $request->getAttribute('userId');
-
-    if (!$userId) {
-        return $response->withJson([
-            'success' => FALSE,
-               'result' => $messages['auth']['userId']['empty']
-        ], 400);
-    }
-    else {
-        $user = new Models\User();
-
-        return $response->withJson([
-            'success' => TRUE,
-               'result' => $user->get($userId)
-        ], 200);
-    }
+    return $user->sendResponse();
 });
 
+/**
+ * Site's index page
+ */
 $app->get('/', function(Request $request, Response $response) {
 
-    $response->getBody()->write(json_encode('Index page'));
+    global $messages;
+
+    $response->getBody()->write($messages['welcome']);
     
     return $response;
 });

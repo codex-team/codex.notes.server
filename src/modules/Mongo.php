@@ -1,9 +1,10 @@
 <?php 
 
-namespace Modules;
+namespace App\Modules;
 
-use Modules\Mongo;
-
+/**
+ * @method  collection getCollection(string $collection)
+ */
 class Mongo
 {
     /**

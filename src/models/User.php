@@ -1,14 +1,15 @@
 <?php
 
-namespace Models;
+namespace App\Models;
 
-require_once '../modules/Mongo.php';
-require_once '../modules/Auth.php';
+use App\Modules\Mongo;
+use App\Modules\Auth;
 
-use Models\User;
-use Modules\Mongo;
-use Modules\Auth;
-
+/**
+ * @method string|array create()    
+ * @method string|array get()
+ * @method boolean      validate()  
+ */
 class User
 {
     /**
@@ -57,19 +58,27 @@ class User
     }
 
     /**
-     * Создаем пользователя
-     * @param  string    $ip
-     * @param  string    $password
-     * @return array     ['uid' => 'value']
+     * Create user
+     * @param  string           $ip
+     * @param  string           $password
+     * @return string|array     $result      'error text' or 
+     *                                       ['id' => $userId, 'password' => $passwordHashed]
      */
     public function create(string $ip = '0.0.0.0', string $password = '')
     {
+        global $logger, $messages;
+
+        if (!$password) {
+            $logger->error("{$ip} - {$messages['auth']['password']['empty']}");
+            return $messages['auth']['password']['empty'];
+        }
+
         $userId = Auth::generatePassword();
         $passwordHashed = Auth::generateHash($password);
 
         try {
             $result = $this->collection->insertOne([
-                'user_id' => $userId,
+                'id' => $userId,
                 'password' => $passwordHashed,
                 'ip' => $ip,
                 'directories' => []
@@ -78,28 +87,50 @@ class User
             # {"$oid":"59dd20985d945f103933fd7e"}
             # $resultId = $result->getInsertedId()
             
-            return ['uid' => $userId];
+            return [
+                'id' => $userId, 
+                'password' => $passwordHashed
+            ];
 
         } catch (Exception $e) {
-
+            $logger->error($messages['api']['user']['create']['error'], [$e->getMessage()]);
         }
     }
 
     /**
-     * Получаем коллекцию пользователя по $userId
-     * @param  string         $userId    hex строка 'c305ed6c'
+     * Get user collection by userId
+     * @param  string         $userId    hex 'c305ed6c'
      * @return object|null    $result    MongoDB\Model\BSONDocument
+     *   {
+     *       _id":{
+     *           "$oid":"59e396..ca3"
+     *       },
+     *       "id":"580d7602",
+     *       "password":{
+     *           "hash":"8e8d860..5d",
+     *           "localSalt":"6ed..07f"
+     *       },
+     *       "ip":"::1",
+     *       "directories":{}
+     *   }
      */
     public function get(string $userId = '')
     {
+        global $messages;
+
+        if (!$userId) {
+            return $messages['auth']['userId']['empty'];
+        }
+
         try {
             $result = $this->collection->findOne([
-                'user_id' => $userId   
+                'id' => $userId   
             ]);
 
             return $result;
+
         } catch (Exception $e) {
-            
+            $logger->error($messages['api']['user']['get']['error'], [$e->getMessage()]);
         }
     }
 
@@ -117,7 +148,7 @@ class User
 
             return $user['password']['hash'] === $checkHash['hash'];
         } catch (Exception $e) {
-            
+            $logger->error($messages['api']['user']['validate']['error'], [$e->getMessage()]);
         }
     }    
 }

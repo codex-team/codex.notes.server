@@ -1,13 +1,9 @@
 <?php
 
-namespace Models;
+namespace App\Models;
 
-require_once '../modules/Mongo.php';
-require_once '../modules/Auth.php';
-
-use Models\Directory;
-use Models\User;
-use Modules\Mongo;
+use App\Models\User;
+use App\Modules\Mongo;
 
 class Directory
 {

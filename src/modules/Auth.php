@@ -1,9 +1,12 @@
 <?php
 
-namespace Modules;
+namespace App\Modules;
 
-use Modules\Auth;
-
+/**
+ * @method array   generateHash()
+ * @method string  generatePassword()
+ * @method boolean validateCredentials()
+ */
 class Auth
 {
     /**
@@ -16,8 +19,9 @@ class Auth
     {
         global $config;
 
-        if (!$localSalt)
+        if (!$localSalt) {
             $localSalt = self::generatePassword();
+        }
 
         $hash = hash_hmac('sha256', $input, $config['auth']['salt'] . $localSalt, FALSE);
 
@@ -29,17 +33,18 @@ class Auth
 
     /**
      * Генерируем пароль
-     * @param  int|integer $lenght
-     * @return string.     hex
+     * @param  int|integer $length
+     * @return string      hex
      */
-    public static function generatePassword(int $lenght = 0)
+    public static function generatePassword(int $length = 0)
     {
         global $config;
 
-        if (!$lenght)
-            $lenght = $config['auth']['passLen'];
+        if (!$length) {
+            $length = $config['auth']['passLen'];
+        }
 
-        return substr(md5(uniqid()), 0, $lenght);
+        return substr(md5(uniqid()), 0, $length);
     }
 
     /**
@@ -51,7 +56,7 @@ class Auth
      */
     public static function validateCredentials(string $userId = '', string $password = '')
     {
-        if (!$userId || $password) {
+        if (!$userId || !$password) {
             return FALSE;
         }
 

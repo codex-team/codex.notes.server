@@ -1,0 +1,5 @@
+<?php
+
+$config['mongodb']['domain'] = '';
+$config['mongodb']['port'] = 0;
+$config['mongodb']['dbname'] = '';

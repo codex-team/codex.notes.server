@@ -139,10 +139,10 @@ class User
     {
         global $config, $messages, $logger;
 
-        $passlength = strlen($userId);
-        $passlengthDefault = $config['auth']['passLen'];
+        $userIdlength = strlen($userId);
+        $userIdlengthDefault = $config['auth']['passLen'];
 
-        if (!$passlength) {
+        if (!$userIdlength) {
             $logger->error($messages['auth']['userId']['empty']);
 
             $message = $messages['auth']['userId']['empty'];
@@ -153,9 +153,9 @@ class User
                 'result' => $message
             ];  
         }
-        elseif($passlength != $passlengthDefault) {
+        elseif($userIdlength != $userIdlengthDefault) {
 
-            $message = sprintf($messages['auth']['password']['length'], $passlengthDefault);
+            $message = sprintf($messages['auth']['userId']['length'], $userIdlengthDefault);
 
             $logger->error($message);
 

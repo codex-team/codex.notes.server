@@ -34,7 +34,7 @@ $app->post('/{apiVer}/user/get/{userId}', function(Request $request, Response $r
 /**
  * Site's index page
  */
-$app->post('/', function(Request $request, Response $response) {
+$app->get('/', function(Request $request, Response $response) {
 
     global $messages;
 

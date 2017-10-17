@@ -9,11 +9,9 @@ global $app;
 
 /**
  * Создание пользователя
- * @param   GET   apiVer
- * @param   POST  password
  * @return  JSON
  */
-$app->get('/{apiVer}/user/create', function(Request $request, Response $response) {
+$app->post('/{apiVer}/user/create', function(Request $request, Response $response) {
 
     $user = new Api\User($request, $response);
     $user->create();
@@ -23,8 +21,6 @@ $app->get('/{apiVer}/user/create', function(Request $request, Response $response
 
 /**
  * Return user info by userId
- * @param  GET   apiVer
- * @param  GET   userId
  * @return JSON  
  */
 $app->post('/{apiVer}/user/get/{userId}', function(Request $request, Response $response) {

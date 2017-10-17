@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Modules\Mongo;
 use App\Modules\Auth;
+use App\Modules\HTTP;
 
 /**
  * @method string|array create()    
@@ -37,6 +38,8 @@ class User
      */
     public function __construct(string $userId = '')
     {
+        global $logger, $messages;
+
         $client = new Mongo();
         
         $this->collection = $client->getCollection(
@@ -52,25 +55,30 @@ class User
                 }
 
             } catch (Exception $e) {
-                # user init fault
+                $logger->error($messages['user']['init']['fault'], [$e->getMessage()]);
             }
         }
     }
 
     /**
      * Create user
-     * @param  string           $ip
-     * @param  string           $password
-     * @return string|array     $result      'error text' or 
-     *                                       ['id' => $userId, 'password' => $passwordHashed]
+     * @param  string   $ip
+     * @param  string   $password
+     * @return array    $result
      */
     public function create(string $ip = '0.0.0.0', string $password = '')
     {
         global $logger, $messages;
 
         if (!$password) {
-            $logger->error("{$ip} - {$messages['auth']['password']['empty']}");
-            return $messages['auth']['password']['empty'];
+
+            $message = $messages['auth']['password']['empty'];
+
+            return [
+                'code' => HTTP::CODE_BAD_REQUEST,
+                'success' => FALSE,
+                'result' => $message
+            ];
         }
 
         $userId = Auth::generatePassword();
@@ -88,12 +96,25 @@ class User
             # $resultId = $result->getInsertedId()
             
             return [
-                'id' => $userId, 
-                'password' => $passwordHashed
+                'code' => HTTP::CODE_SUCCESS,
+                'success' => TRUE,
+                'result' => [
+                    'id' => $userId, 
+                    'password' => $passwordHashed
+                ]
             ];
 
         } catch (Exception $e) {
-            $logger->error($messages['api']['user']['create']['error'], [$e->getMessage()]);
+
+            $message = $messages['api']['user']['create']['error'];
+
+            $logger->error($message, [$e->getMessage()]);
+
+            return [
+                'code' => HTTP::CODE_SERVER_ERROR,
+                'success' => FALSE,
+                'result' => $message,
+            ];            
         }
     }
 
@@ -116,12 +137,33 @@ class User
      */
     public function get(string $userId = '')
     {
-        global $messages;
+        global $config, $messages, $logger;
 
-        if (!$userId) {
-            $logger->error("{$messages['auth']['userId']['empty']}");
+        $passlength = strlen($userId);
+        $passlengthDefault = $config['auth']['passLen'];
 
-            return $messages['auth']['userId']['empty'];
+        if (!$passlength) {
+            $logger->error($messages['auth']['userId']['empty']);
+
+            $message = $messages['auth']['userId']['empty'];
+
+            return [
+                'code' => HTTP::CODE_BAD_REQUEST,
+                'success' => FALSE,
+                'result' => $message
+            ];  
+        }
+        elseif($passlength != $passlengthDefault) {
+
+            $message = sprintf($messages['auth']['password']['length'], $passlengthDefault);
+
+            $logger->error($message);
+
+            return [
+                'code' => HTTP::CODE_BAD_REQUEST,
+                'success' => FALSE,
+                'result' => $message
+            ];  
         }
 
         try {
@@ -129,10 +171,23 @@ class User
                 'id' => $userId   
             ]);
 
-            return $result;
+            return [
+                'code' => HTTP::CODE_SUCCESS,
+                'success' => TRUE,
+                'result' => $result
+            ];  
 
         } catch (Exception $e) {
-            $logger->error($messages['api']['user']['get']['error'], [$e->getMessage()]);
+
+            $message = $messages['api']['user']['get']['error'];
+
+            $logger->error($message, [$e->getMessage()]);
+
+            return [
+                'code' => HTTP::CODE_SERVER_ERROR,
+                'success' => FALSE,
+                'result' => $message
+            ];
         }
     }
 
@@ -145,12 +200,30 @@ class User
      */
     public function validate(array $user = [], string $password = '')
     {
+        global $logger;
+
         try {
             $checkHash = Auth::generateHash($password, $user['password']['localSalt']);
 
-            return $user['password']['hash'] === $checkHash['hash'];
+            $result = $user['password']['hash'] === $checkHash['hash'];
+
+            return [
+                'code' => HTTP::CODE_SERVER_ERROR,
+                'success' => FALSE,
+                'result' => $result
+            ];
+
         } catch (Exception $e) {
-            $logger->error($messages['api']['user']['validate']['error'], [$e->getMessage()]);
+
+            $message = $messages['api']['user']['validate']['error'];
+
+            $logger->error($message, [$e->getMessage()]);
+
+            return [
+                'code' => HTTP::CODE_SERVER_ERROR,
+                'success' => FALSE,
+                'result' => $message
+            ];
         }
     }    
 }

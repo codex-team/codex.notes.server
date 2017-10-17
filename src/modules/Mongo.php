@@ -3,7 +3,7 @@
 namespace App\Modules;
 
 /**
- * @method  collection getCollection(string $collection)
+ * @method collection getCollection()
  */
 class Mongo
 {
@@ -27,11 +27,11 @@ class Mongo
      */
     function __construct(string $domain = null, string $port = null, string $dbname = null)
     {
-        global $config;
+        global $config, $logger;
 
-        $domain = (is_null($domain)) ? $config['mongodb']['domain'] : $domain;
-        $port   = (is_null($port))   ? $config['mongodb']['port']   : $port;
-        $dbname = (is_null($dbname)) ? $config['mongodb']['dbname'] : $dbname;
+        $domain = is_null($domain) ? $config['mongodb']['domain'] : $domain;
+        $port   = is_null($port)   ? $config['mongodb']['port']   : $port;
+        $dbname = is_null($dbname) ? $config['mongodb']['dbname'] : $dbname;
         
         try {
             $this->client = new \MongoDB\Client(
@@ -40,10 +40,11 @@ class Mongo
 
             $this->connection = $this->client->$dbname;
         } catch (Exception $e) {
-            
+            $message = $messages['mongo']['init']['error']; 
+            $logger->error($message, [$e->getMessage()]);
         }
     }
-
+    
     /**
      * Получаем коллекции базы по имени коллекции
      * @param  string $collection
@@ -51,6 +52,16 @@ class Mongo
      */
     public function getCollection(string $collection = '')
     {
-        return $this->connection->$collection;
+        global $logger, $messages;
+
+        try {
+            return $this->connection->$collection;
+            
+        } catch (Exception $e) {
+            $message = sprintf($messages['mongo']['collection']['get']['error'], $collection);
+            
+            $logger->error($message, [$e->getMessage()]);
+        }
+        
     }
 }

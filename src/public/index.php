@@ -15,7 +15,7 @@ require '../../vendor/autoload.php';
  *  Use
  *  - global $config
  */
-require '../config/autoload.php';
+require '../config/_autoload.php';
 
 /**
  *  Load APP output messages
@@ -25,7 +25,7 @@ require '../config/autoload.php';
  *  Use
  *  - global $messages
  */
-require '../messages/autoload.php';
+require '../messages/_autoload.php';
 
 $app = new \Slim\App([
     'settings' => ['displayErrorDetails' => true]
@@ -34,7 +34,7 @@ $app = new \Slim\App([
 $app->add(new IpAddress());
 
 $logger = new Log();
-    
+
 require 'routes.php';
 
 $app->run();

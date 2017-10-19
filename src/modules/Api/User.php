@@ -15,25 +15,18 @@ class User extends Api
      */
     protected $user;
     
-    function __construct(Request $request, Response $response)
+    function __construct()
     {
-        parent::__construct($request, $response);
-
         $this->user = new \App\Models\User();
     }
 
-    public function create()
+    public function create($ip, $password)
     {
-        $pass = $this->request->getParam('password');
-        $ip   = $this->request->getAttribute('ip_address');
-
-        $this->_response = $this->user->create($ip, $pass);
+        return $this->user->create($ip, $password);
     }
 
-    public function get()
+    public function get($userId)
     {
-        $userId = $this->request->getAttribute('userId');
-
-        $this->_response = $this->user->get($userId);
+        return  $this->user->get($userId);
     }
 }

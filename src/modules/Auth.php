@@ -44,7 +44,7 @@ class Auth
             $length = $config['auth']['passLen'];
         }
 
-        $string = $this->generateHex($length);
+        $string = self::generateHex($length);
 
         return substr($string, 0, $length);
     }

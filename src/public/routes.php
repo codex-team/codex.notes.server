@@ -13,10 +13,17 @@ global $app;
  */
 $app->post('/{apiVer}/user/create', function(Request $request, Response $response) {
 
-    $user = new Api\User($request, $response);
-    $user->create();
-    
-    return $user->sendResponse();
+    $apiVer = $request->getAttribute('apiVer');
+    $pass   = $request->getParam('password');
+    $ip     = $request->getAttribute('ip_address');
+
+    $api = new Api($apiVer);
+    $result =  $api->getUser()->create($ip, $pass);
+
+    return $response->withJson(
+        $result,
+        $result['code']
+    );
 });
 
 /**
@@ -25,10 +32,16 @@ $app->post('/{apiVer}/user/create', function(Request $request, Response $respons
  */
 $app->post('/{apiVer}/user/get/{userId}', function(Request $request, Response $response) {
 
-    $user = new Api\User($request, $response);
-    $user->get();
+    $apiVer = $request->getAttribute('apiVer');
+    $userId = $request->getAttribute('userId');
 
-    return $user->sendResponse();
+    $api = new Api($apiVer);
+    $result = $api->getUser()->get($userId);
+
+    return $response->withJson(
+        $result,
+        $result['code']
+    );
 });
 
 /**

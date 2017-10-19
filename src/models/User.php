@@ -81,7 +81,7 @@ class User
             ];
         }
 
-        $userId = Auth::generatePassword();
+        $userId = Auth::generateHex();
         $passwordHashed = Auth::generateHash($password);
 
         try {
@@ -139,10 +139,10 @@ class User
     {
         global $config, $messages, $logger;
 
-        $userIdlength = strlen($userId);
-        $userIdlengthDefault = $config['auth']['passLen'];
+        $userIdLength = strlen($userId);
+        $userIdLengthDefault = $config['auth']['passLen'];
 
-        if (!$userIdlength) {
+        if (!$userIdLength) {
             $logger->error($messages['auth']['userId']['empty']);
 
             $message = $messages['auth']['userId']['empty'];
@@ -153,9 +153,9 @@ class User
                 'result' => $message
             ];  
         }
-        elseif($userIdlength != $userIdlengthDefault) {
+        elseif($userIdLength != $userIdLengthDefault) {
 
-            $message = sprintf($messages['auth']['userId']['length'], $userIdlengthDefault);
+            $message = sprintf($messages['auth']['userId']['length'], $userIdLengthDefault);
 
             $logger->error($message);
 

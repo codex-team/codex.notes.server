@@ -11,7 +11,7 @@ global $app;
  * Создание пользователя
  * @return  JSON
  */
-$app->post('/{apiVer}/user/create', function(Request $request, Response $response) {
+$app->get('/{apiVer}/user/create', function(Request $request, Response $response) {
 
     $user = new Api\User($request, $response);
     $user->create();

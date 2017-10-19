@@ -33,7 +33,7 @@ class Auth
 
     /**
      * Генерируем пароль
-     * @param  int|integer $length
+     * @param  integer     $length
      * @return string      hex
      */
     public static function generatePassword(int $length = 0)
@@ -44,7 +44,21 @@ class Auth
             $length = $config['auth']['passLen'];
         }
 
-        return substr(md5(uniqid()), 0, $length);
+        $string = $this->generateHex($length);
+
+        return substr($string, 0, $length);
+    }
+
+    /**
+     * Generate hex
+     * @param  int|integer $length
+     * @return string hex
+     */
+    public static function generateHex(int $length = 8)
+    {
+        $bytes = floor($length / 2);
+
+        return bin2hex(openssl_random_pseudo_bytes($bytes));
     }
 
     /**

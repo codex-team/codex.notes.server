@@ -1,6 +1,7 @@
 .DS_Store
 .idea
-src/config/auth.php
-src/config/mongo.php
+config/database.php
+config/mongo.php
+config/user.php
 vendor/*
 logs/*

@@ -1,4 +1,5 @@
 .DS_Store
+.idea/*
 src/config/auth.php
 src/config/mongo.php
 vendor/*

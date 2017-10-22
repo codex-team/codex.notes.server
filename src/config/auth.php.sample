@@ -1,4 +1,0 @@
-<?php
-
-$config['auth']['salt'] = '';
-$config['auth']['passLen'] = 0;

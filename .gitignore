@@ -1,7 +1,9 @@
 .DS_Store
 .idea
-config/database.php
 config/mongo.php
 config/user.php
 vendor/*
 logs/*
+composer.lock
+composer-setup.php 
+composer.phar

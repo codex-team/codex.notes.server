@@ -6,7 +6,10 @@ use App\System\Utilities\Config;
 use App\System\Utilities\Message;
 
 /**
- * @method collection getCollection()
+ * Class Mongo
+ * Модель для работы с БД Mongo
+ *
+ * @package App\Versions\V1\Models
  */
 class Mongo extends Base
 {

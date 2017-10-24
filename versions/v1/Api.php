@@ -6,6 +6,12 @@ use App\Versions\V1\Api\User as ApiUser;
 use App\System\HTTP;
 use App\System\Log;
 
+/**
+ * Class Api
+ * Оболочка, через которую взаимодействуют контроллеры с моделями.
+ *
+ * @package App\Versions\V1
+ */
 class Api
 {
     /**
@@ -30,6 +36,10 @@ class Api
         $this->version = $version;
     }
 
+    /**
+     * Получаем объект API класса для работы с моделью User
+     * @return ApiUser
+     */
     public function getUser()
     {
         return new ApiUser();

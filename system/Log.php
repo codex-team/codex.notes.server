@@ -6,12 +6,17 @@ use App\System\Utilities\Config;
 use Katzgrau\KLogger\Logger;
 
 /**
- * @method info  (string $text)
- * @method error (string $text)
- * @method debug (string $text, array $params)
+ * Class Log
+ *
+ * Прослойка для стороннего модуля логирования
+ * @package App\System
  */
 class Log extends Logger
-{    
+{
+    /**
+     * Инициализируем логгер с помощью указания пути к папке с логами
+     * @param string $logDir
+     */
     function __construct(string $logDir = '')
     {
         if ($logDir) {

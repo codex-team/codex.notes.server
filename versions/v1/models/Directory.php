@@ -2,9 +2,14 @@
 
 namespace App\Versions\V1\Models;
 
+/**
+ * Class Directory
+ * Модель для работы с коллекцией директории в MongoDB
+ *
+ * @package App\Versions\V1\Models
+ */
 class Directory extends Base;
 {
-
     /**
      * Коллекция папок
      * @var object MongoDB\Collection
@@ -15,7 +20,7 @@ class Directory extends Base;
      * Коллекция папки
      * @var object null|MongoDB\Model\BSONDocument
      */
-    private $collectionItem;
+    private $collectionItem = null;
 
     /**
      * Имя коллекции в Mongo
@@ -23,8 +28,5 @@ class Directory extends Base;
      */
     private $collectionName = 'dir';
     
-    public function __construct()
-    {
-
-    }
+    public function __construct() {}
 }

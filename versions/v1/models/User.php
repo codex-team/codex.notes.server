@@ -10,9 +10,10 @@ use App\System\Utilities\Config;
 use App\System\Utilities\Message;
 
 /**
- * @method string|array create()    
- * @method string|array get()
- * @method boolean      validate()  
+ * Class User
+ * Объект для работы с коллекцией пользователя в Mongo
+ *
+ * @package App\Versions\V1\Models
  */
 class User extends Base
 {

@@ -5,9 +5,10 @@ namespace App\Versions\V1\Utilities;
 use App\System\Utilities\Config;
 
 /**
- * @method array   generateHash()
- * @method string  generatePassword()
- * @method boolean validateCredentials()
+ * Class Tweaks
+ * Различные хелперы
+ *
+ * @package App\Versions\V1\Utilities
  */
 class Tweaks
 {

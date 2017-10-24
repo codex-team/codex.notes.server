@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+    php:
+        build: php
+        volumes:
+            - ./www:/var/www/codex.notes.server/
+    nginx:
+        build: nginx
+        ports:
+            - 8081:80
+        links:
+            - php
+        volumes_from:
+            - php
+        volumes:
+            - ./logs/nginx/:/var/log/nginx
+    db:
+        image: mongo:latest
+        volumes:
+          - /.data/db

@@ -14,3 +14,7 @@ $ curl -X POST http://codex.notes.server/v1/user/get/713eaef0
 {"code":200,"success":true,"result":{"id":"713eaef0","password":{"hash":"ba20f4954e3326f344465c93b2fb8ecb5b13af9ec7a61e21dd9494eb4cbf1121","localSalt":"0ef53a6f"}}}
 
 {"code":400,"success":false,"result":"User id length is not 8"}
+
+## Install composer dependencies
+
+$ docker exec notesserver_php_1 composer install

@@ -3,7 +3,7 @@
 namespace App\Versions\V1\Models;
 
 use App\System\Utilities\Config;
-use App\System\Utilities\Message;
+use App\System\Utilities\Messages;
 
 /**
  * Class Mongo
@@ -34,7 +34,7 @@ class Mongo extends Base
     function __construct(string $domain = null, string $port = null, string $dbname = null)
     {
         $this->config = Config::load('mongo');
-        $this->messages = Message::load('v1', 'user');
+        $this->messages = Messages::load('v1', 'user');
 
         $domain = is_null($domain) ? $this->config['domain']   : $domain;
         $port   = is_null($port)   ? $this->config['port']     : $port;

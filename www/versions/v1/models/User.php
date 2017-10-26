@@ -2,12 +2,14 @@
 
 namespace App\Versions\V1\Models;
 
-use App\System\Utilities\Messages;
+use App\Versions\V1\Models\Exceptions\ModelException;
 use App\Versions\V1\Models\Mongo;
 use App\Versions\V1\Utilities\Tweaks;
 use App\System\HTTP;
 use App\System\Utilities\Config;
-use App\System\Utilities\Message;
+use App\System\Utilities\Messages;
+
+use App\Versions\V1\Models\Exceptions\ControllerException;
 
 /**
  * Class User
@@ -45,7 +47,7 @@ class User extends Base
         parent::__construct();
 
         $this->config = Config::load('user');
-        $this->messages = Message::load('v1', 'user');
+        $this->messages = Messages::load('v1', 'user');
 
         $client = new Mongo();
         
@@ -54,15 +56,11 @@ class User extends Base
         );
 
         if ($userId) {
-            try {
-                $user = $this->get($userId);
 
-                if ($user) {
-                    $this->collectionItem = $user;
-                }
+            $user = $this->get($userId);
 
-            } catch (Exception $e) {
-                $this->logger->error($this->messages['id']['empty'], [$e->getMessage()]);
+            if ($user) {
+                $this->collectionItem = $user;
             }
         }
     }
@@ -72,16 +70,12 @@ class User extends Base
      * @param  string   $ip
      * @param  string   $password
      * @return array    $result
+     * @throws  \App\Versions\V1\Models\Exceptions\ControllerException;
      */
     public function create(string $ip = '0.0.0.0', string $password = '')
     {
         if (!$password) {
-
-            return [
-                'code' => HTTP::CODE_BAD_REQUEST,
-                'success' => false,
-                'result' => $this->messages['password']['empty']
-            ];
+            throw new ModelException($this->messages['password']['empty'], HTTP::CODE_BAD_REQUEST);
         }
 
         $userId = Tweaks::generateHex();
@@ -99,25 +93,13 @@ class User extends Base
             # $resultId = $result->getInsertedId()
             
             return [
-                'code' => HTTP::CODE_SUCCESS,
-                'success' => true,
-                'result' => [
-                    'id' => $userId, 
-                    'password' => $passwordHashed
-                ]
+                'id' => $userId,
+                'password' => $passwordHashed
             ];
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
-            $message = $this->messages['create']['error'];
-
-            $this->logger->error($message, [$e->getMessage()]);
-
-            return [
-                'code' => HTTP::CODE_SERVER_ERROR,
-                'success' => false,
-                'result' => $message,
-            ];            
+            throw new ModelException($this->messages['create']['error'],HTTP::CODE_SERVER_ERROR);
         }
     }
 
@@ -144,50 +126,22 @@ class User extends Base
         $userIdLengthDefault = $this->config['auth']['password']['length'];
 
         if (!$userIdLength) {
-            $message = $this->messages['id']['empty'];
-
-            $this->logger->error($message);
-
-            return [
-                'code' => HTTP::CODE_BAD_REQUEST,
-                'success' => false,
-                'result' => $message
-            ];  
+            throw new ControllerException($this->messages['id']['empty'], HTTP::CODE_BAD_REQUEST);
         }
         elseif($userIdLength != $userIdLengthDefault) {
             $message = sprintf($this->messages['id']['length'], $userIdLengthDefault);
 
-            $this->logger->error($message);
-
-            return [
-                'code' => HTTP::CODE_BAD_REQUEST,
-                'success' => false,
-                'result' => $message
-            ];  
+            return $message;
         }
 
         try {
-            $result = $this->collection->findOne([
+            return $this->collection->findOne([
                 'id' => $userId   
             ]);
 
-            return [
-                'code' => HTTP::CODE_SUCCESS,
-                'success' => true,
-                'result' => $result
-            ];  
+        } catch (\Exception $e) {
 
-        } catch (Exception $e) {
-
-            $message = $this->messages['isset']['notIsset'];
-
-            $this->logger->error($message, [$e->getMessage()]);
-
-            return [
-                'code' => HTTP::CODE_SERVER_ERROR,
-                'success' => true,
-                'result' => $message
-            ];
+            throw new ModelException($this->messages['isset']['notIsset'], HTTP::CODE_SERVER_ERROR);
         }
     }
 
@@ -211,7 +165,7 @@ class User extends Base
                 'result' => $result
             ];
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             $message = $this->messages['validate']['not'];
 

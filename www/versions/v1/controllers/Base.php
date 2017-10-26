@@ -2,6 +2,8 @@
 
 namespace App\Versions\V1\Controllers;
 
+use App\System\Log;
+
 /**
  * Class Base
  * Родитель для остальных контроллеров
@@ -10,5 +12,11 @@ namespace App\Versions\V1\Controllers;
  */
 class Base {
 
-    public function __construct() {}
+    protected $logger;
+
+    public function __construct() {
+        if (!$this->logger) {
+            $this->logger = new Log();
+        }
+    }
 }

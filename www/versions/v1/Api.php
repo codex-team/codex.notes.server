@@ -23,6 +23,12 @@ class Api
      * @var object App\System\Log
      */
     protected $logger;
+
+    /**
+     * Contain API response
+     * @var array
+     */
+    protected $response;
     
     /**
      * Init API
@@ -34,6 +40,8 @@ class Api
         }
 
         $this->version = $version;
+
+        $this->response = $this->getDefaultResponseAsArray();
     }
 
     /**
@@ -43,5 +51,19 @@ class Api
     public function getUser()
     {
         return new ApiUser();
+    }
+
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    public function getDefaultResponseAsArray()
+    {
+        return [
+            'code' => HTTP::CODE_SUCCESS,
+            'success' => true,
+            'result' => null
+        ];
     }
 }

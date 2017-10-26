@@ -5,6 +5,7 @@ namespace App\Versions\V1\Models;
 use App\System\Utilities\Config;
 use App\System\Utilities\Messages;
 use App\System\HTTP;
+use App\Versions\V1\Models\Exceptions\DatabaseException;
 
 /**
  * Class Mongo

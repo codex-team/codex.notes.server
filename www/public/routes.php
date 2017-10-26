@@ -14,12 +14,12 @@ $app->group('/v1', function() {
      * @param  string {userId}  hex
      * @return json
      */
-    $this->get('/user/get/{userId}', 'App\Versions\V1\Controllers\User:get');
+    $this->post('/user/get/{userId}', 'App\Versions\V1\Controllers\User:get');
 
     /**
      * Создаем пользователя в MongoDB
      * @param  string {password} Передается в POST
      * @return json
      */
-    $this->get('/user/create', 'App\Versions\V1\Controllers\User:create');
+    $this->post('/user/create', 'App\Versions\V1\Controllers\User:create');
 });

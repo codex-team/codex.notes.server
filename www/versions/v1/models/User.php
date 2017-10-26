@@ -70,7 +70,6 @@ class User extends Base
      * @param  string   $ip
      * @param  string   $password
      * @return array    $result
-     * @throws  \App\Versions\V1\Models\Exceptions\ControllerException;
      */
     public function create(string $ip = '0.0.0.0', string $password = '')
     {
@@ -154,28 +153,8 @@ class User extends Base
      */
     public function validate(array $user = [], string $password = '')
     {
-        try {
-            $checkHash = Tweaks::generateHash($password, $user['password']['localSalt']);
+        $checkHash = Tweaks::generateHash($password, $user['password']['localSalt']);
 
-            $result = $user['password']['hash'] === $checkHash['hash'];
-
-            return [
-                'code' => HTTP::CODE_SERVER_ERROR,
-                'success' => false,
-                'result' => $result
-            ];
-
-        } catch (\Exception $e) {
-
-            $message = $this->messages['validate']['not'];
-
-            $this->logger->error($message, [$e->getMessage()]);
-
-            return [
-                'code' => HTTP::CODE_SERVER_ERROR,
-                'success' => false,
-                'result' => $message
-            ];
-        }
+        return $user['password']['hash'] === $checkHash['hash'];
     }    
 }

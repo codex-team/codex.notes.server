@@ -32,3 +32,7 @@ $ docker exec notesserver_php_1 composer install
 
 {"code":400,"success":false,"result":"Password is empty"}
 
+`$ curl -X GET --data 'password=123' http://codex.notes.server:8081/v1/user/create`
+
+{"code":405,"success":false,"result":"Method must be one of: POST"}
+

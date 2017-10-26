@@ -5,6 +5,7 @@ namespace App;
 use App\Versions\V1\Models\Handlers\AppExceptionHandler;
 use App\Versions\V1\Models\Handlers\CodeExceptionHandler;
 use App\Versions\V1\Models\Handlers\RouteExceptionHandler;
+use App\Versions\V1\Models\Handlers\MethodNotAllowedExceptionHandler;
 
 /**
  * Автоподгрузка классов Slim и приложения
@@ -22,11 +23,7 @@ $app = new \Slim\App([
 
 $c = $app->getContainer();
 
-/**
- * @param $c
- *
- * @return AppException
- */
+
 $c['errorHandler'] = function ($c) {
     return new AppExceptionHandler();
 };
@@ -37,6 +34,10 @@ $c['notFoundHandler'] = function ($c) {
 
 $c['phpErrorHandler'] = function ($c) {
     return new CodeExceptionHandler();
+};
+
+$c['notAllowedHandler'] = function ($c) {
+    return new MethodNotAllowedExceptionHandler();
 };
 
 /**

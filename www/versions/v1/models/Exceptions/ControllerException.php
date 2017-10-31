@@ -4,9 +4,4 @@ namespace App\Versions\V1\Models\Exceptions;
 
 use App\Versions\V1\Models\BaseException;
 
-class ControllerException extends BaseException {
-
-    public function __construct($message, $code = 0, $previous = null) {
-        parent::__construct($message, $code, $previous);
-    }
-}
+class ControllerException extends BaseException {}

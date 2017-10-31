@@ -8,7 +8,7 @@ namespace App\System\Utilities;
  *
  * @package App\System\Utilities
  */
-class Message extends Base
+class Messages extends Base
 {
     /**
      * Возвращает ассоциативный массив сообщений

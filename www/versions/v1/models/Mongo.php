@@ -3,7 +3,9 @@
 namespace App\Versions\V1\Models;
 
 use App\System\Utilities\Config;
-use App\System\Utilities\Message;
+use App\System\Utilities\Messages;
+use App\System\HTTP;
+use App\Versions\V1\Models\Exceptions\DatabaseException;
 
 /**
  * Class Mongo
@@ -34,7 +36,7 @@ class Mongo extends Base
     function __construct(string $domain = null, string $port = null, string $dbname = null)
     {
         $this->config = Config::load('mongo');
-        $this->messages = Message::load('v1', 'user');
+        $this->messages = Messages::load('v1', 'user');
 
         $domain = is_null($domain) ? $this->config['domain']   : $domain;
         $port   = is_null($port)   ? $this->config['port']     : $port;
@@ -46,8 +48,8 @@ class Mongo extends Base
             );
 
             $this->connection = $this->client->$dbname;
-        } catch (Exception $e) {
-            $logger->error($this->messages['init']['error'], [$e->getMessage()]);
+        } catch (\Exception $e) {
+            throw new DatabaseException($this->messages['init']['error'], HTTP::CODE_SERVER_ERROR);
         }
     }
     
@@ -61,10 +63,10 @@ class Mongo extends Base
         try {
             return $this->connection->$collection;
             
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $message = sprintf($this->messages['collection']['get']['error'], $collection);
 
-            $this->logger->error($message, [$e->getMessage()]);
+            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
         }
         
     }

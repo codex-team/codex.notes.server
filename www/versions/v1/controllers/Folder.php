@@ -7,13 +7,13 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use App\Versions\V1\Api;
 
 /**
- * Class User
- * Основные методы по работе с объектом User
+ * Class Folder
+ * Основные методы по работе с объектом Folder
  *
- * @see \App\Versions\V1\Models\User;
+ * @see \App\Versions\V1\Models\Folder;
  * @package App\Versions\V1\Controllers
  */
-class User extends Base
+class Folder extends Base
 {
     public function __construct()
     {
@@ -21,7 +21,7 @@ class User extends Base
     }
 
     /**
-     * Создаем пользователя
+     * Создаем папку
      * @param Request $request
      * @param Response $response
      * @param $args
@@ -29,12 +29,12 @@ class User extends Base
      */
     public function create(Request $request, Response $response, $args) {
 
-        $pass   = $request->getParam('password');
-        $ip     = $request->getAttribute('ip_address');
+        $name = $request->getParam('name');
+        $user = $request->getParam('user');
 
         $api = new Api();
 
-        $result = $api->getUser()->create($ip, $pass)->getResponse();
+        $result = $api->getFolder()->create($user, $name)->getResponse();
 
         return $response->withJson(
             $result,
@@ -49,12 +49,13 @@ class User extends Base
      * @param $args
      * @return json
      */
-    public function get(Request $request, Response $response, $args) {
+    public function delete(Request $request, Response $response, $args) {
 
-        $userId = $request->getAttribute('userId');
+        $name = $request->getParam('name');
+        $user = $request->getParam('user');
 
         $api = new Api();
-        $result = $api->getUser()->get($userId)->getResponse();
+        $result = $api->getFolder()->delete($user, $name)->getResponse();
 
         return $response->withJson(
             $result,

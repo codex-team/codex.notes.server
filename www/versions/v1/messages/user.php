@@ -2,7 +2,7 @@
 
 return [
     'isset' => [
-        'notIsset' => 'User not isset'
+        'notIsset' => 'User not isset: %s'
     ],
     'id' => [
         'empty' => 'User id is empty',
@@ -12,7 +12,7 @@ return [
         'empty' => 'Password is empty'
     ],
     'create' => [
-        'error' => 'User creating error'
+        'error' => 'User creating error: %s'
     ],
     'validate' => [
         'not' => 'User credentials not validated'

@@ -3,6 +3,7 @@
 namespace App\Versions\V1;
 
 use App\Versions\V1\Api\User as ApiUser;
+use App\Versions\V1\Api\Folder as ApiFolder;
 use App\System\HTTP;
 use App\System\Log;
 
@@ -14,11 +15,6 @@ use App\System\Log;
  */
 class Api
 {
-    /**
-     * @var string
-     */
-    protected $version = 'v1';
-
     /**
      * @var object App\System\Log
      */
@@ -33,13 +29,11 @@ class Api
     /**
      * Init API
      */
-    function __construct(string $version = 'v1')
+    public function __construct()
     {
         if (!$this->logger) {
             $this->logger = new Log();
         }
-
-        $this->version = $version;
 
         $this->response = $this->getDefaultResponseAsArray();
     }
@@ -53,9 +47,18 @@ class Api
         return new ApiUser();
     }
 
+    public  function getFolder()
+    {
+        return new ApiFolder();
+    }
+
     public function getResponse()
     {
-        return $this->response;
+        return [
+            'code' => HTTP::CODE_SUCCESS,
+            'success' => true,
+            'result' => $this->response
+        ];
     }
 
     public function getDefaultResponseAsArray()

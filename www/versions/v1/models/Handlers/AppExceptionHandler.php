@@ -21,7 +21,9 @@ class AppExceptionHandler extends BaseExceptionHandler {
         $_response['result'] = $exception->getMessage();
         $_response['success'] = false;
 
-        $this->logger->notice($_response['result']);
+        $message = $exception->getMessage() . ' in ' . $exception->getFile() . ' : ' . $exception->getLine();
+
+        $this->logger->notice($message);
 
         return $response->withJson(
             $_response,

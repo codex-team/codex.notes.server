@@ -6,6 +6,7 @@ use App\System\Utilities\Config;
 use App\System\Utilities\Messages;
 use App\System\HTTP;
 use App\Versions\V1\Models\Exceptions\DatabaseException;
+use App\Versions\V1\Models\Exceptions\ModelException;
 
 /**
  * Class Mongo
@@ -36,7 +37,7 @@ class Mongo extends Base
     function __construct(string $domain = null, string $port = null, string $dbname = null)
     {
         $this->config = Config::load('mongo');
-        $this->messages = Messages::load('v1', 'user');
+        $this->messages = Messages::load('v1', 'mongo');
 
         $domain = is_null($domain) ? $this->config['domain']   : $domain;
         $port   = is_null($port)   ? $this->config['port']     : $port;
@@ -60,6 +61,10 @@ class Mongo extends Base
      */
     public function getCollection(string $collection = '')
     {
+        if (!$collection) {
+            throw new ModelException($this->messages['collection']['name']['empty'], HTTP::CODE_BAD_REQUEST);
+        }
+
         try {
             return $this->connection->$collection;
             
@@ -69,5 +74,50 @@ class Mongo extends Base
             throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
         }
         
+    }
+
+    public function createCollection(string $collection = '', array $content = [])
+    {
+        if (!$collection) {
+            throw new ModelException($this->messages['collection']['name']['empty'], HTTP::CODE_BAD_REQUEST);
+        }
+
+        try {
+            // return $this->connection->$collection->insertOne($content);
+
+            $result = $this->connection->command(["create" => $collection]);
+        }
+        catch (\Exception $e) {
+            $message = sprintf($this->messages['collection']['create']['error'], $collection, $e->getMessage());
+
+            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
+        }
+
+        return $result;
+    }
+
+    public function deleteCollection(string $collection = '')
+    {
+        if (!$collection) {
+            throw new ModelException($this->messages['collection']['name']['empty'], HTTP::CODE_BAD_REQUEST);
+        }
+
+        try {
+            $result = $this->connection->$collection->drop();
+        }
+        catch (\Exception $e) {
+            $message = sprintf($this->messages['collection']['remove']['error'], $collection, $e->getMessage());
+
+            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
+        }
+
+        /* query ok, but collection not found */
+        if ($result->ok != 1) {
+            $message = sprintf($this->messages['collection']['remove']['error'], $collection, $result->errmsg);
+
+            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
+        }
+
+        return $result;
     }
 }

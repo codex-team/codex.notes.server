@@ -5,7 +5,12 @@ return [
         'empty' => 'User id is empty'
     ],
     'folder' => [
-        'empty' => 'Folder name is empty'
+        'name' => [
+            'empty' => 'Folder name is empty'
+        ],
+        'id' => [
+            'empty' => 'Folder id is empty'
+        ]
     ],
     'create' => [
         'error' => 'Folder creating error: %s'

@@ -83,17 +83,18 @@ class Mongo extends Base
         }
 
         try {
-            // return $this->connection->$collection->insertOne($content);
-
             $result = $this->connection->command(["create" => $collection]);
+            return true;
         }
         catch (\Exception $e) {
+
+            return false;
+            /*
             $message = sprintf($this->messages['collection']['create']['error'], $collection, $e->getMessage());
 
             throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
+            */
         }
-
-        return $result;
     }
 
     public function deleteCollection(string $collection = '')
@@ -119,5 +120,35 @@ class Mongo extends Base
         }
 
         return $result;
+    }
+
+    public function insert(string $collection = '', array $content = [])
+    {
+        if (!$collection) {
+            throw new ModelException($this->messages['collection']['name']['empty'], HTTP::CODE_BAD_REQUEST);
+        }
+
+        return $this->connection->$collection->insertOne($content);
+    }
+
+    public function collectionIsset(string $collection = '')
+    {
+        if (!$collection) {
+            throw new ModelException($this->messages['collection']['name']['empty'], HTTP::CODE_BAD_REQUEST);
+        }
+
+        try {
+            $this->connection->$collection->findOne([]);
+
+            return true;
+        }
+        catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function deleteInCollection(string $collection = '', array $criteria = [])
+    {
+        return $this->connection->$collection->deleteOne($criteria);
     }
 }

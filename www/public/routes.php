@@ -21,8 +21,11 @@ $app->group('/v1', function() {
      * @param  string {password} Передается в POST
      * @return json
      */
-    $this->get('/user/create', 'App\Versions\V1\Controllers\User:create');
+    $this->post('/user/create', 'App\Versions\V1\Controllers\User:create');
 
     $this->post('/folder/create', 'App\Versions\V1\Controllers\Folder:create');
     $this->post('/folder/delete', 'App\Versions\V1\Controllers\Folder:delete');
+
+    $this->post('/note/create', 'App\Versions\V1\Controllers\Note:create');
+    $this->post('/note/delete', 'App\Versions\V1\Controllers\Note:delete');
 });

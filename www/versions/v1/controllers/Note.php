@@ -7,13 +7,13 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use App\Versions\V1\Api;
 
 /**
- * Class Folder
+ * Class Note
  * Основные методы по работе с объектом Folder
  *
- * @see \App\Versions\V1\Models\Folder;
+ * @see \App\Versions\V1\Models\Note;
  * @package App\Versions\V1\Controllers
  */
-class Folder extends Base
+class Note extends Base
 {
     public function __construct()
     {
@@ -29,14 +29,13 @@ class Folder extends Base
      */
     public function create(Request $request, Response $response, $args) {
 
-        $name = $request->getParam('name');
-        $id   = $request->getParam('id');
-        $user = $request->getParam('user');
+        $dirId = $request->getParam('dirId');
+        $dirName = $request->getParam('dieName');
         $timestamp = $request->getParam('timestamp');
 
         $api = new Api();
 
-        $result = $api->getFolder()->create($user, $name, $id, $timestamp)->getResponse();
+        $result = $api->getNote()->create($dirId, $dirName, $timestamp)->getResponse();
 
         return $response->withJson(
             $result,
@@ -53,11 +52,11 @@ class Folder extends Base
      */
     public function delete(Request $request, Response $response, $args) {
 
-        $id = $request->getParam('id');
+        $name = $request->getParam('name');
         $user = $request->getParam('user');
 
         $api = new Api();
-        $result = $api->getFolder()->delete($user, $id)->getResponse();
+        $result = $api->getFolder()->delete($user, $name)->getResponse();
 
         return $response->withJson(
             $result,

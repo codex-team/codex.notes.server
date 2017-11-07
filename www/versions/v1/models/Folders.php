@@ -8,12 +8,12 @@ use App\Versions\V1\Models\Mongo;
 use App\Versions\V1\Models\Exceptions\ControllerException;
 
 /**
- * Class Folder
- * Модель для работы с коллекцией директории в MongoDB
+ * Class Folders
+ * Модель для работы с коллекцией директорий в MongoDB
  *
  * @package App\Versions\V1\Models
  */
-class Folder extends Base
+class Folders extends Base
 {
     private $client;
 
@@ -21,7 +21,7 @@ class Folder extends Base
      * Имя коллекции в Mongo
      * @var string
      */
-    private $collectionName = 'folder';
+    private $collectionName = 'folders';
     
     public function __construct() {
 
@@ -30,7 +30,7 @@ class Folder extends Base
         $this->client = new Mongo();
     }
 
-    public function create(string $user = '', string $name = '', string $id = '', int $timestamp = 0 )
+    public function create(string $user = '', string $name = '', string $id = '', int $timestamp = 0)
     {
         if (!$user) {
             throw new ControllerException($this->messages['user']['empty'], HTTP::CODE_BAD_REQUEST);
@@ -44,15 +44,23 @@ class Folder extends Base
             throw new ControllerException($this->messages['folder']['id']['empty'], HTTP::CODE_BAD_REQUEST);
         }
 
-        $folderIdUidCollectionName = $this->collectionName . ':' . $id . ':' . $user;
+        $this->collectionName .= ':' . $user;
 
-        $folderIdUid = $this->client->createCollection($folderIdUidCollectionName);
+        if (!$this->client->collectionIsset($this->collectionName)) {
+            $folderIdUid = $this->client->createCollection($this->collectionName);
+        }
 
-        $folders = new Folders();
-        $folderUid = $folders->create($user, $name, $id, $timestamp);
+        $content = [
+            'did' => $id,
+            'title' => $name,
+            'timestamp' => $timestamp
+        ];
+
+        $this->client->insert($this->collectionName, $content);
 
         return true;
     }
+
 
     public function delete(string $user = '', string $id = '')
     {
@@ -64,13 +72,11 @@ class Folder extends Base
             throw new ControllerException($this->messages['folder']['id']['empty'], HTTP::CODE_BAD_REQUEST);
         }
 
-        $folderCollection = $this->collectionName .= ':' . $id . ':' . $user;
+        $this->collectionName .= ':' . $user;
 
-        $this->client->deleteCollection($folderCollection);
-
-        $folders = new Folders();
-        $foldersCollection = $folders->delete($user, $id);
+        $this->client->deleteInCollection($this->collectionName, ['did' => $id]);
 
         return true;
     }
+
 }

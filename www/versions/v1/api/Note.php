@@ -3,27 +3,27 @@
 namespace App\Versions\V1\Api;
 
 use App\Versions\V1\Api;
-use App\Versions\V1\Models\Folder as ModelFolder;
+use App\Versions\V1\Models\Note as ModelNote;
 
 /**
- * Class User
- * Объект API для работы с Моделью User
+ * Class Note
+ * Объект API для работы с Моделью Note
  *
  * @package App\Versions\V1\Api
  */
-class Folder extends Api
+class Note extends Api
 {
     /**
      * Храним модель папки
-     * @var ModelFolder
+     * @var ModelNote
      */
-    protected $folder;
+    protected $note;
     
     function __construct()
     {
         parent::__construct();
 
-        $this->folder = new ModelFolder();
+        $this->note = new ModelNote();
     }
 
     /**
@@ -34,9 +34,9 @@ class Folder extends Api
      *
      * @return array
      */
-    public function create($user, $name, $id, $timestamp)
+    public function create($dirId, $dirName, $timestamp)
     {
-        $this->response = $this->folder->create($user, $name, $id, $timestamp);
+        $this->response = $this->note->create($dirId, $dirName, $timestamp);
 
         return $this;
     }
@@ -46,9 +46,9 @@ class Folder extends Api
      *
      * @return null|object
      */
-    public function delete($user, $id)
+    public function delete($user, $name)
     {
-        $this->response = $this->folder->delete($user, $id);
+        $this->response = $this->folder->delete($user, $name);
 
         return $this;
     }

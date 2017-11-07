@@ -14,16 +14,23 @@
 
 ## Folder
 ### Create
-$ curl -X POST --data 'user=xhr3y0tm&name=unn1oeu5' http://codex.notes.server/v1/folder/create
+`$ curl -X POST --data 'user=xhr3y0tm&id=00n1o111&name=example4&timestamp=111111111' http://codex.notes.server/v1/folder/create`
 
-{"code":200,"success":true,"result":{}}
+folder:00n1o110:xhr3y0tm
+`{}`
+
+folders:xhr3y0tm
+`> db.getCollection('folders:xhr3y0tm').find({});
+{ "_id" : ObjectId("5a01ea2661fa0f00073bee12"), "did" : "00n1o111", "title" : "example3", "timestamp" : 111111111 }`
+
+{"code":200,"success":true,"result":true}
 {"code":500,"success":false,"result":"Collection folder:00n1o103:xhr3y0tm is not created: a collection 'notes.folder:00n1o103:xhr3y0tm' already exists"}
 
 ### Delete
 
-{"code":200,"success":true,"result":{"ns":"notes.folder:00n1o103:xhr3y0tm","nIndexesWas":1,"ok":1}}
+`curl -X POST --data 'user=xhr3y0tm&id=00n1o111' http://codex.notes.server/v1/folder/delete`
 
-{"code":200,"success":true,"result":{"ok":0,"errmsg":"ns not found"}}
+{"code":200,"success":true,"result":true}
 
 ## Errors
 `$ curl -X POST --data 'pass=123' http://codex.notes.server/v1/user/create?pas`

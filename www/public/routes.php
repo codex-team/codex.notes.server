@@ -25,7 +25,4 @@ $app->group('/v1', function() {
 
     $this->post('/folder/create', 'App\Versions\V1\Controllers\Folder:create');
     $this->post('/folder/delete', 'App\Versions\V1\Controllers\Folder:delete');
-
-    $this->post('/note/create', 'App\Versions\V1\Controllers\Note:create');
-    $this->post('/note/delete', 'App\Versions\V1\Controllers\Note:delete');
 });

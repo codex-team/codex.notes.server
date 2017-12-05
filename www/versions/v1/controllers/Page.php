@@ -23,10 +23,8 @@ class Page extends Base {
     }
 
     /**
-     * Выводим приколюшку
-     * @param Request $request
-     * @param Response $response
-     * @param $args
+     * Выводим приколюшку-приветствие
+     *
      * @return html
      */
     public function index(Request $request, Response $response, $args) {

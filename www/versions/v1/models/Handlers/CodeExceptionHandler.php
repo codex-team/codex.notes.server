@@ -23,7 +23,9 @@ class CodeExceptionHandler extends BaseExceptionHandler
         $_response['result'] = HTTP::STRING_SERVER_ERROR;
         $_response['success'] = false;
 
-        $this->logger->emergency($exception->getMessage());
+        $message = $exception->getMessage() . ' in ' . $exception->getFile() . ' : ' . $exception->getLine();
+
+        $this->logger->emergency($message);
 
         return $response->withJson(
             $_response,

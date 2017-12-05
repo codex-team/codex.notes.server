@@ -2,6 +2,8 @@
 
 namespace App\Versions\V1\Models;
 
+use App\Versions\V1\Models\Exceptions\DatabaseException;
+use App\Versions\V1\Models\Exceptions\ControllerException;
 use App\Versions\V1\Models\Exceptions\ModelException;
 use App\Versions\V1\Models\Mongo;
 use App\Versions\V1\Utilities\Tweaks;
@@ -9,7 +11,7 @@ use App\System\HTTP;
 use App\System\Utilities\Config;
 use App\System\Utilities\Messages;
 
-use App\Versions\V1\Models\Exceptions\ControllerException;
+
 
 /**
  * Class User
@@ -87,10 +89,7 @@ class User extends Base
                 'ip' => $ip,
                 'directories' => []
             ]);
-            
-            # {"$oid":"59dd20985d945f103933fd7e"}
-            # $resultId = $result->getInsertedId()
-            
+
             return [
                 'id' => $userId,
                 'password' => $passwordHashed
@@ -98,7 +97,9 @@ class User extends Base
 
         } catch (\Exception $e) {
 
-            throw new ModelException($this->messages['create']['error'],HTTP::CODE_SERVER_ERROR);
+            $message = sprintf($this->messages['create']['error'], $e->getMessage());
+
+            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
         }
     }
 
@@ -125,23 +126,30 @@ class User extends Base
         $userIdLengthDefault = $this->config['auth']['password']['length'];
 
         if (!$userIdLength) {
-            throw new ControllerException($this->messages['id']['empty'], HTTP::CODE_BAD_REQUEST);
+            throw new ModelException($this->messages['id']['empty'], HTTP::CODE_BAD_REQUEST);
         }
         elseif($userIdLength != $userIdLengthDefault) {
             $message = sprintf($this->messages['id']['length'], $userIdLengthDefault);
 
-            return $message;
+            throw new ModelException($message, HTTP::CODE_BAD_REQUEST);
         }
 
         try {
-            return $this->collection->findOne([
+            $result = $this->collection->findOne([
                 'id' => $userId   
             ]);
 
         } catch (\Exception $e) {
-
-            throw new ModelException($this->messages['isset']['notIsset'], HTTP::CODE_SERVER_ERROR);
+            $message = sprintf($this->messages['isset']['notIsset'], $e->getMessage());
+            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
         }
+
+        if ($result->ok != 1)
+        {
+
+        }
+
+        return $result;
     }
 
     /**

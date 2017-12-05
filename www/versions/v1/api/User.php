@@ -3,7 +3,6 @@
 namespace App\Versions\V1\Api;
 
 use App\Versions\V1\Api;
-use App\Versions\V1\Models\Exceptions\ModelException;
 use App\Versions\V1\Models\User as ModelUser;
 
 /**
@@ -37,7 +36,9 @@ class User extends Api
      */
     public function create($ip, $password)
     {
-        return $this->user->create($ip, $password);
+        $this->response = $this->user->create($ip, $password);
+
+        return $this;
     }
 
     /**
@@ -49,6 +50,8 @@ class User extends Api
      */
     public function get($userId)
     {
-        return $this->user->get($userId);
+        $this->response = $this->user->get($userId);
+
+        return $this;
     }
 }

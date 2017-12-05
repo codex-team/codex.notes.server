@@ -3,8 +3,10 @@
 namespace App\Versions\V1;
 
 use App\Versions\V1\Api\User as ApiUser;
+use App\Versions\V1\Api\Folder as ApiFolder;
 use App\System\HTTP;
 use App\System\Log;
+use App\Versions\V1\Models\Handlers\AppExceptionHandler;
 
 /**
  * Class Api
@@ -14,11 +16,6 @@ use App\System\Log;
  */
 class Api
 {
-    /**
-     * @var string
-     */
-    protected $version = 'v1';
-
     /**
      * @var object App\System\Log
      */
@@ -33,13 +30,11 @@ class Api
     /**
      * Init API
      */
-    function __construct(string $version = 'v1')
+    public function __construct()
     {
         if (!$this->logger) {
             $this->logger = new Log();
         }
-
-        $this->version = $version;
 
         $this->response = $this->getDefaultResponseAsArray();
     }
@@ -53,11 +48,33 @@ class Api
         return new ApiUser();
     }
 
-    public function getResponse()
+    /**
+     * Получаем объект класса API Folder для работы с его методами
+     * @return App\Versions\V1\Api\Folder()
+     */
+    public function getFolder()
     {
-        return $this->response;
+        return new ApiFolder();
     }
 
+    /**
+     * Получаем результат работы API
+     * Вызывается самой последней
+     * @return array
+     */
+    public function getResponse()
+    {
+        $_response = $this->getDefaultResponseAsArray();
+        $_response['result'] = $this->response;
+        return $_response;
+    }
+
+    /**
+     * Используется в ExceptionHandler'ах и $this->getResponse()
+     * Нам неважно, какой `result`, он перезапишется
+     * `result` key обязательный
+     * @return array
+     */
     public function getDefaultResponseAsArray()
     {
         return [

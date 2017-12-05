@@ -6,9 +6,6 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use App\Versions\V1\Api;
 
-use App\Versions\V1\Models\Exceptions\ControllerException;
-
-
 /**
  * Class User
  * Основные методы по работе с объектом User
@@ -37,7 +34,7 @@ class User extends Base
 
         $api = new Api();
 
-        $result = $api->getUser()->create($ip, $pass);
+        $result = $api->getUser()->create($ip, $pass)->getResponse();
 
         return $response->withJson(
             $result,
@@ -57,7 +54,7 @@ class User extends Base
         $userId = $request->getAttribute('userId');
 
         $api = new Api();
-        $result = $api->getUser()->get($userId);
+        $result = $api->getUser()->get($userId)->getResponse();
 
         return $response->withJson(
             $result,

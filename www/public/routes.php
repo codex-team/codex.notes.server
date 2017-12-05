@@ -22,4 +22,7 @@ $app->group('/v1', function() {
      * @return json
      */
     $this->post('/user/create', 'App\Versions\V1\Controllers\User:create');
+
+    $this->post('/folder/create', 'App\Versions\V1\Controllers\Folder:create');
+    $this->post('/folder/delete', 'App\Versions\V1\Controllers\Folder:delete');
 });

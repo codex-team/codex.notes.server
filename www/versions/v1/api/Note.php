@@ -14,7 +14,7 @@ use App\Versions\V1\Models\Note as ModelNote;
 class Note extends Api
 {
     /**
-     * Храним модель папки
+     * Храним модель записи
      * @var ModelNote
      */
     protected $note;
@@ -27,28 +27,28 @@ class Note extends Api
     }
 
     /**
-     * Создаем папку
+     * Создаем заметку (in developing)
      *
-     * @param $user     User id
-     * @param $name     Folder name
-     *
-     * @return array
+     * @param $noteName   Note name
+     * @param $noteId     Note id
+     * @param $timestamp  unix time
      */
-    public function create($dirId, $dirName, $timestamp)
+    public function create($noteId, $noteName, $timestamp)
     {
-        $this->response = $this->note->create($dirId, $dirName, $timestamp);
+        $this->response = $this->note->create($noteId, $noteName, $timestamp);
 
         return $this;
     }
 
     /**
-     * Получаем папку
+     * Получаем заметку (in developing)
      *
-     * @return null|object
+     * @param $user       User id
+     * @param $noteId     Note id
      */
-    public function delete($user, $name)
+    public function delete($user, $noteId)
     {
-        $this->response = $this->folder->delete($user, $name);
+        $this->response = $this->note->delete($user, $noteId);
 
         return $this;
     }

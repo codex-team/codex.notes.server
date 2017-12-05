@@ -30,6 +30,17 @@ class Folders extends Base
         $this->client = new Mongo();
     }
 
+    /**
+     * Создаем коллекцию папок и в нее вставляем запись о другой папке
+     *
+     * @param string $user      User id
+     * @param string $name      Folder name
+     * @param string $id        Folder id
+     * @param int    $timestamp
+     *
+     * @return bool | exception
+     * @throws ControllerException
+     */
     public function create(string $user = '', string $name = '', string $id = '', int $timestamp = 0)
     {
         if (!$user) {
@@ -61,7 +72,15 @@ class Folders extends Base
         return true;
     }
 
-
+    /**
+     * Удаляем коллекцию папок
+     *
+     * @param string $user  User id
+     * @param string $id    Folder id
+     *
+     * @return bool | exception
+     * @throws ControllerException
+     */
     public function delete(string $user = '', string $id = '')
     {
         if (!$user) {
@@ -78,5 +97,4 @@ class Folders extends Base
 
         return true;
     }
-
 }

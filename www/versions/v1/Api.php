@@ -6,6 +6,7 @@ use App\Versions\V1\Api\User as ApiUser;
 use App\Versions\V1\Api\Folder as ApiFolder;
 use App\System\HTTP;
 use App\System\Log;
+use App\Versions\V1\Models\Handlers\AppExceptionHandler;
 
 /**
  * Class Api
@@ -47,20 +48,33 @@ class Api
         return new ApiUser();
     }
 
-    public  function getFolder()
+    /**
+     * Получаем объект класса API Folder для работы с его методами
+     * @return App\Versions\V1\Api\Folder()
+     */
+    public function getFolder()
     {
         return new ApiFolder();
     }
 
+    /**
+     * Получаем результат работы API
+     * Вызывается самой последней
+     * @return array
+     */
     public function getResponse()
     {
-        return [
-            'code' => HTTP::CODE_SUCCESS,
-            'success' => true,
-            'result' => $this->response
-        ];
+        $_response = $this->getDefaultResponseAsArray();
+        $_response['result'] = $this->response;
+        return $_response;
     }
 
+    /**
+     * Используется в ExceptionHandler'ах и $this->getResponse()
+     * Нам неважно, какой `result`, он перезапишется
+     * `result` key обязательный
+     * @return array
+     */
     public function getDefaultResponseAsArray()
     {
         return [

@@ -22,9 +22,13 @@ class Folder extends Base
 
     /**
      * Создаем папку
-     * @param Request $request
-     * @param Response $response
-     * @param $args
+     *
+     * Получаем в POST
+     * @param name          Folder name
+     * @param id            Folder id
+     * @param user          User id
+     * @param timestamp     unix time
+     *
      * @return json
      */
     public function create(Request $request, Response $response, $args) {
@@ -46,9 +50,11 @@ class Folder extends Base
 
     /**
      * Получаем пользователя
-     * @param Request $request
-     * @param Response $response
-     * @param $args
+     *
+     * Получаем в POST
+     * @param id    Folder id
+     * @param user  User id
+     *
      * @return json
      */
     public function delete(Request $request, Response $response, $args) {

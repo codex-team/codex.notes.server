@@ -29,8 +29,10 @@ class Folder extends Api
     /**
      * Создаем папку
      *
-     * @param $user     User id
-     * @param $name     Folder name
+     * @param $user      User id
+     * @param $name      Folder name
+     * @param $id        Folder id
+     * @param $timestamp unix time
      *
      * @return array
      */
@@ -43,6 +45,8 @@ class Folder extends Api
 
     /**
      * Получаем папку
+     * @param $user User id
+     * @param $id   Folder id
      *
      * @return null|object
      */

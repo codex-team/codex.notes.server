@@ -30,6 +30,7 @@ class Mongo extends Base
 
     /**
      * Устанавливаем соединение с базой
+     *
      * @param string|null $domain 
      * @param string|null $port
      * @param string|null $dbname
@@ -56,6 +57,7 @@ class Mongo extends Base
     
     /**
      * Получаем коллекции базы по имени коллекции
+     *
      * @param  string $collection
      * @return MongoDB\Collection
      */
@@ -76,6 +78,14 @@ class Mongo extends Base
         
     }
 
+    /**
+     * Создаем коллекцию по ее имени
+     *
+     * @param string $collection    example: what:a:fuck
+     *
+     * @return bool
+     * @throws ModelException
+     */
     public function createCollection(string $collection = '', array $content = [])
     {
         if (!$collection) {
@@ -89,14 +99,18 @@ class Mongo extends Base
         catch (\Exception $e) {
 
             return false;
-            /*
-            $message = sprintf($this->messages['collection']['create']['error'], $collection, $e->getMessage());
-
-            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
-            */
         }
     }
 
+    /**
+     * Удаляем коллекцию по ее имени
+     *
+     * @param string $collection
+     *
+     * @return array|object
+     * @throws DatabaseException
+     * @throws ModelException
+     */
     public function deleteCollection(string $collection = '')
     {
         if (!$collection) {
@@ -122,6 +136,15 @@ class Mongo extends Base
         return $result;
     }
 
+    /**
+     * Вставляем данные в коллекцию
+     *
+     * @param string $collection
+     * @param array  $content
+     *
+     * @return \MongoDB\InsertOneResult
+     * @throws ModelException
+     */
     public function insert(string $collection = '', array $content = [])
     {
         if (!$collection) {
@@ -131,6 +154,14 @@ class Mongo extends Base
         return $this->connection->$collection->insertOne($content);
     }
 
+    /**
+     * Проверяем существование коллекции
+     *
+     * @param string $collection
+     *
+     * @return bool
+     * @throws ModelException
+     */
     public function collectionIsset(string $collection = '')
     {
         if (!$collection) {
@@ -147,6 +178,14 @@ class Mongo extends Base
         }
     }
 
+    /**
+     * Удаляем из коллекции что-то по условию
+     *
+     * @param string $collection
+     * @param array  $criteria      example: ['did' => '126']
+     *
+     * @return \MongoDB\DeleteResult
+     */
     public function deleteInCollection(string $collection = '', array $criteria = [])
     {
         return $this->connection->$collection->deleteOne($criteria);

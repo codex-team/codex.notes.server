@@ -1,9 +1,9 @@
 FROM debian:jessie
 
-MAINTAINER Codex Team <github.com/codex-team>
+MAINTAINER CodeX Team <github.com/codex-team>
 
-RUN apt-get update && apt-get install -y \
-    nginx
+RUN apt-get update
+RUN apt-get install -y nginx
 
 ADD nginx.conf /etc/nginx/
 ADD codex.conf /etc/nginx/sites-available/
@@ -18,4 +18,3 @@ RUN usermod -u 1000 www-data
 CMD ["nginx"]
 
 EXPOSE 80
-EXPOSE 443

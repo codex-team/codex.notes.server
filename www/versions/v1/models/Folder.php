@@ -23,7 +23,9 @@ class Folder extends Base
      */
     private $collectionName = 'folder';
     
-    public function __construct() {
+    public function __construct()
+    {
+        parent::__construct();
 
         $this->messages = Messages::load('v1', 'folder');
 
@@ -93,4 +95,27 @@ class Folder extends Base
 
         return true;
     }
+
+    /**
+     * Add collaborator to folder
+     *
+     * @param string $userId
+     * @param string $folderId
+     * @param $email
+     * @return bool
+     */
+    public function addCollaborator(string $userId, string $folderId, $email)
+    {
+
+        $collaboratorsCollection = 'collaborators:' . $userId . ':' . $folderId;
+
+        $this->client->insert($collaboratorsCollection, [
+            'email' => $email,
+            'accepted' => 0
+        ]);
+
+        return true;
+
+    }
+
 }

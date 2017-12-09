@@ -70,4 +70,29 @@ class Folder extends Base
             $result['code']
         );
     }
+
+    /**
+     * Add collaborator handler
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function addCollaborator(Request $request, Response $response, $args) {
+
+        $email    = $request->getParam('collaborator');
+        $folderId = $request->getParam('folder');
+        $userId   = $request->getParam('user');
+
+        $api = new Api();
+        $result = $api->getFolder()->addCollaborator($userId, $folderId, $email)->getResponse();
+
+        return $response->withJson(
+            $result,
+            $result['code']
+        );
+
+    }
+
 }

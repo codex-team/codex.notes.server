@@ -56,4 +56,19 @@ class Folder extends Api
 
         return $this;
     }
+
+    /**
+     * Add collaborator to folder
+     *
+     * @param $user
+     * @param $id
+     * @param $email
+     * @return $this
+     */
+    public function addCollaborator($user, $id, $email) {
+        $this->response = $this->folder->addCollaborator($user, $id, $email);
+
+        return $this;
+    }
+
 }

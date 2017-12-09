@@ -85,16 +85,15 @@ Invitation token contains:
 ## Adding a new note in a shared folder
 
 1. Send `/sync` event with new item: it will be newer that `dt_sync`, where stored date of last syncronisation
-
 2. API: in the `/sync` event we've got a new Note with `folder_id` and other note's data
+4. Get all collaborators from `collaborators:<owner_id>:<folder_id>`
+5. Add (or update) a document in the `directory:<owner_id>:<folder_id>`
 
-4. Get all collaborators from `collaborators:<user_id>:<folder_id>`
-
-5. Add (or update) a document in the `directory:<user_id>:<folder_id>`
-
-note (json) | dt_add | dt_modify
-
-
-
-
+#### Fields
+| Param | Type | Description |
+|--|--|--|
+| `_id` | mongoId | `Note` unique mongo id |
+| `note` | json | `Note` data |
+| `dt_add` | timestamp | `Note` creation date |
+| `dt_modify` | timestamp | `Note` last updating date |
 

@@ -111,7 +111,7 @@ class Folder extends Base
 
         $this->client->insert($collaboratorsCollection, [
             'email' => $email,
-            'status' => 0
+            'accepted' => 0
         ]);
 
         return true;

@@ -2,3 +2,6 @@
 .idea
 .data
 logs
+*.sublime-project
+
+*.sublime-workspace

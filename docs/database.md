@@ -6,15 +6,16 @@
 
 | Name | Description |
 | -- | -- |
-| `Users` | All users  |
+| `users` | All users  |
 | `directories:<owner_id>`  |  List of user's folders |
-| `collaborators:<owner_id>:<folder_id>` | list of collaborators of specified folder |
-| `notes:<owner_id>:<folder_id>` | List of notes in directory |
+| `collaborators:<owner_id>:<folder_id>` | Collaborators list for the specified folder |
+| `notes:<owner_id>:<folder_id>` | List of notes in a directory |
 
-All `ids` is a [ObjectId](http://php.net/manual/en/class.mongodb-bson-objectid.php) from specified collection:
+All `ids` is an [ObjectId](http://php.net/manual/en/class.mongodb-bson-objectid.php) from specified collection:
 
-- `<owner_id>` — `_id` from `Users`
+- `<owner_id>` — `_id` from `users`
 - `<folder_id>` — `_id` from `directories:<owner_id>`
+- `<note_id>` — `_id` from `notes:<owner_id>:<folder_id>`
 
 ## Folder creation
 
@@ -51,7 +52,7 @@ where `sharer_id` — current user
 |--|--|--|
 | `_id` | mongoId | unique mongo id |
 | `email` | string | Invitation acceptor's email |
-| `collaborator_id` | mongoId \| null (default) | Invitation acceptor's `_id` from `Users`. |
+| `collaborator_id` | mongoId \| null (default) | Invitation acceptor's `_id` from `users`. |
 | `invitation_token` | string | Token with `<owner_id>:<folder_id>:<hash>`  |
 | `dt_add` | mongoId | Date of an invitation |
 

@@ -9,9 +9,9 @@
 | `Users` | All users  |
 | `directories:<owner_id>`  |  List of user's folders |
 | `collaborators:<owner_id>:<folder_id>` | list of collaborators of specified folder |
-| `directory:<owner_id>:<folder_id>` | List of notes in directory |
+| `notes:<owner_id>:<folder_id>` | List of notes in directory |
 
-All `ids` is a mongo_id from specified collection:
+All `ids` is a [ObjectId](http://php.net/manual/en/class.mongodb-bson-objectid.php) from specified collection:
 
 - `<owner_id>` — `_id` from `Users`
 - `<folder_id>` — `_id` from `directories:<owner_id>`
@@ -21,6 +21,7 @@ All `ids` is a mongo_id from specified collection:
 ### 1. Add a document in the `directories:<owner_id>`
 
 #### Fields
+
 | Param | Type | Description |
 |--|--|--|
 | `_id` | mongoId | unique mongo id |
@@ -33,7 +34,7 @@ All `ids` is a mongo_id from specified collection:
 where `is_shared` — 0
 where `sharer_id` — current user
 
-### 2. Create `directory:<owner_id>:<folder_id>` for the current user
+### 2. Create `notes:<owner_id>:<folder_id>` for the current user with created `folder_id`
 
 ## Invite a collaborator
 
@@ -54,7 +55,7 @@ where `sharer_id` — current user
 | `invitation_token` | string | Token with `<owner_id>:<folder_id>:<hash>`  |
 | `dt_add` | mongoId | Date of an invitation |
 
-### 2. Send email with `invitation token`
+### 2. Send an email with `invitation token`
 
 Invitation token contains:
 
@@ -87,9 +88,10 @@ Invitation token contains:
 1. Send `/sync` event with new item: it will be newer that `dt_sync`, where stored date of last syncronisation
 2. API: in the `/sync` event we've got a new Note with `folder_id` and other note's data
 4. Get all collaborators from `collaborators:<owner_id>:<folder_id>`
-5. Add (or update) a document in the `directory:<owner_id>:<folder_id>`
+5. Add (or update) a document in the `notes:<owner_id>:<folder_id>`
 
 #### Fields
+
 | Param | Type | Description |
 |--|--|--|
 | `_id` | mongoId | `Note` unique mongo id |

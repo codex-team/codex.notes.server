@@ -69,6 +69,19 @@ docker exec -ti <Container Id> /bin/bash
 
 # Database
 
+![](https://capella.pics/5be4ad62-0b30-4348-aa0d-838279bf46cd)
+
+## Create a folder
+
+1. Add a document in the `directories:<uid>`
+
+    _did | is_shared | owner_id | title | ....
+
+where `is_shared` — 0 (it will be 1 on sharing)
+where `owner_id` — current user
+
+2. Create `directory:<user_id>:<folder_id>`
+
 ## Invites
 
 1. Add email to the table
@@ -81,7 +94,8 @@ Who have an access to the folder:
 `folder_id` — shared folder id
 
 fields:
-email | dt_add | auth_token
+
+email | dt_add | invitation token | user_id
 
 ![](https://capella.pics/59ccf892-e5c6-4bfe-8b64-d50f2fac55c4)
 
@@ -101,7 +115,9 @@ Invitation token contains: `<user_id>:<folder_id>:<hash (user_id+folder_id+salt)
 
     - Get `user_id`, `folder_id` from the token, compare with `hash`.
     - Select collection `collaborators:<user_id>:<folder_id>`
-    - Update email status to ACCEPTED, and save new users id;
+    - Update email status to ACCEPTED, and save new user's id;
+    - Add new folder to the `directories:<uid>` (uid — invited user) with `owner_id` (current user) and `is_shared` = 1
+    - Update an item in the `directories:<uid>` (uid — current user) with `is_shared` = 1
     - send response with shared folder and notes
 
 
@@ -113,7 +129,7 @@ Invitation token contains: `<user_id>:<folder_id>:<hash (user_id+folder_id+salt)
 
 4. Get all collaborators from `collaborators:<user_id>:<folder_id>`
 
-5. Add (or update) a document in the `directories:<user_id>:<folder_id>` for all collaborators
+5. Add (or update) a document in the `directory:<user_id>:<folder_id>`
 
     note (json) | dt_add | dt_modify
 

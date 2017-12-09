@@ -25,4 +25,5 @@ $app->group('/v1', function() {
 
     $this->post('/folder/create', 'App\Versions\V1\Controllers\Folder:create');
     $this->post('/folder/delete', 'App\Versions\V1\Controllers\Folder:delete');
+    $this->post('/folder/addCollaborator', 'App\Versions\V1\Controllers\Folder:addCollaborator');
 });

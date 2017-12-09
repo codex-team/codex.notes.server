@@ -20,4 +20,7 @@ RUN mv composer.phar /usr/local/bin/composer
 RUN usermod -u 1000 www-data
 RUN usermod -G staff www-data
 
+RUN cd /var/www/codex.notes.server
+RUN composer update
+
 WORKDIR /var/www/codex.notes.server

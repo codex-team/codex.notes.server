@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * Internal components
+ */
+$app->get('/', 'App\Components\Index\Index:page');
+
+/**
  * API v1
  */
 $app->group('/v1', function() {

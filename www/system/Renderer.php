@@ -5,9 +5,8 @@ namespace App\System;
 use App\System\Utilities\Base;
 
 /**
- * Class HTTP
- * Оболочка для обработки HTTP запросов
- * На данный момент хранит только коды ответов червера
+ * Class Renderer
+ * Provides template rendering methods
  *
  * @package App\System
  */

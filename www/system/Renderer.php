@@ -3,6 +3,7 @@
 namespace App\System;
 
 use App\System\Utilities\Base;
+use \App\System\Utilities\Config;
 
 /**
  * Class Renderer
@@ -18,7 +19,7 @@ class Renderer
      * @param  array|null $viewData   - data passed to the template
      * @return string
      */
-    public static function render(string $tpl, array $viewData = null)
+    public static function render(string $tpl, array $viewData = null): void
     {
         /**
          * Get caller classname
@@ -50,7 +51,7 @@ class Renderer
     }
 
     /**
-     * Retuns template forder path from component
+     * Returns template forder path from the component
      * @param  string $componentName  - component name
      * @return string
      */
@@ -59,7 +60,7 @@ class Renderer
         /**
          * Path to the /components directory
          */
-        $componensDir = \App\System\Utilities\Config::getPathTo(Base::DIR_COMPONENTS);
+        $componensDir = Config::getPathTo(Base::DIR_COMPONENTS);
 
         /**
          * Path to the /tpl directory inside the component

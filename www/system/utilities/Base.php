@@ -15,4 +15,5 @@ class Base {
     CONST DIR_LOGS     = 'logs';
     CONST DIR_VERSIONS = 'versions';
     CONST DIR_MESSAGES = 'messages';
+    CONST DIR_COMPONENTS = 'components';
 }

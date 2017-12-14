@@ -1,0 +1,54 @@
+html {
+    min-height: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-size: 14px;
+    line-height: 1.5em;
+    letter-spacing: 0.1px;
+}
+
+/**
+ * Index page component
+ * ==============================
+ */
+
+/**
+ * Main panel
+ */
+.index-panel {
+    width: 200px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.index-panel h1 {
+    font-size: 20px;
+    letter-spacing: 0.19px;
+    margin-bottom: 2px;
+}
+
+.index-panel .version {
+    font-size: 14.6px;
+    color: #767779;
+    letter-spacing: 0.14px;
+}
+
+.index-panel .download {
+    display: inline-block;
+    padding: 5px 20px;
+    margin-top: 10px;
+    background: #20DE6F;
+    border-radius: 4px;
+    font-size: 14.6px;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.index-panel .download:hover {
+    background: #11C55C;
+}

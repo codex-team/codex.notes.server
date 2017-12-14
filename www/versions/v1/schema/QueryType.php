@@ -1,25 +1,16 @@
 <?php
+namespace App\Versions\V1\Schema;
 
-namespace App\Components\Index;
-
-use App\System\Renderer;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
-/**
- * Index page component
- */
-class Index
+class QueryType extends ObjectType
 {
-    /**
-     * Index page action
-     */
-    public function page()
+    public function __construct()
     {
-        // Renderer::render('index.php', [ 'title' => 'CodeX Notes' ]);
-
-        $queryType = new ObjectType([
-            'name' => 'Query',
+        $config = [
+            // Note: 'name' is not needed in this form:
+            // it will be inferred from class name by omitting namespace and dropping "Type" suffix
             'fields' => [
                 'echo' => [
                     'type' => Type::string(),
@@ -30,10 +21,8 @@ class Index
                         return $root['prefix'] . $args['message'];
                     }
                 ],
-            ],
-        ]);
-
-        dump($queryType);
+            ]
+        ];
+        parent::__construct($config);
     }
-
 }

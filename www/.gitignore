@@ -7,3 +7,4 @@ logs/*
 composer.lock
 composer-setup.php 
 composer.phar
+.env

@@ -155,6 +155,46 @@ class Mongo extends Base
     }
 
     /**
+     * Обновляем данные в коллекции
+     *
+     * @param string $collection
+     * @param array  $filter
+     * @param array  $content
+     * @param array  $options
+     *
+     * @return \MongoDB\UpdateResult
+     * @throws ModelException
+     */
+    public function update(string $collection = '', array $filter = [], array $content = [], array $options = [])
+    {
+        if (!$collection) {
+            throw new ModelException($this->messages['collection']['name']['empty'], HTTP::CODE_BAD_REQUEST);
+        }
+
+        return $this->connection->$collection->updateOne($filter, $content, $options);
+    }
+
+    /**
+     * Находим данные в коллекции
+     *
+     * @param string $collection
+     * @param array  $filter
+     *
+     * @returns Array
+     * @throws ModelException
+     */
+    public function find(string $collection = '', array $filter = [])
+    {
+        if (!$collection) {
+            throw new ModelException($this->messages['collection']['name']['empty'], HTTP::CODE_BAD_REQUEST);
+        }
+
+        return $this->connection->$collection->find($filter)->toArray();
+    }
+
+
+
+    /**
      * Проверяем существование коллекции
      *
      * @param string $collection

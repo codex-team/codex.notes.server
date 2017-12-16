@@ -101,20 +101,98 @@ class Folder extends Base
      *
      * @param string $userId
      * @param string $folderId
-     * @param $email
+     * @param string $email
      * @return bool
      */
-    public function addCollaborator(string $userId, string $folderId, $email)
+    public function addCollaborator(string $userId, string $folderId, string $email)
     {
 
         $collaboratorsCollection = 'collaborators:' . $userId . ':' . $folderId;
 
         $this->client->insert($collaboratorsCollection, [
             'email' => $email,
-            'accepted' => 0
+            'collaborator_id' => null,
+            'invitation_token' => $this->getInvitationToken($userId, $folderId, $email),
+            'dt_add' => time(),
+            'accepted' => false
         ]);
 
         return true;
+
+    }
+
+    public function verifyCollaborator(string $userId, string $email, string $token)
+    {
+
+        list($ownerId, $folderId, $signature) = explode(':', $token);
+
+        $verificationToken = $this->getInvitationToken($ownerId, $folderId, $email);
+
+        if ($verificationToken !== $token) {
+            return false;
+        }
+
+        $collaboratorsCollection = 'collaborators:' . $ownerId . ':' . $folderId;
+
+        $this->client->update($collaboratorsCollection,
+            ['invitation_token' => $token],
+            ['$set' =>
+                [
+                    'accepted' => true,
+                    'collaborator_id' => $userId
+                ]
+            ]
+        );
+
+        $this->shareFolder($ownerId, $folderId, $userId);
+
+        $folder = $this->client->find('directory:' . $ownerId . ':' . $folderId, []);
+        return $folder;
+
+    }
+
+    public function shareFolder($ownerId, $folderId, $userId)
+    {
+
+        /** @TODO: check if folder or users don't exist */
+
+        $ownerCollection = 'directories:' . $ownerId;
+        $invitedCollection = 'directories:' . $userId;
+
+        $this->client->update($ownerCollection, [
+            '_id' => $folderId
+        ],
+        [
+            '$set' => [
+                'is_shared' => true,
+                'sharer_id' => $ownerId
+            ]
+        ]);
+
+        $this->client->update($invitedCollection,
+        [
+            '_id' => $folderId
+        ],
+        [
+            '$set' => [
+                '_id' => $folderId,
+                'is_shared' => true,
+                'sharer_id' => $ownerId,
+                'title' => 'Default title'
+            ]
+        ],
+        [
+            'upsert' => true
+        ]);
+
+        return true;
+
+    }
+
+    private function getInvitationToken(string $userId, string $folderId, string $email)
+    {
+
+        return $userId . ':' . $folderId . ':' . hash_hmac('sha256', $userId . $folderId . $email, $_SERVER['INVITATION_SALT']);
 
     }
 

@@ -71,4 +71,18 @@ class Folder extends Api
         return $this;
     }
 
+    /**
+     * Verify collaborator
+     *
+     * @param string $userId
+     * @param string $email
+     * @param string $token
+     * @return $this
+     */
+    public function verifyCollaborator($userId, $email, $token) {
+        $this->response = $this->folder->verifyCollaborator($userId, $email, $token);
+
+        return $this;
+    }
+
 }

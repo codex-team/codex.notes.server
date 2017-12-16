@@ -103,7 +103,7 @@ class Folder extends Base
         $token  = $request->getParam('token');
 
         $api = new Api();
-        $result = $api->getFolder()->verifyCollaborator($userId, $email, $token)->getRepsonse();
+        $result = $api->getFolder()->verifyCollaborator($userId, $email, $token)->getResponse();
 
         return $response->withJson(
             $result,

@@ -32,5 +32,5 @@ $app->group('/v1', function() {
     $this->post('/folder/delete', 'App\Versions\V1\Controllers\Folder:delete');
     $this->post('/folder/addCollaborator', 'App\Versions\V1\Controllers\Folder:addCollaborator');
 
-    $this->post('/test', 'App\Versions\V1\Controllers\Users:test');
+    $this->get('/graphql', 'App\Versions\V1\Controllers\Index:graphql');
 });

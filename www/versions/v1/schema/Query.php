@@ -4,7 +4,7 @@ namespace App\Versions\V1\Schema;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
-class QueryType extends ObjectType
+class Query extends ObjectType
 {
     public function __construct()
     {

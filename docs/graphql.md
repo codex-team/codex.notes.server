@@ -166,7 +166,7 @@ class Types
 
 ## Queries testing tools
 
-Use this tools for sending queries and discover graph.
+Use this tools for sending queries and discover the Graph.
 
 - https://insomnia.rest
 - or Chrome Extension [GraphiQL](https://chrome.google.com/webstore/detail/chromeiql/fkkiamalmpiidkljmicmjfbieiclmeij)
@@ -179,11 +179,11 @@ Enter a php process and look at the `logs/log_<YYYY-MM-DD>.txt`:
 
 ```bash
 docker ps  // and get container ID
-docker exes -ti <Container Id> /bin/bash
+docker exec -ti <Container Id> /bin/bash
 tail logs/log_YYYY-MM-DD.txt
 ```
 
-If `.env` contains `DEBUG=TRUE`, you will se GraphQL errors in the answer:
+If `.env` contains `DEBUG=TRUE`, you will see GraphQL errors in the answer:
 
 ![](https://capella.pics/05b1b1c0-4482-45f0-b6eb-1f177764dece/resize/1300)
 

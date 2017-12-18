@@ -6,6 +6,7 @@ use App\Versions\V1\Models\Handlers\AppExceptionHandler;
 use App\Versions\V1\Models\Handlers\CodeExceptionHandler;
 use App\Versions\V1\Models\Handlers\RouteExceptionHandler;
 use App\Versions\V1\Models\Handlers\MethodNotAllowedExceptionHandler;
+use App\System\Utilities\Config;
 
 define('DOCROOT', realpath(dirname(__FILE__ . '/../')).DIRECTORY_SEPARATOR);
 
@@ -15,13 +16,13 @@ define('DOCROOT', realpath(dirname(__FILE__ . '/../')).DIRECTORY_SEPARATOR);
  */
 require '../vendor/autoload.php';
 
-
 /**
  * Load Dotenv
  * @see https://github.com/vlucas/phpdotenv
  */
-if (is_file(DOCROOT.'.env')) {
-    $dotenv = new \Dotenv\Dotenv(DOCROOT);
+if (is_file(Config::baseDir() . '.env'))
+{
+    $dotenv = new \Dotenv\Dotenv(Config::baseDir());
     $dotenv->load();
 }
 

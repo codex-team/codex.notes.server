@@ -13,6 +13,8 @@ use App\Versions\V1\Models\Handlers\AppExceptionHandler;
  * Оболочка, через которую взаимодействуют контроллеры с моделями.
  *
  * @package App\Versions\V1
+ *
+ * @deprecated Use GraphQL-scheme with App\Components\Api\Api
  */
 class Api
 {

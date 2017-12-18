@@ -7,19 +7,19 @@
 | Name | Description |
 | -- | -- |
 | `users` | All users  |
-| `directories:<owner_id>`  |  List of user's folders |
+| `folders:<owner_id>`  |  List of user's folders |
 | `collaborators:<owner_id>:<folder_id>` | Collaborators list for the specified folder |
 | `notes:<owner_id>:<folder_id>` | List of notes in a directory |
 
 All `ids` is an [ObjectId](http://php.net/manual/en/class.mongodb-bson-objectid.php) from specified collection:
 
 - `<owner_id>` — `_id` from `users`
-- `<folder_id>` — `_id` from `directories:<owner_id>`
+- `<folder_id>` — `_id` from `folders:<owner_id>`
 - `<note_id>` — `_id` from `notes:<owner_id>:<folder_id>`
 
 ## Folder creation
 
-### 1. Add a document in the `directories:<owner_id>`
+### 1. Add a document in the `folders:<owner_id>`
 
 #### Fields
 
@@ -27,7 +27,7 @@ All `ids` is an [ObjectId](http://php.net/manual/en/class.mongodb-bson-objectid.
 |--|--|--|
 | `_id` | mongoId | unique mongo id |
 | `is_shared` | boolean | `false` on creation, `true` on sharing |
-| `sharer_id` | mongoId | Person who created a directory |
+| `owner_id` | mongoId | Person who created a directory |
 | `title` | string | Folder title |
 | ... | ... | other directory data |
 
@@ -52,7 +52,7 @@ where `sharer_id` — current user
 |--|--|--|
 | `_id` | mongoId | unique mongo id |
 | `email` | string | Invitation acceptor's email |
-| `collaborator_id` | mongoId \| null (default) | Invitation acceptor's `_id` from `users`. |
+| `user_id` | mongoId \| null (default) | Invitation acceptor's `_id` from `users`. |
 | `invitation_token` | string | Token with `<owner_id>:<folder_id>:<hash>`  |
 | `dt_add` | mongoId | Date of an invitation |
 
@@ -79,14 +79,14 @@ Invitation token contains:
 - Get `owner_id` and `folder_id` from the token, validate with `hash`.
 - Select collection `collaborators:<owner_id>:<folder_id>`
 - Update an email status to `accepted`, and save a new user's `_id`;
-- Add a new folder to the `directories:<acceptor_id>` (invited user) with `owner_id` (current user) and `is_shared` = 1
-- Update an item in the `directories:<owner_id>` (current user) with `is_shared` = 1
+- Add a new folder to the `folders:<acceptor_id>` (invited user) with `owner_id` (current user) and `is_shared` = 1
+- Update an item in the `folders:<owner_id>` (current user) with `is_shared` = 1
 - send a response with the shared folder data and notes list
 
 
 ## Adding a new note in a shared folder
 
-1. Send `/sync` event with new item: it will be newer that `dt_sync`, where stored date of last syncronisation
+1. Send `/sync` event with new item: it will be newer that `dt_sync`, where stored date of last synchronisation
 2. API: in the `/sync` event we've got a new Note with `folder_id` and other note's data
 4. Get all collaborators from `collaborators:<owner_id>:<folder_id>`
 5. Add (or update) a document in the `notes:<owner_id>:<folder_id>`

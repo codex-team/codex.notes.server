@@ -7,7 +7,8 @@ use App\Schema\Types\ {
     User,
     Folder,
     Note,
-    Collaborator
+    Collaborator,
+    Mutation
 };
 
 /**
@@ -39,6 +40,11 @@ class Types
     public static function query()
     {
         return self::$query ?: (self::$query = new Query());
+    }
+
+    public static function mutation()
+    {
+        return self::$mutation ?: (self::$mutation = new Mutation());
     }
 
     public static function user()

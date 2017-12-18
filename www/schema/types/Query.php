@@ -37,7 +37,6 @@ class Query extends ObjectType
                     'notes' => [
                         'type' => Type::listOf(Types::note()),
                         'description' => 'List of notes by user id',
-
                         'args' => [
                             'userId' => Type::nonNull(Type::id()),
                             'folderId' => Type::nonNull(Type::id()),

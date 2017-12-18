@@ -63,7 +63,7 @@ class Api
         /**
          * Save request to the logs
          */
-        $this->logger->debug($requestBody);
+//        $this->logger->debug($requestBody);
 
         /**
          * Configure server

@@ -6,7 +6,13 @@
 $app->get('/', 'App\Components\Index\Index:page');
 
 /**
+ * GraphQL API endpoint
+ */
+$app->map(['GET', 'POST'], '/graphql', 'App\Components\Api\Api:graphql');
+
+/**
  * API v1
+ * @deprecated
  */
 $app->group('/v1', function() {
     /**
@@ -32,5 +38,4 @@ $app->group('/v1', function() {
     $this->post('/folder/delete', 'App\Versions\V1\Controllers\Folder:delete');
     $this->post('/folder/addCollaborator', 'App\Versions\V1\Controllers\Folder:addCollaborator');
 
-    $this->get('/graphql', 'App\Versions\V1\Controllers\Index:graphql');
 });

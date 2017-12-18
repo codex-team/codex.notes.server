@@ -4,7 +4,8 @@
         "mongodb/mongodb": "^1.1",
         "akrabat/rka-ip-address-middleware": "^0.5.0",
         "katzgrau/klogger": "dev-master",
-        "webonyx/graphql-php": "^0.11.5"
+        "webonyx/graphql-php": "^0.11.5",
+        "vlucas/phpdotenv": "^2.4"
     },
     "autoload": {
         "psr-4": {

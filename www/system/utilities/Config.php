@@ -11,6 +11,8 @@ namespace App\System\Utilities;
 class Config extends Base
 {
     /**
+     * @deprecated Use .env file
+     *
      * Метод реализует подгрузку параметров (массива) из .php файла
      * @param string $config    Имя файла настроек
      * @return array
@@ -32,8 +34,26 @@ class Config extends Base
      * @param string $folder
      * @return string
      */
-    public static function getPathTo(string $folder)
+    public static function getPathTo(string $folder): string
     {
         return $_SERVER['DOCUMENT_ROOT'] . '/../' . $folder;
+    }
+
+    /**
+     * Return an absolute path to the base dir
+     * @return string
+     */
+    public static function baseDir(): string
+    {
+        return $_SERVER['DOCUMENT_ROOT'] . '/../';
+    }
+
+    /**
+     * Return true if debug flag enabled in the .env config file
+     * @return bool
+     */
+    public static function debug(): bool
+    {
+        return !empty($_SERVER['DEBUG']) && $_SERVER['DEBUG'] == 'TRUE';
     }
 }

@@ -47,23 +47,6 @@ class Api
         $this->schema = new Schema([
             'query' => Types::query(),
         ]);
-    }
-
-    /**
-     * Single endpoint for all GraphQL queries to the API
-     * @param Request $request
-     * @param Response $response
-     * @param $args
-     * @return Response
-     */
-    public function graphql(Request $request, Response $response, $args) {
-
-        $requestBody = $request->getBody();
-
-        /**
-         * Save request to the logs
-         */
-//        $this->logger->debug($requestBody);
 
         /**
          * Configure server
@@ -85,13 +68,29 @@ class Api
             /**
              * Continue error throwing to the logs/log_YYYY-MM-DD.txt
              */
-             $config->setDebug(Debug::RETHROW_INTERNAL_EXCEPTIONS);
+            $config->setDebug(Debug::RETHROW_INTERNAL_EXCEPTIONS);
         }
 
         /**
          * Pass request to the GraphQL Standard Server
          */
         $this->server = new StandardServer($config);
+    }
+
+    /**
+     * Single endpoint for all GraphQL queries to the API
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
+    public function graphql(Request $request, Response $response, $args) {
+
+        $requestBody = $request->getBody();
+        /**
+         * Save request to the logs
+         */
+//       $this->logger->debug($requestBody);
 
         return $this->server->processPsrRequest($request, $response, $requestBody);
 

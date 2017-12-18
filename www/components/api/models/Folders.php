@@ -33,7 +33,7 @@ class Folders
     }
 
     /**
-     * Compose collection name by pattern notes:<userId>:<folderId>
+     * Compose collection name by pattern folders:<userId>
      * @param int $userId
      * @return string
      */

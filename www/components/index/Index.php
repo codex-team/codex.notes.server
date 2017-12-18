@@ -14,7 +14,7 @@ class Index
      */
     public function page()
     {
-         Renderer::render('index.php', [ 'title' => 'CodeX Notes' ]);
+        Renderer::render('index.php', [ 'title' => 'CodeX Notes' ]);
     }
 
 }

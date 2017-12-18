@@ -91,9 +91,9 @@ class Api
         /**
          * Pass request to the GraphQL Standard Server
          */
-        $server = new StandardServer($config);
+        $this->server = new StandardServer($config);
 
-        return $server->processPsrRequest($request, $response, $requestBody);
+        return $this->server->processPsrRequest($request, $response, $requestBody);
 
     }
 }

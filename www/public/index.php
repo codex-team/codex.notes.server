@@ -16,16 +16,6 @@ define('DOCROOT', realpath(dirname(__FILE__ . '/../')).DIRECTORY_SEPARATOR);
  */
 require '../vendor/autoload.php';
 
-
-/**
- * Load Dotenv
- * @see https://github.com/vlucas/phpdotenv
- */
-if (is_file(DOCROOT.'.env')) {
-    $dotenv = new \Dotenv\Dotenv(DOCROOT);
-    $dotenv->load();
-}
-
 /**
  * Load Dotenv
  * @see https://github.com/vlucas/phpdotenv

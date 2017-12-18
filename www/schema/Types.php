@@ -2,9 +2,6 @@
 
 namespace App\Schema;
 
-use GraphQL\GraphQL;
-use GraphQL\Type\Definition\ObjectType;
-
 use App\Schema\Types\ {
     Query,
     User,
@@ -17,7 +14,7 @@ use App\Schema\Types\ {
  * Class Types
  * @package App\Schema
  *
- * Facade of custom types for GraphQL schema
+ * Registry of custom types for GraphQL schema
  */
 class Types
 {

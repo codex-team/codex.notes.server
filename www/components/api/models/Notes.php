@@ -30,7 +30,7 @@ class Notes
          * @todo Construct collection and return items
          */
         $this->collection = self::collection($userId, $folderId);
-        $this->items = ['note1', 'note2', 'note3', 'note4'];
+        $this->items = ['note1', 'note2'];
     }
 
     /**

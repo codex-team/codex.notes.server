@@ -25,7 +25,7 @@ class Query extends ObjectType
                 return [
                     'user' => [
                         'type' => Types::user(),
-                        'description' => 'Returns user by id',
+                        'description' => 'Return user by id',
                         'args' => [
                             'id' => Type::nonNull(Type::int()),
                         ],
@@ -33,6 +33,17 @@ class Query extends ObjectType
                             return new User($args['id']);
                         }
                     ],
+
+                    // 'note' => [
+                    //     'type' => Types::note(),
+                    //     'description' => 'Return note by id',
+                    //     'args' => [
+                    //         'id' => Type::nonNull(Type::id()),
+                    //     ],
+                    //     'resolve' => function($root, $args) {
+                    //         return new Note($args['id']);
+                    //     }
+                    // ],
 
                     'notes' => [
                         'type' => Type::listOf(Types::note()),

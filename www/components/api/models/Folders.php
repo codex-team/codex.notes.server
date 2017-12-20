@@ -2,6 +2,8 @@
 
 namespace App\Components\Api\Models;
 
+use App\Components\Sglobal\Models\Mongo;
+
 /**
  * Model Folders
  * Operates with collection folders:<userId>
@@ -28,8 +30,19 @@ class Folders
         /**
          * @todo Construct collection and return items
          */
-        $this->collection = self::collection($userId);
-        $this->items = [['folder1'], ['folder2'], ['folder3']];
+        $this->collectionName = self::collection($userId);
+
+        $this->mongo = new Mongo();
+
+        // $this->items = [['folder1'], ['folder2']];
+    }
+
+    /**
+     *
+     */
+    public function insert($data)
+    {
+        $this->mongo->insert($this->collectionName, $data);
     }
 
     /**

@@ -46,6 +46,7 @@ class Api
 
         $this->schema = new Schema([
             'query' => Types::query(),
+            'mutation' => Types::mutation()
         ]);
 
         /**

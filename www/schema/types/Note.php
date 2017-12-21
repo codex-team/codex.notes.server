@@ -44,10 +44,6 @@ class Note extends ObjectType
                     'views' => [
                         'type' => Type::int(),
                         'description' => 'Note\'s views counter',
-                    ],
-                    'collaborators' => [
-                        'type'=> Type::listOf(Types::collaborator()),
-                        'description' => 'Collaborators list'
                     ]
                 ];
             }

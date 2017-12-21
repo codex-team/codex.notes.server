@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Components\Sglobal\Models;
+namespace App\Components\Base\Models;
 
 /**
  * Class Mongo
@@ -168,6 +168,25 @@ class Mongo
         }
 
         return $this->connection->$collection->updateOne($filter, $content, $options);
+    }
+
+    /**
+     * Удаляем данные из коллекции
+     *
+     * @param string $collection
+     * @param array  $filter
+     * @param array  $options
+     *
+     * @return \MongoDB\UpdateResult
+     * @throws ModelException
+     */
+    public function remove(string $collection = '', array $filter = [], array $options = [])
+    {
+        if (!$collection) {
+            throw new ModelException('Collection name is empty', HTTP::CODE_BAD_REQUEST);
+        }
+
+        return $this->connection->$collection->findOneAndDelete($filter, $options);
     }
 
     /**

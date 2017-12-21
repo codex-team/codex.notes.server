@@ -25,7 +25,7 @@ class Folders
      * User constructor.
      * @param int $userId      Owner user id
      */
-    public function __construct(int $userId)
+    public function __construct($userId)
     {
         $this->collectionName = self::collection($userId);
 
@@ -64,20 +64,26 @@ class Folders
 
 
 
-//    /**
-//     * Update the existing folder
-//     */
-//    public function update($data)
-//    {
-//        $this->mongo->update($this->collectionName, $data);
-//    }
+    /**
+     * Rename folder
+     */
+    public function rename($data)
+    {
+        $folder = new Folder($data);
+
+        $filter = ['_id' => new MongoId($data['id'])];
+
+        $mongoResponse = $this->mongo->update($this->collectionName, $filter, $data);
+
+        return (boolean) $mongoResponse->ok;
+    }
 
     /**
      * Compose collection name by pattern folders:<userId>
      * @param int $userId
      * @return string
      */
-    private static function collection(int $userId): string
+    private static function collection($userId): string
     {
         return sprintf('folders:%u', $userId);
     }

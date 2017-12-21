@@ -24,36 +24,11 @@ class Mutation extends ObjectType
         $config = [
             'fields' => function() {
                 return [
-                    // 'user' => [
-                    //     'type' => Types::user(),
-                    //     'description' => 'Return user by id',
-                    //     'args' => [
-                    //         'id' => Type::nonNull(Type::int()),
-                    //     ],
-                    //     'resolve' => function($root, $args) {
-                    //         return new User($args['id']);
-                    //     }
-                    // ],
-                    //
-                    // 'notes' => [
-                    //     'type' => Type::listOf(Types::note()),
-                    //     'description' => 'List of notes by user id',
-                    //     'args' => [
-                    //         'userId' => Type::nonNull(Type::id()),
-                    //         'folderId' => Type::nonNull(Type::id()),
-                    //     ],
-                    //     'resolve' => function($root, $args) {
-                    //         $NotesModel = new Notes($args['userId'], $args['folderId']);
-                    //
-                    //         return $NotesModel->items;
-                    //     }
-                    // ],
-
                     'createFolder' => [
                         'type' => Types::folder(),
                         'description' => 'Create a new folder',
                         'args' => [
-                            'owner' => Type::nonNull(Type::int()),
+                            'owner' => Type::nonNull(Type::id()),
                             'title' => Type::nonNull(Type::string()),
                             'dt_create' => Type::nonNull(Type::int()),
                             'dt_modify' => Type::int(),
@@ -68,11 +43,28 @@ class Mutation extends ObjectType
                         }
                     ],
 
+                    'renameFolder' => [
+                        'type' => Type::boolean(),
+                        'description' => 'Rename folder by id',
+                        'args' => [
+                            'owner' => Type::nonNull(Type::id()),
+                            'id' => Type::nonNull(Type::id()),
+                            'title' => Type::nonNull(Type::string()),
+                        ],
+                        'resolve' => function($root, $args) {
+                            $userFolders = new Folders($args['owner']);
+
+                            $result = $userFolders->rename($args);
+
+                            return ['ok' => $result];
+                        }
+                    ],
+
                     'deleteFolder' => [
                          'type' => Type::boolean(),
                          'description' => 'Delete folder by id',
                          'args' => [
-                             'owner' => Type::nonNull(Type::int()),
+                             'owner' => Type::nonNull(Type::id()),
                              'id' => Type::nonNull(Type::id())
                          ],
                          'resolve' => function($root, $args) {
@@ -80,26 +72,13 @@ class Mutation extends ObjectType
 
                              $result = $userFolders->delete($args);
 
-                             return ['success' => $result];
+                             return ['ok' => $result];
                          }
                     ]
 
 
                     // @todo updateFolderTitle
 
-
-                    // 'folders' => [
-                    //     'type' => Type::listOf(Types::folder()),
-                    //     'description' => 'List of user\'s folders',
-                    //     'args' => [
-                    //         'userId' => Type::nonNull(Type::id()),
-                    //     ],
-                    //     'resolve' => function($root, $args){
-                    //         $FoldersModel = new Folders($args['userId']);
-                    //
-                    //         return $FoldersModel->items;
-                    //     }
-                    // ]
                 ];
             }
         ];

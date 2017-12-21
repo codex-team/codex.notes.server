@@ -2,10 +2,10 @@
 
 namespace App;
 
-use App\Versions\V1\Models\Handlers\AppExceptionHandler;
-use App\Versions\V1\Models\Handlers\CodeExceptionHandler;
-use App\Versions\V1\Models\Handlers\RouteExceptionHandler;
-use App\Versions\V1\Models\Handlers\MethodNotAllowedExceptionHandler;
+use App\Components\Base\Models\Handlers\AppExceptionHandler;
+use App\Components\Base\Models\Handlers\CodeExceptionHandler;
+use App\Components\Base\Models\Handlers\RouteExceptionHandler;
+use App\Components\Base\Models\Handlers\MethodNotAllowedExceptionHandler;
 use App\System\Utilities\Config;
 
 define('DOCROOT', realpath(dirname(__FILE__ . '/../')).DIRECTORY_SEPARATOR);

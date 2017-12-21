@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Versions\V1\Models;
+namespace App\Components\Base\Models;
 
 use App\System\Log;
 

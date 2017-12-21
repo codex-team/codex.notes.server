@@ -49,31 +49,44 @@ class Mutation extends ObjectType
                     //     }
                     // ],
 
-                    'folder' => [
+                    'createFolder' => [
                         'type' => Types::folder(),
                         'description' => 'Create a new folder',
                         'args' => [
-                            'id' => Type::int(),
-                            'userId' => Type::nonNull(Type::id()),
+                            'owner' => Type::nonNull(Type::int()),
                             'title' => Type::nonNull(Type::string()),
                             'dt_create' => Type::nonNull(Type::int()),
                             'dt_modify' => Type::int(),
-                            'is_shared' => Type::boolean(),
-                            'owner' => Type::nonNull(Type::id())
+                            'is_shared' => Type::boolean()
                         ],
                         'resolve' => function($root, $args){
-                            $userFolders = new Folders($args['userId']);
+                            $userFolders = new Folders($args['owner']);
 
-                            if (true) {
-                                return $userFolders->insert($args);
-                            // } else {
-                            //     $userFolders->update();
-                            }
+                            $folder = $userFolders->create($args);
 
-                            // return $FoldersModel->items;
-                            // return
+                            return $folder;
                         }
+                    ],
+
+                    'deleteFolder' => [
+                         'type' => Type::boolean(),
+                         'description' => 'Delete folder by id',
+                         'args' => [
+                             'owner' => Type::nonNull(Type::int()),
+                             'id' => Type::nonNull(Type::id())
+                         ],
+                         'resolve' => function($root, $args) {
+                             $userFolders = new Folders($args['owner']);
+
+                             $result = $userFolders->delete($args);
+
+                             return ['success' => $result];
+                         }
                     ]
+
+
+                    // @todo updateFolderTitle
+
 
                     // 'folders' => [
                     //     'type' => Type::listOf(Types::folder()),

@@ -78,6 +78,22 @@ class Api
         $this->server = new StandardServer($config);
     }
 
+//    /**
+//     * Single endpoint for all GraphQL queries to the API
+//     * @param Request $request
+//     * @param Response $response
+//     * @param $args
+//     * @return Response
+//     */
+//    public function graphql(Request $request, Response $response, $args) {
+//        $requestBody = $request->getBody();
+//        /**
+//         * Save request to the logs
+//         */
+////       $this->logger->debug($requestBody);
+//        return $this->server->processPsrRequest($request, $response, $requestBody);
+//    }
+
     /**
      * Single endpoint for all GraphQL queries to the API
      */

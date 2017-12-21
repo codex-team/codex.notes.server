@@ -30,10 +30,9 @@ class User
 
     /**
      * User constructor.
-     * @param int|null $userId      If passed, returns filled User model
+     * @param int|null $id      If passed, returns filled User model
      */
-    public function __construct(int $userId = null)
-    {
-        // @todo Construct collection model and get user document
+    public function __construct(int $id = null) {
+        $this->id = $id;
     }
 }

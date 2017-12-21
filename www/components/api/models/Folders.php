@@ -2,7 +2,7 @@
 
 namespace App\Components\Api\Models;
 
-use App\Components\Sglobal\Models\Mongo;
+use App\Components\Base\Models\Mongo;
 
 /**
  * Model Folders
@@ -27,23 +27,50 @@ class Folders
      */
     public function __construct(int $userId)
     {
-        /**
-         * @todo Construct collection and return items
-         */
         $this->collectionName = self::collection($userId);
 
         $this->mongo = new Mongo();
-
-        // $this->items = [['folder1'], ['folder2']];
     }
 
     /**
-     *
+     * Create a new folder
+     * @param array $data
+     * @return object
+     * @throws
      */
-    public function insert($data)
+    public function create($data)
     {
-        $this->mongo->insert($this->collectionName, $data);
+        $folder = new Folder($data);
+
+        $mongoResponse = $this->mongo->insert($this->collectionName, $data);
+
+        $folder->id = (string) $mongoResponse->getInsertedId();
+
+        return $folder;
     }
+
+    /**
+     * Delete folder by id
+     * @param array $data
+     * @return object
+     * @throws
+     */
+    public function delete($data)
+    {
+        $mongoResponse = $this->mongo->remove($this->collectionName, $data);
+
+        return (boolean) $mongoResponse->ok;
+    }
+
+
+
+//    /**
+//     * Update the existing folder
+//     */
+//    public function update($data)
+//    {
+//        $this->mongo->update($this->collectionName, $data);
+//    }
 
     /**
      * Compose collection name by pattern folders:<userId>

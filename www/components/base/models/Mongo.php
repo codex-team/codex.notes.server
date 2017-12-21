@@ -2,6 +2,10 @@
 
 namespace App\Components\Base\Models;
 
+use App\Components\Base\Models\Exceptions\DatabaseException;
+use App\Components\Base\Models\Exceptions\ModelException;
+use App\System\Utilities\Config;
+
 /**
  * Class Mongo
  * Модель для работы с БД Mongo
@@ -29,16 +33,9 @@ class Mongo
      */
     function __construct(string $domain = null, string $port = null, string $dbname = null)
     {
-        // $this->config = Config::load('mongo');
-        $this->config = [
-            'domain' => 'db',
-            'port' => 27017,
-            'database' => 'notes'
-        ];
-
-        $domain = is_null($domain) ? $this->config['domain']   : $domain;
-        $port   = is_null($port)   ? $this->config['port']     : $port;
-        $dbname = is_null($dbname) ? $this->config['database'] : $dbname;
+        $domain = isset($_SERVER['MONGO_HOST'])   ? $_SERVER['MONGO_HOST']   : 'localhost';
+        $port   = isset($_SERVER['MONGO_PORT'])   ? $_SERVER['MONGO_PORT']   : 27017;
+        $dbname = isset($_SERVER['MONGO_DBNAME']) ? $_SERVER['MONGO_DBNAME'] : 'notes';
 
         try {
             $this->client = new \MongoDB\Client(

@@ -1,7 +1,0 @@
-<?php
-
-return [
-    'domain' => 'db',
-    'port' => 27017,
-    'database' => 'notes'
-];

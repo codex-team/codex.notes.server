@@ -32,7 +32,7 @@ class User
      * User constructor.
      * @param int|null $id      If passed, returns filled User model
      */
-    public function __construct(int $id = null) {
+    public function __construct($id = null) {
         $this->id = $id;
     }
 }

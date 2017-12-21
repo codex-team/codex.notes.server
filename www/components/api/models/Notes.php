@@ -24,7 +24,7 @@ class Notes
      * @param int $userId      Owner user id
      * @param int $folderId    Folder id
      */
-    public function __construct(int $userId, int $folderId)
+    public function __construct($userId, $folderId)
     {
         /**
          * @todo Construct collection and return items
@@ -39,7 +39,7 @@ class Notes
      * @param int $folderId
      * @return string
      */
-    private static function collection(int $userId, int $folderId): string
+    private static function collection($userId, $folderId): string
     {
         return sprintf('notes:%u:%u', $userId, $folderId);
     }

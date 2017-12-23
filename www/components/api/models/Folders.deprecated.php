@@ -25,7 +25,7 @@ class Folders
      * User constructor.
      * @param int $userId      Owner user id
      */
-    public function __construct($userId)
+    public function __construct(string $userId)
     {
         $this->collectionName = self::collection($userId);
 
@@ -38,7 +38,7 @@ class Folders
      * @return object
      * @throws
      */
-    public function create($data)
+    public function create($data): Folder
     {
         $folder = new Folder($data);
 
@@ -55,7 +55,7 @@ class Folders
      * @return object
      * @throws
      */
-    public function delete($data)
+    public function delete($data): bool
     {
         $mongoResponse = $this->mongo->remove($this->collectionName, $data);
 
@@ -67,7 +67,7 @@ class Folders
     /**
      * Rename folder
      */
-    public function rename($data)
+    public function rename($data): bool
     {
         $folder = new Folder($data);
 
@@ -83,7 +83,7 @@ class Folders
      * @param int $userId
      * @return string
      */
-    private static function collection($userId): string
+    private static function collection(string $userId): string
     {
         return sprintf('folders:%u', $userId);
     }

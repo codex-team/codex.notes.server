@@ -4,7 +4,12 @@ namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
 
-
+/**
+ * Model Folder
+ * Operates with collection folders:<userId>
+ *
+ * @package App\Components\Api\Models
+ */
 class Folder
 {
     /**

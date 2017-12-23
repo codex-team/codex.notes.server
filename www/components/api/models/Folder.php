@@ -5,72 +5,93 @@ namespace App\Components\Api\Models;
 use App\Components\Base\Models\Mongo;
 
 /**
- * Model User
+ * Model Folder
+ * Operates with collection folders:<userId>
  *
  * @package App\Components\Api\Models
  */
-class User
+class Folder
 {
     /**
-     * Users unique identifier
+     * Folder's id
      *
-     * @var int|null
+     * @var string|null
      */
     public $id;
 
     /**
-     * User's nickname
+     * Folder's title
      *
      * @var string|null
      */
-    public $name;
+    public $title;
 
     /**
-     * User's email address
+     * Owner's id
      *
      * @var string|null
      */
-    public $email;
+    public $ownerId;
 
     /**
-     * Registration timestamp
+     * Created date timestamp
      *
      * @var int|null
      */
-    public $dtReg;
+    public $dtCreate;
 
     /**
-     * User's folders
+     * Modified date timestamp
      *
-     * @var array
+     * @var int|null
      */
-    public $folders = [];
+    public $dtModify;
 
     /**
-     * Collection name
+     * Shared state
+     *
+     * @var boolean|null
+     */
+    public $isShared;
+
+    /**
+     * Removed state
+     *
+     * @var boolean|null
+     */
+    public $isRemoved;
+
+    /**
+     * Collection name for this folder
      *
      * @var string|null
      */
     private $collectionName;
 
     /**
-     * User constructor
+     * Initializing model Folder
      *
-     * @param string|null $id      if passed, returns filled User model
+     * @param string $ownerId
+     * @param string $folderId
+     * @param array  $data          init model from data
      */
-    public function __construct(string $id = null)
+    public function __construct(string $ownerId, string $folderId = null, array $data = null)
     {
-        $this->collectionName = self::getCollectionName();
+        $this->collectionName = self::getCollectionName($ownerId);
 
-        if ($id) {
+        if ($folderId) {
 
-            $this->get($id);
+            $this->get($folderId);
         }
 
+        if ($data) {
+
+            $this->fillModel($data);
+        }
     }
 
     /**
-     * Create or update existing user
+     * Create or update existing folder
      *
      * @param array $data
      */
@@ -97,45 +118,15 @@ class User
         $this->fillModel($mongoResponse ?: $data);
     }
 
-
     /**
-     * Get user's folders and put into model
+     * Get folder's data by id
      *
-     * @param int $limit    how much items do you need
-     * @param int $skip     how much items needs to be skipped
-     * @param array $sort   sort fields
+     * @var string $folderId
      */
-    public function getFolders(int $limit = null, int $skip = null, array $sort = [])
-    {
-        $foldersCollection = Folder::getCollectionName($this->id);
-
-        $query = [];
-
-        $options = [
-            'limit' => $limit,
-            'skip' => $skip,
-            'sort' => $sort
-        ];
-
-        $mongoResponse = Mongo::connect()
-            ->{$foldersCollection}
-            ->find($query, $options);
-
-        foreach ($mongoResponse as $folder) {
-
-            $this->folders[] = new Folder($this->id, null, $folder);
-        }
-    }
-
-    /**
-     * Get user's data by id
-     *
-     * @var string $userId
-     */
-    private function get(string $userId)
+    private function get(string $folderId)
     {
         $query = [
-            'id' => $userId
+            'id' => $folderId
         ];
 
         $mongoResponse = Mongo::connect()
@@ -159,15 +150,18 @@ class User
                 $this->$key = $value;
             }
         }
+
+        $this->owner = new User($this->ownerId);
     }
 
     /**
-     * Return collection name
+     * Compose collection name by pattern folders:<userId>
      *
+     * @param string $ownerId
      * @return string
      */
-    private static function getCollectionName(): string
+    public static function getCollectionName(string $ownerId): string
     {
-        return 'users';
+        return sprintf('folders:%s', $ownerId);
     }
 }

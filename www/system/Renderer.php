@@ -2,8 +2,10 @@
 
 namespace App\System;
 
-use App\System\Utilities\Base;
-use \App\System\Utilities\Config;
+use App\System\Utilities\{
+    Base,
+    Config
+};
 
 /**
  * Class Renderer
@@ -46,7 +48,7 @@ class Renderer
          * Render layout with the template content
          */
         $layoutData = array_merge($viewData, ['content' => $templateContent]);
-        echo self::renderTemplate(self::getTemplateDirectory('global') . 'layout.php', $layoutData);
+        echo self::renderTemplate(self::getTemplateDirectory('base') . 'layout.php', $layoutData);
 
     }
 

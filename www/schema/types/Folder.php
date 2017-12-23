@@ -2,8 +2,10 @@
 
 namespace App\Schema\Types;
 
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\{
+    ObjectType,
+    Type
+};
 use App\Schema\Types;
 
 
@@ -26,21 +28,25 @@ class Folder extends ObjectType
                         'type' => Type::string(),
                         'description' => 'Folder\'s public title',
                     ],
-                    'dt_create' => [
-                        'type' => Type::int(),
-                        'description' => 'Folder\'s creation timestamp',
-                    ],
-                    'dt_modify' => [
-                        'type' => Type::int(),
-                        'description' => 'Folder\'s last modification timestamp',
-                    ],
-                    'is_shared' => [
-                        'type' => Type::boolean(),
-                        'description' => 'Shared status: false on creation, true on sharing',
-                    ],
                     'owner' => [
                         'type' => Types::user(),
                         'description' => 'Person who create a folder',
+                    ],
+                    'dtCreate' => [
+                        'type' => Type::int(),
+                        'description' => 'Folder\'s creation timestamp',
+                    ],
+                    'dtModify' => [
+                        'type' => Type::int(),
+                        'description' => 'Folder\'s last modification timestamp',
+                    ],
+                    'isShared' => [
+                        'type' => Type::boolean(),
+                        'description' => 'Shared status: false on creation, true on sharing',
+                    ],
+                    'isRemoved' => [
+                        'type' => Type::boolean(),
+                        'description' => 'Removed status: true if folder marked as removed',
                     ],
                 ];
             }

@@ -2,8 +2,11 @@
 
 namespace App\Schema\Types;
 
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\{
+    ObjectType,
+    Type
+};
+use App\Schema\Types;
 
 /**
  * User type
@@ -27,6 +30,26 @@ class User extends ObjectType
                     'email' => [
                         'type' => Type::string(),
                         'description' => 'User\'s email address',
+                    ],
+                    'dtReg' => [
+                        'type' => Type::int(),
+                        'description' => 'User\'s register timestamp',
+                    ],
+                    'folders' => [
+                        'type' => Type::listOf(Types::folder()),
+                        'description' => 'User\'s folders',
+
+                        /** @todo make it work */
+                        'args' => [
+                            'limit' => [
+                                'type' => Type::int(),
+                                'defaultValue' => 0
+                            ],
+                            'skip' => [
+                                'type' => Type::int(),
+                                'defaultValue' => 0
+                            ]
+                        ],
                     ],
                 ];
             }

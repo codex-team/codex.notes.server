@@ -2,8 +2,10 @@
 
 namespace App\Schema\Types;
 
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\{
+    ObjectType,
+    Type
+};
 use App\Schema\Types;
 
 /**

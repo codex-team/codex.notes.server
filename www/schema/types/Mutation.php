@@ -2,11 +2,13 @@
 
 namespace App\Schema\Types;
 
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\{
+    ObjectType,
+    Type
+};
 use App\Schema\Types;
 use App\Components\Api\Models\{
-//    User,
+    User,
 //    Notes,
     Folder
 };
@@ -24,6 +26,25 @@ class Mutation extends ObjectType
         $config = [
             'fields' => function() {
                 return [
+
+                    'user' => [
+                        'type' => Types::user(),
+                        'description' => 'Sync folder',
+                        'args' => [
+                            'id'         => Type::nonNull(Type::id()),
+                            'name'       => Type::nonNull(Type::string()),
+                            'email'      => Type::nonNull(Type::string()),
+                            'dt_reg'     => Type::int()
+                        ],
+                        'resolve' => function($root, $args) {
+
+                            $user = new User();
+
+                            $user->sync($args);
+
+                            return $user;
+                        }
+                    ],
 
                     'folder' => [
                         'type' => Types::folder(),

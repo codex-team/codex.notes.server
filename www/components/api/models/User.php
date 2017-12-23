@@ -2,6 +2,8 @@
 
 namespace App\Components\Api\Models;
 
+use App\Components\Base\Models\Mongo;
+
 /**
  * Model User
  *
@@ -38,6 +40,13 @@ class User
     public $dt_reg;
 
     /**
+     * User's folders
+     *
+     * @var array
+     */
+    public $folders = [];
+
+    /**
      * Collection name
      *
      * @var string|null
@@ -55,10 +64,7 @@ class User
 
         if ($id) {
 
-            $this->id = $id;
-
-            // @todo create get function
-//            $this->get();
+            $this->get($id);
         }
 
     }
@@ -84,6 +90,57 @@ class User
 
         /** mongoResponse could be NULL if no item was found */
         $this->fillModel($mongoResponse ?: $data);
+    }
+
+
+    /**
+     * Get user's folders and put into model
+     *
+     * @param int $limit    how much items do you need
+     * @param int $skip     how much items needs to be skipped
+     * @param array $sort   sort fields
+     */
+    public function getFolders(int $limit = null, int $skip = null, array $sort = [])
+    {
+        $foldersCollection = Folder::getCollectionName($this->id);
+
+        $query = [];
+
+        $options = [
+            'limit' => $limit,
+            'skip' => $skip,
+            'projection' => [
+                'id' => 1
+            ],
+            'sort' => $sort
+        ];
+
+        $mongoResponse = Mongo::connect()
+            ->{$foldersCollection}
+            ->find($query, $options);
+
+        foreach ($mongoResponse as $folder) {
+
+            $this->folders[] = new Folder($this->id, $folder['id']);
+        }
+    }
+
+    /**
+     * Get user's data by id
+     *
+     * @var string $userId
+     */
+    private function get(string $userId)
+    {
+        $query = [
+            'id' => $userId
+        ];
+
+        $mongoResponse = Mongo::connect()
+            ->{$this->collectionName}
+            ->findOne($query);
+
+        $this->fillModel($mongoResponse ?: []);
     }
 
     /**

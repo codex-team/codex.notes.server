@@ -72,10 +72,16 @@ class Folder
      * Initializing model Folder
      *
      * @param string $userId
+     * @param string $folderId
      */
-    public function __construct(string $userId)
+    public function __construct(string $userId, string $folderId = null)
     {
         $this->collectionName = self::getCollectionName($userId);
+
+        if ($folderId) {
+
+            $this->get($folderId);
+        }
     }
 
     /**
@@ -102,6 +108,24 @@ class Folder
     }
 
     /**
+     * Get folder's data by id
+     *
+     * @var string $folderId
+     */
+    private function get(string $folderId)
+    {
+        $query = [
+            'id' => $folderId
+        ];
+
+        $mongoResponse = Mongo::connect()
+            ->{$this->collectionName}
+            ->findOne($query);
+
+        $this->fillModel($mongoResponse ?: []);
+    }
+
+    /**
      * Fill model with values from data
      *
      * @param array $data
@@ -125,7 +149,7 @@ class Folder
      * @param string $userId
      * @return string
      */
-    private static function getCollectionName(string $userId): string
+    public static function getCollectionName(string $userId): string
     {
         return sprintf('folders:%s', $userId);
     }

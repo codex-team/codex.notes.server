@@ -2,13 +2,15 @@
 
 namespace App\Schema\Types;
 
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\{
+    ObjectType,
+    Type
+};
 use App\Schema\Types;
 use App\Components\Api\Models\{
     User,
     Notes,
-    Folders
+    Folder
 };
 /**
  * Class Query
@@ -27,10 +29,20 @@ class Query extends ObjectType
                         'type' => Types::user(),
                         'description' => 'Return user by id',
                         'args' => [
-                            'id' => Type::nonNull(Type::int()),
+                            'id' => Type::nonNull(Type::id()),
+                            'foldersLimit' => Type::int(),
+                            'foldersSkip'  => Type::int()
                         ],
                         'resolve' => function($root, $args) {
-                            return new User($args['id']);
+
+                            $user = new User($args['id']);
+
+                            if ($user->id && $args['foldersLimit'] !== null) {
+
+                                $user->getFolders($args['foldersLimit'], $args['foldersSkip']);
+                            }
+
+                            return $user;
                         }
                     ],
 
@@ -45,32 +57,34 @@ class Query extends ObjectType
                     //     }
                     // ],
 
-                    'notes' => [
-                        'type' => Type::listOf(Types::note()),
-                        'description' => 'List of notes by user id',
+//                    'notes' => [
+//                        'type' => Type::listOf(Types::note()),
+//                        'description' => 'List of notes by user id',
+//                        'args' => [
+//                            'userId' => Type::nonNull(Type::id()),
+//                            'folderId' => Type::nonNull(Type::id()),
+//                        ],
+//                        'resolve' => function($root, $args) {
+//                            $NotesModel = new Notes($args['userId'], $args['folderId']);
+//
+//                            return $NotesModel->items;
+//                        }
+//                    ],
+
+                    'folder' => [
+                        'type' => Types::folder(),
+                        'description' => 'Folder\'s data',
                         'args' => [
-                            'userId' => Type::nonNull(Type::id()),
-                            'folderId' => Type::nonNull(Type::id()),
+                            'owner' => Type::nonNull(Type::id()),
+                            'id' => Type::nonNull(Type::id()),
                         ],
                         'resolve' => function($root, $args) {
-                            $NotesModel = new Notes($args['userId'], $args['folderId']);
 
-                            return $NotesModel->items;
+                            $folder = new Folder($args['owner'], $args['id']);
+
+                            return $folder;
                         }
                     ],
-
-                    'folders' => [
-                        'type' => Type::listOf(Types::folder()),
-                        'description' => 'List of user\'s folders',
-                        'args' => [
-                            'userId' => Type::nonNull(Type::id()),
-                        ],
-                        'resolve' => function($root, $args){
-                            $FoldersModel = new Folders($args['userId']);
-
-                            return $FoldersModel->items;
-                        }
-                    ]
                 ];
             }
         ];

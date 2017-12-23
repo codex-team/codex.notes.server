@@ -2,7 +2,7 @@
 
 namespace App\Schema;
 
-use App\Schema\Types\ {
+use App\Schema\Types\{
     Query,
     User,
     Folder,

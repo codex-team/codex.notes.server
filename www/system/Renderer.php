@@ -2,8 +2,10 @@
 
 namespace App\System;
 
-use App\System\Utilities\Base;
-use \App\System\Utilities\Config;
+use App\System\Utilities\{
+    Base,
+    Config
+};
 
 /**
  * Class Renderer

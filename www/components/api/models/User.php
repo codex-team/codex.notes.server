@@ -4,35 +4,46 @@ namespace App\Components\Api\Models;
 
 /**
  * Model User
+ *
  * @package App\Components\Api\Models
  */
 class User
 {
     /**
-     * @var int|null    Users unique identifier
+     * Users unique identifier
+     *
+     * @var int|null
      */
     public $id;
 
     /**
-     * @var string|null  User's nickname
+     * User's nickname
+     *
+     * @var string|null
      */
     public $name;
 
     /**
-     * @var string|null  User's email address
+     * User's email address
+     *
+     * @var string|null
      */
     public $email;
 
     /**
-     * @var int|null Registration timestamp
+     * Registration timestamp
+     *
+     * @var int|null
      */
     public $dt_reg;
 
     /**
-     * User constructor.
-     * @param int|null $id      If passed, returns filled User model
+     * User constructor
+     *
+     * @param string|null $id      if passed, returns filled User model
      */
-    public function __construct(string $id = null) {
+    public function __construct(string $id = null)
+    {
         $this->id = $id;
     }
 }

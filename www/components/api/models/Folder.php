@@ -75,25 +75,7 @@ class Folder
      */
     public function __construct(string $userId)
     {
-        $this->collectionName = self::composeCollectionName($userId);
-    }
-
-    /**
-     * Fill model with values from data
-     *
-     * @param array $data
-     */
-    public function fillModel(array $data)
-    {
-        foreach ($data as $key => $value) {
-
-            if (property_exists($this, $key)) {
-
-                $this->$key = $value;
-            }
-        }
-
-        $this->owner = new User($this->owner);
+        $this->collectionName = self::getCollectionName($userId);
     }
 
     /**
@@ -120,12 +102,30 @@ class Folder
     }
 
     /**
+     * Fill model with values from data
+     *
+     * @param array $data
+     */
+    private function fillModel(array $data)
+    {
+        foreach ($data as $key => $value) {
+
+            if (property_exists($this, $key)) {
+
+                $this->$key = $value;
+            }
+        }
+
+        $this->owner = new User($this->owner);
+    }
+
+    /**
      * Compose collection name by pattern folders:<userId>
      *
      * @param string $userId
      * @return string
      */
-    private static function composeCollectionName(string $userId): string
+    private static function getCollectionName(string $userId): string
     {
         return sprintf('folders:%s', $userId);
     }

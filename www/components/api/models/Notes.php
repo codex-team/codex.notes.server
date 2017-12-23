@@ -5,6 +5,7 @@ namespace App\Components\Api\Models;
 /**
  * Model Notes
  * Operates with collection notes:<userId>:<folderId>
+ *
  * @package App\Components\Api\Models
  */
 class Notes

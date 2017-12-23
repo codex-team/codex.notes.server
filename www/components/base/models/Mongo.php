@@ -45,8 +45,8 @@ class Mongo
          */
         if (!isset(self::$_connection)) {
 
-            $domain = isset($_SERVER['MONGO_HOST']) ? $_SERVER['MONGO_HOST'] : 'localhost';
-            $port   = isset($_SERVER['MONGO_PORT']) ? $_SERVER['MONGO_PORT'] : 27017;
+            $domain = $_SERVER['MONGO_HOST'] ?? 'localhost';
+            $port   = $_SERVER['MONGO_PORT'] ?? 27017;
 
             self::$_connection = new Client(
                 "mongodb://{$domain}:{$port}", [],
@@ -65,7 +65,7 @@ class Mongo
          */
         if (!empty($database) && is_string($database)) {
 
-            $database = isset($_SERVER['MONGO_DBNAME']) ? $_SERVER['MONGO_DBNAME'] : $database;
+            $database = $_SERVER['MONGO_DBNAME'] ?? $database;
 
             $connectedDatabase = self::$_connection->$database;
 

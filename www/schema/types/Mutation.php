@@ -4,6 +4,7 @@ namespace App\Schema\Types;
 
 use GraphQL\Type\Definition\{
     ObjectType,
+    ResolveInfo,
     Type
 };
 use App\Schema\Types;
@@ -31,16 +32,22 @@ class Mutation extends ObjectType
                         'type' => Types::user(),
                         'description' => 'Sync folder',
                         'args' => [
-                            'id'         => Type::nonNull(Type::id()),
-                            'name'       => Type::nonNull(Type::string()),
-                            'email'      => Type::nonNull(Type::string()),
-                            'dt_reg'     => Type::int()
+                            'id'    => Type::nonNull(Type::id()),
+                            'name'  => Type::nonNull(Type::string()),
+                            'email' => Type::nonNull(Type::string()),
+                            'dtReg' => Type::int()
                         ],
-                        'resolve' => function($root, $args) {
+                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
+
+                            $selectedFields = $info->getFieldSelection();
 
                             $user = new User();
-
                             $user->sync($args);
+
+                            if (in_array('folder', $selectedFields)) {
+
+                                $user->getFolders();
+                            }
 
                             return $user;
                         }
@@ -50,17 +57,17 @@ class Mutation extends ObjectType
                         'type' => Types::folder(),
                         'description' => 'Sync folder',
                         'args' => [
-                            'id'         => Type::nonNull(Type::id()),
-                            'owner'      => Type::nonNull(Type::id()),
-                            'title'      => Type::nonNull(Type::string()),
-                            'dt_create'  => Type::int(),
-                            'dt_modify'  => Type::int(),
-                            'is_shared'  => Type::boolean(),
-                            'is_removed' => Type::boolean()
+                            'id'        => Type::nonNull(Type::id()),
+                            'ownerId'   => Type::nonNull(Type::id()),
+                            'title'     => Type::nonNull(Type::string()),
+                            'dtCreate'  => Type::int(),
+                            'dtModify'  => Type::int(),
+                            'isShared'  => Type::boolean(),
+                            'isRemoved' => Type::boolean()
                         ],
                         'resolve' => function($root, $args) {
 
-                            $folder = new Folder($args['owner']);
+                            $folder = new Folder($args['ownerId']);
 
                             $folder->sync($args);
 

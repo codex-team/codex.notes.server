@@ -37,7 +37,7 @@ class User
      *
      * @var int|null
      */
-    public $dt_reg;
+    public $dtReg;
 
     /**
      * User's folders
@@ -84,9 +84,14 @@ class User
             '$set' => $data
         ];
 
+        $options = [
+            'upsert' => true,
+            'returnDocument' => \MongoDB\Operation\FindOneAndUpdate::RETURN_DOCUMENT_AFTER
+        ];
+
         $mongoResponse = Mongo::connect()
             ->{$this->collectionName}
-            ->findOneAndUpdate($query, $update, ['upsert' => true]);
+            ->findOneAndUpdate($query, $update, $options);
 
         /** mongoResponse could be NULL if no item was found */
         $this->fillModel($mongoResponse ?: $data);
@@ -109,9 +114,6 @@ class User
         $options = [
             'limit' => $limit,
             'skip' => $skip,
-            'projection' => [
-                'id' => 1
-            ],
             'sort' => $sort
         ];
 
@@ -121,7 +123,7 @@ class User
 
         foreach ($mongoResponse as $folder) {
 
-            $this->folders[] = new Folder($this->id, $folder['id']);
+            $this->folders[] = new Folder($this->id, null, $folder);
         }
     }
 

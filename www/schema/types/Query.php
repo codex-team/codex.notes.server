@@ -4,12 +4,13 @@ namespace App\Schema\Types;
 
 use GraphQL\Type\Definition\{
     ObjectType,
+    ResolveInfo,
     Type
 };
 use App\Schema\Types;
 use App\Components\Api\Models\{
     User,
-    Notes,
+//    Notes,
     Folder
 };
 /**
@@ -30,16 +31,25 @@ class Query extends ObjectType
                         'description' => 'Return user by id',
                         'args' => [
                             'id' => Type::nonNull(Type::id()),
-                            'foldersLimit' => Type::int(),
-                            'foldersSkip'  => Type::int()
+                            'foldersLimit' => [
+                                'type' => Type::int(),
+                                'defaultValue' => 0
+                            ],
+                            'foldersSkip' => [
+                                'type' => Type::int(),
+                                'defaultValue' => 0
+                            ]
                         ],
                         'resolve' => function($root, $args) {
 
                             $user = new User($args['id']);
 
-                            if ($user->id && $args['foldersLimit'] !== null) {
+                            $limit = $args['foldersLimit'];
+                            $skip = $args['foldersSkip'];
 
-                                $user->getFolders($args['foldersLimit'], $args['foldersSkip']);
+                            if ($user->id && $limit !== null) {
+
+                                $user->getFolders($limit, $skip);
                             }
 
                             return $user;
@@ -75,12 +85,12 @@ class Query extends ObjectType
                         'type' => Types::folder(),
                         'description' => 'Folder\'s data',
                         'args' => [
-                            'owner' => Type::nonNull(Type::id()),
-                            'id' => Type::nonNull(Type::id()),
+                            'ownerId' => Type::nonNull(Type::id()),
+                            'id'      => Type::nonNull(Type::id()),
                         ],
                         'resolve' => function($root, $args) {
 
-                            $folder = new Folder($args['owner'], $args['id']);
+                            $folder = new Folder($args['ownerId'], $args['id']);
 
                             return $folder;
                         }

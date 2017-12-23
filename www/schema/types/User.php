@@ -31,13 +31,25 @@ class User extends ObjectType
                         'type' => Type::string(),
                         'description' => 'User\'s email address',
                     ],
-                    'dt_reg' => [
+                    'dtReg' => [
                         'type' => Type::int(),
                         'description' => 'User\'s register timestamp',
                     ],
                     'folders' => [
                         'type' => Type::listOf(Types::folder()),
-                        'description' => 'User\'s email address',
+                        'description' => 'User\'s folders',
+
+                        /** @todo make it work */
+                        'args' => [
+                            'limit' => [
+                                'type' => Type::int(),
+                                'defaultValue' => 0
+                            ],
+                            'skip' => [
+                                'type' => Type::int(),
+                                'defaultValue' => 0
+                            ]
+                        ],
                     ],
                 ];
             }

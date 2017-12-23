@@ -32,19 +32,19 @@ class Folder extends ObjectType
                         'type' => Types::user(),
                         'description' => 'Person who create a folder',
                     ],
-                    'dt_create' => [
+                    'dtCreate' => [
                         'type' => Type::int(),
                         'description' => 'Folder\'s creation timestamp',
                     ],
-                    'dt_modify' => [
+                    'dtModify' => [
                         'type' => Type::int(),
                         'description' => 'Folder\'s last modification timestamp',
                     ],
-                    'is_shared' => [
+                    'isShared' => [
                         'type' => Type::boolean(),
                         'description' => 'Shared status: false on creation, true on sharing',
                     ],
-                    'is_removed' => [
+                    'isRemoved' => [
                         'type' => Type::boolean(),
                         'description' => 'Removed status: true if folder marked as removed',
                     ],

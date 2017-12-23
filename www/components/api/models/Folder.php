@@ -31,35 +31,35 @@ class Folder
      *
      * @var string|null
      */
-    public $owner;
+    public $ownerId;
 
     /**
      * Created date timestamp
      *
      * @var int|null
      */
-    public $dt_create;
+    public $dtCreate;
 
     /**
      * Modified date timestamp
      *
      * @var int|null
      */
-    public $dt_modify;
+    public $dtModify;
 
     /**
      * Shared state
      *
      * @var boolean|null
      */
-    public $is_shared;
+    public $isShared;
 
     /**
      * Removed state
      *
      * @var boolean|null
      */
-    public $is_removed;
+    public $isRemoved;
 
     /**
      * Collection name for this folder
@@ -71,16 +71,22 @@ class Folder
     /**
      * Initializing model Folder
      *
-     * @param string $userId
+     * @param string $ownerId
      * @param string $folderId
+     * @param array  $data          init model from data
      */
-    public function __construct(string $userId, string $folderId = null)
+    public function __construct(string $ownerId, string $folderId = null, array $data = null)
     {
-        $this->collectionName = self::getCollectionName($userId);
+        $this->collectionName = self::getCollectionName($ownerId);
 
         if ($folderId) {
 
             $this->get($folderId);
+        }
+
+        if ($data) {
+
+            $this->fillModel($data);
         }
     }
 
@@ -99,9 +105,14 @@ class Folder
             '$set' => $data
         ];
 
+        $options = [
+            'upsert' => true,
+            'returnDocument' => \MongoDB\Operation\FindOneAndUpdate::RETURN_DOCUMENT_AFTER
+        ];
+
         $mongoResponse = Mongo::connect()
             ->{$this->collectionName}
-            ->findOneAndUpdate($query, $update, ['upsert' => true]);
+            ->findOneAndUpdate($query, $update, $options);
 
         /** mongoResponse could be NULL if no item was found */
         $this->fillModel($mongoResponse ?: $data);
@@ -140,17 +151,17 @@ class Folder
             }
         }
 
-        $this->owner = new User($this->owner);
+        $this->owner = new User($this->ownerId);
     }
 
     /**
      * Compose collection name by pattern folders:<userId>
      *
-     * @param string $userId
+     * @param string $ownerId
      * @return string
      */
-    public static function getCollectionName(string $userId): string
+    public static function getCollectionName(string $ownerId): string
     {
-        return sprintf('folders:%s', $userId);
+        return sprintf('folders:%s', $ownerId);
     }
 }

@@ -2,244 +2,77 @@
 
 namespace App\Components\Base\Models;
 
-use App\Components\Base\Models\Exceptions\DatabaseException;
-use App\Components\Base\Models\Exceptions\ModelException;
-use App\System\Utilities\Config;
+use \MongoDB\Client as Client;
 
 /**
- * Class Mongo
- * Модель для работы с БД Mongo
+ * Class statically creates an instance of the mongo database.
+ *
+ * @package utils
+ * @subpackage mongodb
+ * @link https://github.com/calebjonasson/mongodb-php-singleton
  */
 class Mongo
 {
-    /**
-     * MongoDB\Client
-     * @var object
-     */
-    private $client;
+    private static $_connection;
+    private static $_instance;
 
     /**
-     * [$connection description]
-     * @var object
+     * Make these magic methods private as it should be instanciated through the connect method.
+     * Ie: Mongo::connect();
      */
-    private $connection;
+    private function __construct(){}
+    private function __clone(){}
 
     /**
-     * Устанавливаем соединение с базой
+     * Method will instantiate the object and create a mongo client.
+     * Return value will change depending on the $database parameter.
      *
-     * @param string|null $domain
-     * @param string|null $port
-     * @param string|null $dbname
+     * @param String $database the database to auto connect to.
+     * @return Client|\MongoDB\Database. Either the database object or the MongoDB\Client object.
      */
-    function __construct(string $domain = null, string $port = null, string $dbname = null)
+    public static function connect($database = 'notes')
     {
-        $domain = isset($_SERVER['MONGO_HOST'])   ? $_SERVER['MONGO_HOST']   : 'localhost';
-        $port   = isset($_SERVER['MONGO_PORT'])   ? $_SERVER['MONGO_PORT']   : 27017;
-        $dbname = isset($_SERVER['MONGO_DBNAME']) ? $_SERVER['MONGO_DBNAME'] : 'notes';
+        /**
+         * Establish a new static object.
+         */
+        if (!isset(self::$_instance)) {
 
-        try {
-            $this->client = new \MongoDB\Client(
-                "mongodb://{$domain}:{$port}"
+            self::$_instance = new Mongo();
+        }
+
+        /**
+         * Check to make sure that we have an object.
+         */
+        if (!isset(self::$_connection)) {
+
+            $domain = isset($_SERVER['MONGO_HOST']) ? $_SERVER['MONGO_HOST'] : 'localhost';
+            $port   = isset($_SERVER['MONGO_PORT']) ? $_SERVER['MONGO_PORT'] : 27017;
+
+            self::$_connection = new Client(
+                "mongodb://{$domain}:{$port}", [],
+                [
+                    'typeMap' => [
+                        'array' => 'array',
+                        'document' => 'array',
+                        'root' => 'array',
+                    ],
+                ]
             );
-
-            $this->connection = $this->client->$dbname;
-        } catch (\Exception $e) {
-            throw new DatabaseException('Mongo int connection faulted', HTTP::CODE_SERVER_ERROR);
         }
+
+        /**
+         * Check to see if the database string is empty. If so return the object instance.
+         */
+        if (!empty($database) && is_string($database)) {
+
+            $database = isset($_SERVER['MONGO_DBNAME']) ? $_SERVER['MONGO_DBNAME'] : $database;
+
+            $connectedDatabase = self::$_connection->$database;
+
+            return $connectedDatabase;
+        }
+
+        return self::$_connection;
     }
 
-    /**
-     * Получаем коллекции базы по имени коллекции
-     *
-     * @param  string $collection
-     * @return MongoDB\Collection
-     */
-    public function getCollection(string $collection = '')
-    {
-        if (!$collection) {
-            throw new ModelException('Collection name is empty', HTTP::CODE_BAD_REQUEST);
-        }
-
-        try {
-            return $this->connection->$collection;
-
-        } catch (\Exception $e) {
-            $message = sprintf('Collection %s is not received', $collection);
-
-            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
-        }
-
-    }
-
-    /**
-     * Создаем коллекцию по ее имени
-     *
-     * @param string $collection    example: what:a:fuck
-     *
-     * @return bool
-     * @throws ModelException
-     */
-    public function createCollection(string $collection = '', array $content = [])
-    {
-        if (!$collection) {
-            throw new ModelException('Collection name is empty', HTTP::CODE_BAD_REQUEST);
-        }
-
-        try {
-            $result = $this->connection->command(["create" => $collection]);
-            return true;
-        }
-        catch (\Exception $e) {
-
-            return false;
-        }
-    }
-
-    /**
-     * Удаляем коллекцию по ее имени
-     *
-     * @param string $collection
-     *
-     * @return array|object
-     * @throws DatabaseException
-     * @throws ModelException
-     */
-    public function deleteCollection(string $collection = '')
-    {
-        if (!$collection) {
-            throw new ModelException('Collection name is empty', HTTP::CODE_BAD_REQUEST);
-        }
-
-        try {
-            $result = $this->connection->$collection->drop();
-        }
-        catch (\Exception $e) {
-            $message = sprintf('Collection %s is not removed: %s', $collection, $e->getMessage());
-
-            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
-        }
-
-        /* query ok, but collection not found */
-        if ($result->ok != 1) {
-            $message = sprintf('Collection %s is not removed: %s', $collection, $result->errmsg);
-
-            throw new DatabaseException($message, HTTP::CODE_SERVER_ERROR);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Вставляем данные в коллекцию
-     *
-     * @param string $collection
-     * @param array  $content
-     *
-     * @return \MongoDB\InsertOneResult
-     * @throws ModelException
-     */
-    public function insert(string $collection = '', array $content = [])
-    {
-        if (!$collection) {
-            throw new ModelException('Collection name is empty', HTTP::CODE_BAD_REQUEST);
-        }
-
-        return $this->connection->$collection->insertOne($content);
-    }
-
-    /**
-     * Обновляем данные в коллекции
-     *
-     * @param string $collection
-     * @param array  $filter
-     * @param array  $content
-     * @param array  $options
-     *
-     * @return \MongoDB\UpdateResult
-     * @throws ModelException
-     */
-    public function update(string $collection = '', array $filter = [], array $content = [], array $options = [])
-    {
-        if (!$collection) {
-            throw new ModelException('Collection name is empty', HTTP::CODE_BAD_REQUEST);
-        }
-
-        return $this->connection->$collection->updateOne($filter, $content, $options);
-    }
-
-    /**
-     * Удаляем данные из коллекции
-     *
-     * @param string $collection
-     * @param array  $filter
-     * @param array  $options
-     *
-     * @return \MongoDB\UpdateResult
-     * @throws ModelException
-     */
-    public function remove(string $collection = '', array $filter = [], array $options = [])
-    {
-        if (!$collection) {
-            throw new ModelException('Collection name is empty', HTTP::CODE_BAD_REQUEST);
-        }
-
-        return $this->connection->$collection->findOneAndDelete($filter, $options);
-    }
-
-    /**
-     * Находим данные в коллекции
-     *
-     * @param string $collection
-     * @param array  $filter
-     *
-     * @returns Array
-     * @throws ModelException
-     */
-    public function find(string $collection = '', array $filter = [])
-    {
-        if (!$collection) {
-            throw new ModelException('Collection name is empty', HTTP::CODE_BAD_REQUEST);
-        }
-
-        return $this->connection->$collection->find($filter)->toArray();
-    }
-
-
-
-    /**
-     * Проверяем существование коллекции
-     *
-     * @param string $collection
-     *
-     * @return bool
-     * @throws ModelException
-     */
-    public function collectionIsset(string $collection = '')
-    {
-        if (!$collection) {
-            throw new ModelException('Collection name is empty', HTTP::CODE_BAD_REQUEST);
-        }
-
-        try {
-            $this->connection->$collection->findOne([]);
-
-            return true;
-        }
-        catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Удаляем из коллекции что-то по условию
-     *
-     * @param string $collection
-     * @param array  $criteria      example: ['did' => '126']
-     *
-     * @return \MongoDB\DeleteResult
-     */
-    public function deleteInCollection(string $collection = '', array $criteria = [])
-    {
-        return $this->connection->$collection->deleteOne($criteria);
-    }
 }

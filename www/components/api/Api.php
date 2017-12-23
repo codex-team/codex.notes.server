@@ -97,7 +97,7 @@ class Api
     /**
      * Single endpoint for all GraphQL queries to the API
      */
-    public function graphql()
+    public function graphql(Request $request, Response $response, $args)
     {
         $this->server->handleRequest();
     }

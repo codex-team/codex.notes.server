@@ -10,21 +10,26 @@ namespace App\Components\Api\Models;
 class Notes
 {
     /**
-     * @var object MongoDB\Collection
-     */
-    private $collection;
-
-    /**
-     * @var array|null  List of notes in the folder
+     * List of notes in the folder
+     *
+     * @var array|null
      */
     public $items;
 
     /**
-     * User constructor.
-     * @param int $userId      Owner user id
-     * @param int $folderId    Folder id
+     * Collection name
+     *
+     * @var string
      */
-    public function __construct($userId, $folderId)
+    private $collection;
+
+    /**
+     * User constructor
+     *
+     * @param string $userId      Owner user id
+     * @param string $folderId    Folder id
+     */
+    public function __construct(string $userId, string $folderId)
     {
         /**
          * @todo Construct collection and return items
@@ -35,11 +40,12 @@ class Notes
 
     /**
      * Compose collection name by pattern notes:<userId>:<folderId>
-     * @param int $userId
-     * @param int $folderId
+     *
+     * @param string $userId
+     * @param string $folderId
      * @return string
      */
-    private static function collection($userId, $folderId): string
+    private static function collection(string $userId, string $folderId): string
     {
         return sprintf('notes:%u:%u', $userId, $folderId);
     }

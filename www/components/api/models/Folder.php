@@ -75,7 +75,7 @@ class Folder
      */
     public function __construct(string $userId)
     {
-        $this->collectionName = self::collection($userId);
+        $this->collectionName = self::composeCollectionName($userId);
     }
 
     /**
@@ -125,7 +125,7 @@ class Folder
      * @param string $userId
      * @return string
      */
-    private static function collection(string $userId): string
+    private static function composeCollectionName(string $userId): string
     {
         return sprintf('folders:%s', $userId);
     }

@@ -47,6 +47,6 @@ class Notes
      */
     private static function collection(string $userId, string $folderId): string
     {
-        return sprintf('notes:%u:%u', $userId, $folderId);
+        return sprintf('notes:%s:%s', $userId, $folderId);
     }
 }

@@ -66,7 +66,7 @@ class Folder
      *
      * @var string|null
      */
-    private $collectionName;
+    public $collectionName;
 
     /**
      * Initializing model Folder

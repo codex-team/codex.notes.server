@@ -109,7 +109,11 @@ class User
     {
         $foldersCollection = Folder::getCollectionName($this->id);
 
-        $query = [];
+        $query = [
+            'isRemoved' => [
+                '$ne' => true
+            ]
+        ];
 
         $options = [
             'limit' => $limit,

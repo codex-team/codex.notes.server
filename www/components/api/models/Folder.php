@@ -126,7 +126,10 @@ class Folder
     private function get(string $folderId)
     {
         $query = [
-            'id' => $folderId
+            'id' => $folderId,
+            'isRemoved' => [
+                '$ne' => true
+            ]
         ];
 
         $mongoResponse = Mongo::connect()

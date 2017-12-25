@@ -2,10 +2,6 @@
 
 namespace App\System;
 
-use App\System\Utilities\{
-    Base,
-    Config
-};
 
 /**
  * Class Renderer
@@ -62,7 +58,7 @@ class Renderer
         /**
          * Path to the /components directory
          */
-        $componensDir = Config::getPathTo(Base::DIR_COMPONENTS);
+        $componensDir = 'components';
 
         /**
          * Path to the /tpl directory inside the component

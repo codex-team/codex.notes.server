@@ -6,8 +6,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use App\{
     Schema\Types,
-    System\Log,
-    System\Utilities\Config
+    System\Log
 };
 use GraphQL\{
     Type\Schema,
@@ -60,7 +59,7 @@ class Api
          * Enable debugging tools
          * @see https://github.com/webonyx/graphql-php/blob/master/docs/error-handling.md#default-error-formatting
          */
-        if (Config::debug()){
+        if ($_SERVER['DEBUG']){
             /**
              * Show original error message instead of 'Internal server error'
              */

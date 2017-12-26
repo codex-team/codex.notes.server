@@ -98,7 +98,7 @@ class User
 
 
     /**
-     * Get user's folders and put into model
+     * Fill User's Folders by models
      *
      * @param int $limit    how much items do you need
      * @param int $skip     how much items needs to be skipped
@@ -130,7 +130,7 @@ class User
     }
 
     /**
-     * Get User's data by id
+     * Fill User's data by id
      *
      * @var string $userId
      */

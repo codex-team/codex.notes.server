@@ -132,7 +132,7 @@ class Folder
     }
 
     /**
-     * Get notes in this Folder
+     * Fill Notes in this Folder
      *
      * @param int $limit    how much items do you need
      * @param int $skip     how much items needs to be skipped

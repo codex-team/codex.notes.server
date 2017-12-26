@@ -82,7 +82,7 @@ class Mutation extends ObjectType
                     ],
 
                     'note' => [
-                        'type' => Types::folder(),
+                        'type' => Types::note(),
                         'description' => 'Sync folder',
                         'args' => [
                             'id'        => Type::nonNull(Type::id()),

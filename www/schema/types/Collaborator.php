@@ -31,13 +31,13 @@ class Collaborator extends ObjectType
                         'type' => Types::user(),
                         'description' => 'Invitation acceptor user. Appears after invite acceptance.',
                     ],
-                    'invitation_token' => [
-                        'type' => Type::string(),
-                        'description' => 'Token with <owner_id>:<folder_id>:<hash>',
-                    ],
-                    'dt_invite' => [
+                    'dtInvite' => [
                         'type' => Type::int(),
                         'description' => 'Date of an invitation sending',
+                    ],
+                    'isRemoved' => [
+                        'type' => Type::boolean(),
+                        'description' => 'Removed status: true if Collaborator marked as removed',
                     ],
                 ];
             }

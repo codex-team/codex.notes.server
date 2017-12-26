@@ -11,7 +11,8 @@ use App\Schema\Types;
 use App\Components\Api\Models\{
     User,
     Note,
-    Folder
+    Folder,
+    Collaborator
 };
 
 /**
@@ -29,10 +30,10 @@ class Mutation extends ObjectType
                 return [
                     'user' => [
                         'type' => Types::user(),
-                        'description' => 'Sync folder',
+                        'description' => 'Sync User',
                         'args' => [
-                            'id'    => Type::nonNull(Type::id()),
-                            'name'  => Type::nonNull(Type::string()),
+                            'id' => Type::nonNull(Type::id()),
+                            'name' => Type::nonNull(Type::string()),
                             'email' => Type::nonNull(Type::string()),
                             'dtReg' => Type::int()
                         ],
@@ -52,14 +53,14 @@ class Mutation extends ObjectType
 
                     'folder' => [
                         'type' => Types::folder(),
-                        'description' => 'Sync folder',
+                        'description' => 'Sync Folder',
                         'args' => [
-                            'id'        => Type::nonNull(Type::id()),
-                            'ownerId'   => Type::nonNull(Type::id()),
-                            'title'     => Type::nonNull(Type::string()),
-                            'dtCreate'  => Type::int(),
-                            'dtModify'  => Type::int(),
-                            'isShared'  => Type::boolean(),
+                            'id' => Type::nonNull(Type::id()),
+                            'ownerId' => Type::nonNull(Type::id()),
+                            'title' => Type::nonNull(Type::string()),
+                            'dtCreate' => Type::int(),
+                            'dtModify' => Type::int(),
+                            'isShared' => Type::boolean(),
                             'isRemoved' => Type::boolean()
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
@@ -83,15 +84,15 @@ class Mutation extends ObjectType
 
                     'note' => [
                         'type' => Types::note(),
-                        'description' => 'Sync folder',
+                        'description' => 'Sync Note',
                         'args' => [
-                            'id'        => Type::nonNull(Type::id()),
-                            'authorId'  => Type::nonNull(Type::id()),
-                            'folderId'  => Type::nonNull(Type::id()),
-                            'title'     => Type::nonNull(Type::string()),
-                            'content'   => Type::nonNull(Type::string()),
-                            'dtCreate'  => Type::int(),
-                            'dtModify'  => Type::int(),
+                            'id' => Type::nonNull(Type::id()),
+                            'authorId' => Type::nonNull(Type::id()),
+                            'folderId' => Type::nonNull(Type::id()),
+                            'title' => Type::nonNull(Type::string()),
+                            'content' => Type::nonNull(Type::string()),
+                            'dtCreate' => Type::int(),
+                            'dtModify' => Type::int(),
                             'isRemoved' => Type::boolean()
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
@@ -105,6 +106,31 @@ class Mutation extends ObjectType
                             }
 
                             return $note;
+                        }
+                    ],
+
+                    'collaborator' => [
+                        'type' => Types::collaborator(),
+                        'description' => 'Sync Collaborator',
+                        'args' => [
+                            'id' => Type::id(),
+                            'ownerId' => Type::nonNull(Type::id()),
+                            'folderId' => Type::nonNull(Type::id()),
+                            'email' => Type::nonNull(Type::string()),
+                            'dtInvite' => Type::int(),
+                            'isRemoved' => Type::boolean()
+                        ],
+                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
+
+                            $collaborator = new Collaborator($args['ownerId'], $args['folderId']);
+                            $collaborator->sync($args);
+
+                            $selectedFields = $info->getFieldSelection();
+                            if (in_array('user', $selectedFields)) {
+                                $collaborator->fillUser();
+                            }
+
+                            return $collaborator;
                         }
                     ],
 

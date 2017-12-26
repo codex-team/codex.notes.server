@@ -62,6 +62,13 @@ class Folder
     public $notes = [];
 
     /**
+     * List of Collaborators (User model)
+     *
+     * @var array
+     */
+    public $collaborators = [];
+
+    /**
      * Folder owner's model
      *
      * @var object|null
@@ -86,16 +93,16 @@ class Folder
      * Initializing model Folder
      *
      * @param string $ownerId
-     * @param string $folderId
+     * @param string $id
      * @param array  $data          init model from data
      */
-    public function __construct(string $ownerId, string $folderId = null, array $data = null)
+    public function __construct(string $ownerId, string $id = null, array $data = null)
     {
         $this->ownerId = $ownerId;
         $this->collectionName = self::getCollectionName($this->ownerId);
 
-        if ($folderId) {
-            $this->findAndFill($folderId);
+        if ($id) {
+            $this->findAndFill($id);
         }
 
         if ($data) {
@@ -164,6 +171,38 @@ class Folder
     }
 
     /**
+     * Fill Collaborators in this Folder
+     *
+     * @param int $limit    how much items do you need
+     * @param int $skip     how much items needs to be skipped
+     * @param array $sort   sort fields
+     */
+    public function fillCollaborators(int $limit = null, int $skip = null, array $sort = []): void
+    {
+        $collaboratorsCollection = Collaborator::getCollectionName($this->ownerId, $this->id);
+
+        $query = [
+            'isRemoved' => [
+                '$ne' => true
+            ]
+        ];
+
+        $options = [
+            'limit' => $limit,
+            'skip' => $skip,
+            'sort' => $sort
+        ];
+
+        $mongoResponse = Mongo::connect()
+            ->{$collaboratorsCollection}
+            ->find($query, $options);
+
+        foreach ($mongoResponse as $note) {
+            $this->collaborators[] = new Collaborator($this->ownerId, $this->id, null, $note);
+        }
+    }
+
+    /**
      * Fill Folder's owner User model
      */
     public function fillOwner(): void
@@ -172,7 +211,7 @@ class Folder
     }
 
     /**
-     * Find Folder by id and fill put data into model
+     * Find Folder by id and put data into model
      *
      * @var string $folderId
      */

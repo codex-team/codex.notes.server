@@ -16,7 +16,7 @@ class Log extends Logger
      * Инициализируем логгер с помощью указания пути к папке с логами
      * @param string $logDir
      */
-    function __construct(string $logDir = null)
+    function __construct(string $logDir = '')
     {
         $logDir = $_SERVER['LOGS_DIR_PATH'] ?: $logDir;
 

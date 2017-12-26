@@ -10,7 +10,7 @@ use GraphQL\Type\Definition\{
 use App\Schema\Types;
 use App\Components\Api\Models\{
     User,
-//    Notes,
+    Note,
     Folder
 };
 /**
@@ -48,7 +48,6 @@ class Query extends ObjectType
                             $skip = $args['foldersSkip'];
 
                             if ($user->id && $limit !== null) {
-
                                 $user->getFolders($limit, $skip);
                             }
 
@@ -56,43 +55,58 @@ class Query extends ObjectType
                         }
                     ],
 
-                    // 'note' => [
-                    //     'type' => Types::note(),
-                    //     'description' => 'Return note by id',
-                    //     'args' => [
-                    //         'id' => Type::nonNull(Type::id()),
-                    //     ],
-                    //     'resolve' => function($root, $args) {
-                    //         return new Note($args['id']);
-                    //     }
-                    // ],
-
-//                    'notes' => [
-//                        'type' => Type::listOf(Types::note()),
-//                        'description' => 'List of notes by user id',
-//                        'args' => [
-//                            'userId' => Type::nonNull(Type::id()),
-//                            'folderId' => Type::nonNull(Type::id()),
-//                        ],
-//                        'resolve' => function($root, $args) {
-//                            $NotesModel = new Notes($args['userId'], $args['folderId']);
-//
-//                            return $NotesModel->items;
-//                        }
-//                    ],
-
                     'folder' => [
                         'type' => Types::folder(),
                         'description' => 'Folder\'s data',
                         'args' => [
                             'ownerId' => Type::nonNull(Type::id()),
-                            'id'      => Type::nonNull(Type::id()),
+                            'id' => Type::nonNull(Type::id()),
+                            'withOwner' => [
+                                'type' => Type::boolean(),
+                                'defaultValue' => false
+                            ],
+                            'withNotes' => [
+                                'type' => Type::boolean(),
+                                'defaultValue' => false
+                            ]
                         ],
                         'resolve' => function($root, $args) {
 
                             $folder = new Folder($args['ownerId'], $args['id']);
 
+                            if ($args['withOwner']) {
+                                $folder->getOwner();
+                            }
+
+                            if ($args['withNotes']) {
+                                $folder->getNotes();
+                            }
+
                             return $folder;
+                        }
+                    ],
+
+                    'note' => [
+                        'type' => Types::note(),
+                        'description' => 'Return note by id',
+                        'args' => [
+                            'authorId' => Type::nonNull(Type::id()),
+                            'folderId' => Type::nonNull(Type::id()),
+                            'id' => Type::nonNull(Type::id()),
+                            'withAuthor' => [
+                                'type' => Type::boolean(),
+                                'defaultValue' => false
+                            ]
+                        ],
+                        'resolve' => function($root, $args) {
+
+                            $note = new Note($args['authorId'], $args['folderId'], $args['id']);
+
+                            if ($args['withAuthor']) {
+                                $note->getAuthor();
+                            }
+
+                            return $note;
                         }
                     ],
                 ];

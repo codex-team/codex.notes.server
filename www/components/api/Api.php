@@ -86,7 +86,8 @@ class Api
      * @param $args
      * @return Response
      */
-    public function graphql(Request $request, Response $response, $args) {
+    public function graphql(Request $request, Response $response, $args)
+    {
         /**
          * Save request to the logs
          */
@@ -101,14 +102,16 @@ class Api
         $newResponse = $response->withHeader('Content-type', 'application/json');
 
         return $newResponse;
-
     }
 
-    /**
-     * Single endpoint for all GraphQL queries to the API
-     */
-////    public function graphql(Request $request, Response $response, $args)
-////    {
-////        $this->server->handleRequest();
-////    }
+//    /**
+//     * Single endpoint for all GraphQL queries to the API
+//     * @param Request $request
+//     * @param Response $response
+//     * @param $args
+//     */
+//    public function graphql(Request $request, Response $response, $args)
+//    {
+//        $this->server->handleRequest();
+//    }
 }

@@ -5,71 +5,108 @@ namespace App\Components\Api\Models;
 use App\Components\Base\Models\Mongo;
 
 /**
- * Model User
+ * Model Note
+ * Operates with collection notes:<userId>:<folderId>
  *
  * @package App\Components\Api\Models
  */
-class User
+class Note
 {
     /**
-     * Users unique identifier
+     * Note's id
      *
-     * @var int|null
+     * @var string|null
      */
     public $id;
 
     /**
-     * User's nickname
+     * Note's title
      *
      * @var string|null
      */
-    public $name;
+    public $title;
 
     /**
-     * User's email address
+     * Note's content
      *
      * @var string|null
      */
-    public $email;
+    public $content;
 
     /**
-     * Registration timestamp
+     * Created date timestamp
      *
      * @var int|null
      */
-    public $dtReg;
+    public $dtCreate;
 
     /**
-     * User's folders
+     * Modified date timestamp
      *
-     * @var array
+     * @var int|null
      */
-    public $folders = [];
+    public $dtModify;
+
+    /**
+     * Removed state
+     *
+     * @var boolean|null
+     */
+    public $isRemoved;
+
+    /**
+     * Note's author
+     *
+     * @var object|null
+     */
+    public $author;
+
+    /**
+     * Note's owner
+     *
+     * @var string|null
+     */
+    private $authorId;
+
+    /**
+     * Note's folder
+     *
+     * @var string|null
+     */
+    private $folderId;
 
     /**
      * Collection name
      *
-     * @var string|null
+     * @var string
      */
     private $collectionName;
 
     /**
      * User constructor
      *
+     * @param string $authorId
+     * @param string $folderId
      * @param string|null $id      if passed, returns filled User model
+     * @param array $data
      */
-    public function __construct(string $id = null)
+    public function __construct(string $authorId, string $folderId, string $id = null, array $data = null)
     {
-        $this->collectionName = self::getCollectionName();
+        $this->authorId = $authorId;
+        $this->folderId = $folderId;
+        $this->collectionName = self::getCollectionName($authorId, $folderId);
 
         if ($id) {
             $this->get($id);
         }
 
+        if ($data) {
+            $this->fillModel($data);
+        }
     }
 
     /**
-     * Create or update existing user
+     * Create or update existing note
      *
      * @param array $data
      */
@@ -96,48 +133,26 @@ class User
         $this->fillModel($mongoResponse ?: $data);
     }
 
-
     /**
-     * Get user's folders and put into model
-     *
-     * @param int $limit    how much items do you need
-     * @param int $skip     how much items needs to be skipped
-     * @param array $sort   sort fields
+     * Get author model
      */
-    public function getFolders(int $limit = null, int $skip = null, array $sort = []): void
+    public function getAuthor(): void
     {
-        $foldersCollection = Folder::getCollectionName($this->id);
-
-        $query = [
-            'isRemoved' => [
-                '$ne' => true
-            ]
-        ];
-
-        $options = [
-            'limit' => $limit,
-            'skip' => $skip,
-            'sort' => $sort
-        ];
-
-        $mongoResponse = Mongo::connect()
-            ->{$foldersCollection}
-            ->find($query, $options);
-
-        foreach ($mongoResponse as $folder) {
-            $this->folders[] = new Folder($this->id, null, $folder);
-        }
+        $this->author = new User($this->authorId);
     }
 
     /**
-     * Get user's data by id
+     * Get note's data by id
      *
-     * @var string $userId
+     * @var string $noteId
      */
-    private function get(string $userId): void
+    private function get(string $noteId): void
     {
         $query = [
-            'id' => $userId
+            'id' => $noteId,
+            'isRemoved' => [
+                '$ne' => true
+            ]
         ];
 
         $mongoResponse = Mongo::connect()
@@ -162,12 +177,14 @@ class User
     }
 
     /**
-     * Return collection name
+     * Compose collection name by pattern notes:<userId>:<folderId>
      *
+     * @param string $userId
+     * @param string $folderId
      * @return string
      */
-    private static function getCollectionName(): string
+    public static function getCollectionName(string $userId, string $folderId): string
     {
-        return 'users';
+        return sprintf('notes:%s:%s', $userId, $folderId);
     }
 }

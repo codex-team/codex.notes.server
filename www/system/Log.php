@@ -16,13 +16,11 @@ class Log extends Logger
      * Инициализируем логгер с помощью указания пути к папке с логами
      * @param string $logDir
      */
-    function __construct(string $logDir = '')
+    function __construct(string $logDir = null)
     {
-        $path = $_SERVER['LOGS_DIR_PATH'];
+        $logDir = $_SERVER['LOGS_DIR_PATH'] ?: $logDir;
 
-        if ($logDir) {
-            $path = $logDir;
-        }
+        $path = PROJECTROOT.$logDir;
 
         parent::__construct($path);
     }

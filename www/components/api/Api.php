@@ -5,7 +5,9 @@ namespace App\Components\Api;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use App\{
-    Schema\Types, System\Config, System\Log
+    Schema\Types,
+    System\Config,
+    System\Log
 };
 use GraphQL\{
     Type\Schema,

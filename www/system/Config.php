@@ -15,7 +15,7 @@ class Config extends Base
      * @param string $param
      * @return string
      */
-    public static function get(string $param)
+    public static function get(string $param): ?string
     {
         return $_SERVER[$param] ?? null;
     }

@@ -58,7 +58,7 @@ class Renderer
         /**
          * Path to the /components directory
          */
-        $componensDir = 'components';
+        $componensDir = Config::DIR_COMPONENTS;
 
         /**
          * Path to the /tpl directory inside the component

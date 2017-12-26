@@ -3,6 +3,7 @@
 namespace App\Components\Base\Models;
 
 use \MongoDB\Client as Client;
+use App\System\Config;
 
 /**
  * Class statically creates an instance of the mongo database.
@@ -45,8 +46,8 @@ class Mongo
          */
         if (!isset(self::$_connection)) {
 
-            $domain = $_SERVER['MONGO_HOST'] ?? 'localhost';
-            $port   = $_SERVER['MONGO_PORT'] ?? 27017;
+            $domain = Config::get('MONGO_HOST') ?? 'localhost';
+            $port   = Config::get('MONGO_PORT') ?? 27017;
 
             self::$_connection = new Client(
                 "mongodb://{$domain}:{$port}", [],
@@ -65,7 +66,7 @@ class Mongo
          */
         if (!empty($database) && is_string($database)) {
 
-            $database = $_SERVER['MONGO_DBNAME'] ?? $database;
+            $database = Config::get('MONGO_DBNAME') ?? $database;
 
             $connectedDatabase = self::$_connection->$database;
 

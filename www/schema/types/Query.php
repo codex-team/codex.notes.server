@@ -57,7 +57,7 @@ class Query extends ObjectType
 
                     'folder' => [
                         'type' => Types::folder(),
-                        'description' => 'Folder\'s data',
+                        'description' => 'Return Folder by id',
                         'args' => [
                             'ownerId' => Type::nonNull(Type::id()),
                             'id' => Type::nonNull(Type::id()),
@@ -88,7 +88,7 @@ class Query extends ObjectType
 
                     'note' => [
                         'type' => Types::note(),
-                        'description' => 'Return note by id',
+                        'description' => 'Return Note by id',
                         'args' => [
                             'authorId' => Type::nonNull(Type::id()),
                             'folderId' => Type::nonNull(Type::id()),

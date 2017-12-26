@@ -134,7 +134,7 @@ class Note
     }
 
     /**
-     * Get author model
+     * Get author's model
      */
     public function fillAuthor(): void
     {
@@ -142,7 +142,7 @@ class Note
     }
 
     /**
-     * Get note's data by id
+     * Get Note's data by id
      *
      * @var string $noteId
      */

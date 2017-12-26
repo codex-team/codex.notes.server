@@ -2,32 +2,33 @@
 
 namespace App;
 
-use App\Components\Base\Models\Handlers\AppExceptionHandler;
-use App\Components\Base\Models\Handlers\CodeExceptionHandler;
-use App\Components\Base\Models\Handlers\RouteExceptionHandler;
-use App\Components\Base\Models\Handlers\MethodNotAllowedExceptionHandler;
-use App\System\Utilities\Config;
+use App\Components\Base\Models\Handlers\{
+    AppExceptionHandler,
+    CodeExceptionHandler,
+    RouteExceptionHandler,
+    MethodNotAllowedExceptionHandler
+};
+use App\System\Config;
 
-define('DOCROOT', realpath(dirname(__FILE__ . '/../')).DIRECTORY_SEPARATOR);
+define('PROJECTROOT', realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
 
 /**
- * Автоподгрузка классов Slim и приложения
- * У приложения namespace App;
+ * Autoload vendor
  */
-require '../vendor/autoload.php';
+require PROJECTROOT . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
 
 /**
  * Load Dotenv
  * @see https://github.com/vlucas/phpdotenv
  */
-if (is_file(Config::baseDir() . '.env'))
-{
-    $dotenv = new \Dotenv\Dotenv(Config::baseDir());
+if (is_file(PROJECTROOT . '.env')) {
+    $dotenv = new \Dotenv\Dotenv(PROJECTROOT);
     $dotenv->load();
 }
 
 /**
- * Инициализируем приложение
+ * Initialize App
  * @see \Slim\Container::$defaultSettings
  */
 $app = new \Slim\App([
@@ -54,13 +55,16 @@ $c['notAllowedHandler'] = function ($c) {
 };
 
 /**
- *  Подключаем к $app модули
+ * Enable modules
  */
-require 'modules.php';
+require PROJECTROOT . Config::DIR_PUBLIC . DIRECTORY_SEPARATOR . 'modules.php';
 
 /**
- * Определяем роуты
+ * Set routes
  */
-require 'routes.php';
+require PROJECTROOT . Config::DIR_PUBLIC . DIRECTORY_SEPARATOR . 'routes.php';
 
+/**
+ * Run App
+ */
 $app->run();

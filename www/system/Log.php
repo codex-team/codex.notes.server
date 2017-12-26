@@ -2,7 +2,6 @@
 
 namespace App\System;
 
-use App\System\Utilities\Config;
 use Katzgrau\KLogger\Logger;
 
 /**
@@ -19,12 +18,9 @@ class Log extends Logger
      */
     function __construct(string $logDir = '')
     {
-        if ($logDir) {
-            $path = $logDir;
-        }
-        else {
-            $path = Config::getPathTo(Config::DIR_LOGS);
-        }
+        $logDir = $logDir ?: Config::DIR_LOGS;
+
+        $path = PROJECTROOT . $logDir;
 
         parent::__construct($path);
     }

@@ -6,8 +6,8 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use App\{
     Schema\Types,
-    System\Log,
-    System\Utilities\Config
+    System\Config,
+    System\Log
 };
 use GraphQL\{
     Type\Schema,

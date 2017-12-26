@@ -2,7 +2,7 @@
 
 namespace App;
 
-define('PROJECTROOT', realpath(dirname(__FILE__ ).'/../').DIRECTORY_SEPARATOR);
+define('PROJECTROOT', realpath(dirname(__FILE__)).'/../');
 
 /**
  * Autoload vendor

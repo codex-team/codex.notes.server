@@ -13,7 +13,8 @@ use GraphQL\{
     Type\Schema,
     Server\StandardServer,
     Server\ServerConfig,
-    Error\Debug
+    Error\Debug,
+    Executor\ExecutionResult
 };
 
 
@@ -78,27 +79,36 @@ class Api
         $this->server = new StandardServer($config);
     }
 
-//    /**
-//     * Single endpoint for all GraphQL queries to the API
-//     * @param Request $request
-//     * @param Response $response
-//     * @param $args
-//     * @return Response
-//     */
-//    public function graphql(Request $request, Response $response, $args) {
-//        $requestBody = $request->getBody();
-//        /**
-//         * Save request to the logs
-//         */
-////       $this->logger->debug($requestBody);
-//        return $this->server->processPsrRequest($request, $response, $requestBody);
-//    }
+    /**
+     * Single endpoint for all GraphQL queries to the API
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
+    public function graphql(Request $request, Response $response, $args) {
+        /**
+         * Save request to the logs
+         */
+       $this->logger->debug($requestBody);
+
+        /** @var ExecutionResult|ExecutionResult[] $result */
+        $result = $this->server->executePsrRequest($request);
+
+        $body = $response->getBody();
+        $body->write(json_encode($result));
+
+        $newResponse = $response->withHeader('Content-type', 'application/json');
+
+        return $newResponse;
+
+    }
 
     /**
      * Single endpoint for all GraphQL queries to the API
      */
-    public function graphql(Request $request, Response $response, $args)
-    {
-        $this->server->handleRequest();
-    }
+////    public function graphql(Request $request, Response $response, $args)
+////    {
+////        $this->server->handleRequest();
+////    }
 }

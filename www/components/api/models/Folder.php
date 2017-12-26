@@ -95,7 +95,7 @@ class Folder
         $this->collectionName = self::getCollectionName($this->ownerId);
 
         if ($folderId) {
-            $this->get($folderId);
+            $this->findAndFill($folderId);
         }
 
         if ($data) {
@@ -164,7 +164,7 @@ class Folder
     }
 
     /**
-     * Fill owner model
+     * Fill Folder's owner User model
      */
     public function fillOwner(): void
     {
@@ -172,11 +172,11 @@ class Folder
     }
 
     /**
-     * Get Folder's data by id
+     * Find Folder by id and fill put data into model
      *
      * @var string $folderId
      */
-    private function get(string $folderId): void
+    private function findAndFill(string $folderId): void
     {
         $query = [
             'id' => $folderId,

@@ -63,7 +63,7 @@ class User
         $this->collectionName = self::getCollectionName();
 
         if ($id) {
-            $this->get($id);
+            $this->findAndFill($id);
         }
 
     }
@@ -130,11 +130,11 @@ class User
     }
 
     /**
-     * Fill User's data by id
+     * Find User by id and fill put data into model
      *
      * @var string $userId
      */
-    private function get(string $userId): void
+    private function findAndFill(string $userId): void
     {
         $query = [
             'id' => $userId

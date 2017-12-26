@@ -97,7 +97,7 @@ class Note
         $this->collectionName = self::getCollectionName($authorId, $folderId);
 
         if ($id) {
-            $this->get($id);
+            $this->findAndFill($id);
         }
 
         if ($data) {
@@ -134,7 +134,7 @@ class Note
     }
 
     /**
-     * Fill author's model
+     * Fill User author's model
      */
     public function fillAuthor(): void
     {
@@ -142,11 +142,11 @@ class Note
     }
 
     /**
-     * Fill Note's data by id
+     * Find Note by id and fill put data into model
      *
      * @var string $noteId
      */
-    private function get(string $noteId): void
+    private function findAndFill(string $noteId): void
     {
         $query = [
             'id' => $noteId,

@@ -43,13 +43,9 @@ class Note extends ObjectType
                         'type' => Types::user(),
                         'description' => 'Note\'s author',
                     ],
-//                    'views' => [
-//                        'type' => Type::int(),
-//                        'description' => 'Note\'s views counter',
-//                    ],
                     'isRemoved' => [
                         'type' => Type::boolean(),
-                        'description' => 'Removed status: true if folder marked as removed',
+                        'description' => 'Removed status: true if Note marked as removed',
                     ],
                 ];
             }

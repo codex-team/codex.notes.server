@@ -69,7 +69,7 @@ class User
     }
 
     /**
-     * Create or update existing user
+     * Create or update an existed User
      *
      * @param array $data
      */
@@ -104,7 +104,7 @@ class User
      * @param int $skip     how much items needs to be skipped
      * @param array $sort   sort fields
      */
-    public function getFolders(int $limit = null, int $skip = null, array $sort = []): void
+    public function fillFolders(int $limit = null, int $skip = null, array $sort = []): void
     {
         $foldersCollection = Folder::getCollectionName($this->id);
 
@@ -130,7 +130,7 @@ class User
     }
 
     /**
-     * Get user's data by id
+     * Get User's data by id
      *
      * @var string $userId
      */

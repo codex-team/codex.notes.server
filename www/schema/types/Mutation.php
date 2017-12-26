@@ -43,7 +43,7 @@ class Mutation extends ObjectType
 
                             $selectedFields = $info->getFieldSelection();
                             if (in_array('folders', $selectedFields)) {
-                                $user->getFolders();
+                                $user->fillFolders();
                             }
 
                             return $user;
@@ -70,11 +70,11 @@ class Mutation extends ObjectType
                             $selectedFields = $info->getFieldSelection();
 
                             if (in_array('notes', $selectedFields)) {
-                                $folder->getNotes();
+                                $folder->fillNotes();
                             }
 
                             if (in_array('owner', $selectedFields)) {
-                                $folder->getOwner();
+                                $folder->fillOwner();
                             }
 
                             return $folder;
@@ -101,7 +101,7 @@ class Mutation extends ObjectType
 
                             $selectedFields = $info->getFieldSelection();
                             if (in_array('author', $selectedFields)) {
-                                $note->getAuthor();
+                                $note->fillAuthor();
                             }
 
                             return $note;

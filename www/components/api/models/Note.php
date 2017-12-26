@@ -62,14 +62,14 @@ class Note
     public $author;
 
     /**
-     * Note's owner
+     * Note author's id
      *
      * @var string|null
      */
     private $authorId;
 
     /**
-     * Note's folder
+     * Note Folder's id
      *
      * @var string|null
      */
@@ -83,11 +83,11 @@ class Note
     private $collectionName;
 
     /**
-     * User constructor
+     * Note constructor
      *
      * @param string $authorId
      * @param string $folderId
-     * @param string|null $id      if passed, returns filled User model
+     * @param string|null $id      if passed, returns filled Note model
      * @param array $data
      */
     public function __construct(string $authorId, string $folderId, string $id = null, array $data = null)
@@ -106,7 +106,7 @@ class Note
     }
 
     /**
-     * Create or update existing note
+     * Create or update an existed Note
      *
      * @param array $data
      */
@@ -136,7 +136,7 @@ class Note
     /**
      * Get author model
      */
-    public function getAuthor(): void
+    public function fillAuthor(): void
     {
         $this->author = new User($this->authorId);
     }

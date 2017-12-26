@@ -55,7 +55,7 @@ class Folder
     public $isRemoved;
 
     /**
-     * List of notes models
+     * List of models of Notes
      *
      * @var array
      */
@@ -76,7 +76,7 @@ class Folder
     private $ownerId;
 
     /**
-     * Collection name for this folder
+     * Collection name for this Folder
      *
      * @var string|null
      */
@@ -104,7 +104,7 @@ class Folder
     }
 
     /**
-     * Create or update existing folder
+     * Create or update an existed Folder
      *
      * @param array $data
      */
@@ -132,13 +132,13 @@ class Folder
     }
 
     /**
-     * Get notes in this folder
+     * Get notes in this Folder
      *
      * @param int $limit    how much items do you need
      * @param int $skip     how much items needs to be skipped
      * @param array $sort   sort fields
      */
-    public function getNotes(int $limit = null, int $skip = null, array $sort = []): void
+    public function fillNotes(int $limit = null, int $skip = null, array $sort = []): void
     {
         $notesCollection = Note::getCollectionName($this->ownerId, $this->id);
 
@@ -166,13 +166,13 @@ class Folder
     /**
      * Get owner model
      */
-    public function getOwner(): void
+    public function fillOwner(): void
     {
         $this->owner = new User($this->ownerId);
     }
 
     /**
-     * Get folder's data by id
+     * Get Folder's data by id
      *
      * @var string $folderId
      */

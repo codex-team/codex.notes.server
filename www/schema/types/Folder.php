@@ -46,7 +46,7 @@ class Folder extends ObjectType
                     ],
                     'isRemoved' => [
                         'type' => Type::boolean(),
-                        'description' => 'Removed status: true if folder marked as removed',
+                        'description' => 'Removed status: true if Folder marked as removed',
                     ],
                     'notes' => [
                         'type' => Type::listOf(Types::note()),

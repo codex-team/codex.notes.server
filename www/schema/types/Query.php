@@ -48,7 +48,7 @@ class Query extends ObjectType
                             $skip = $args['foldersSkip'];
 
                             if ($user->id && $limit !== null) {
-                                $user->getFolders($limit, $skip);
+                                $user->fillFolders($limit, $skip);
                             }
 
                             return $user;
@@ -75,11 +75,11 @@ class Query extends ObjectType
                             $folder = new Folder($args['ownerId'], $args['id']);
 
                             if ($args['withOwner']) {
-                                $folder->getOwner();
+                                $folder->fillOwner();
                             }
 
                             if ($args['withNotes']) {
-                                $folder->getNotes();
+                                $folder->fillNotes();
                             }
 
                             return $folder;
@@ -103,7 +103,7 @@ class Query extends ObjectType
                             $note = new Note($args['authorId'], $args['folderId'], $args['id']);
 
                             if ($args['withAuthor']) {
-                                $note->getAuthor();
+                                $note->fillAuthor();
                             }
 
                             return $note;

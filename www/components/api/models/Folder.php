@@ -164,7 +164,7 @@ class Folder
     }
 
     /**
-     * Get owner model
+     * Fill owner model
      */
     public function fillOwner(): void
     {

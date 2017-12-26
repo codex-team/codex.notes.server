@@ -10,7 +10,7 @@ use GraphQL\Type\Definition\{
 use App\Schema\Types;
 use App\Components\Api\Models\{
     User,
-//    Notes,
+    Note,
     Folder
 };
 
@@ -27,7 +27,6 @@ class Mutation extends ObjectType
         $config = [
             'fields' => function() {
                 return [
-
                     'user' => [
                         'type' => Types::user(),
                         'description' => 'Sync folder',
@@ -39,14 +38,12 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
-                            $selectedFields = $info->getFieldSelection();
-
                             $user = new User();
                             $user->sync($args);
 
-                            if (in_array('folder', $selectedFields)) {
-
-                                $user->getFolders();
+                            $selectedFields = $info->getFieldSelection();
+                            if (in_array('folders', $selectedFields)) {
+                                $user->fillFolders();
                             }
 
                             return $user;
@@ -65,13 +62,49 @@ class Mutation extends ObjectType
                             'isShared'  => Type::boolean(),
                             'isRemoved' => Type::boolean()
                         ],
-                        'resolve' => function($root, $args) {
+                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             $folder = new Folder($args['ownerId']);
-
                             $folder->sync($args);
 
+                            $selectedFields = $info->getFieldSelection();
+
+                            if (in_array('notes', $selectedFields)) {
+                                $folder->fillNotes();
+                            }
+
+                            if (in_array('owner', $selectedFields)) {
+                                $folder->fillOwner();
+                            }
+
                             return $folder;
+                        }
+                    ],
+
+                    'note' => [
+                        'type' => Types::note(),
+                        'description' => 'Sync folder',
+                        'args' => [
+                            'id'        => Type::nonNull(Type::id()),
+                            'authorId'  => Type::nonNull(Type::id()),
+                            'folderId'  => Type::nonNull(Type::id()),
+                            'title'     => Type::nonNull(Type::string()),
+                            'content'   => Type::nonNull(Type::string()),
+                            'dtCreate'  => Type::int(),
+                            'dtModify'  => Type::int(),
+                            'isRemoved' => Type::boolean()
+                        ],
+                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
+
+                            $note = new Note($args['authorId'], $args['folderId']);
+                            $note->sync($args);
+
+                            $selectedFields = $info->getFieldSelection();
+                            if (in_array('author', $selectedFields)) {
+                                $note->fillAuthor();
+                            }
+
+                            return $note;
                         }
                     ],
 

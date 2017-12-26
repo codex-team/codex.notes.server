@@ -27,26 +27,26 @@ class Note extends ObjectType
                         'type' => Type::string(),
                         'description' => 'Note\'s public title',
                     ],
-                    'dt_create' => [
-                        'type' => Type::int(),
-                        'description' => 'Note\'s creation timestamp',
-                    ],
-                    'dt_modify' => [
-                        'type' => Type::int(),
-                        'description' => 'Note\'s last modification timestamp',
-                    ],
                     'content' => [
                         'type' => Type::string(),
                         'description' => 'Note\'s content in the JSON-format',
+                    ],
+                    'dtCreate' => [
+                        'type' => Type::int(),
+                        'description' => 'Note\'s creation timestamp',
+                    ],
+                    'dtModify' => [
+                        'type' => Type::int(),
+                        'description' => 'Note\'s last modification timestamp',
                     ],
                     'author' => [
                         'type' => Types::user(),
                         'description' => 'Note\'s author',
                     ],
-                    'views' => [
-                        'type' => Type::int(),
-                        'description' => 'Note\'s views counter',
-                    ]
+                    'isRemoved' => [
+                        'type' => Type::boolean(),
+                        'description' => 'Removed status: true if Note marked as removed',
+                    ],
                 ];
             }
         ];

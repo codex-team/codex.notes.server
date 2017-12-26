@@ -63,18 +63,17 @@ class User
         $this->collectionName = self::getCollectionName();
 
         if ($id) {
-
-            $this->get($id);
+            $this->findAndFill($id);
         }
 
     }
 
     /**
-     * Create or update existing user
+     * Create or update an existed User
      *
      * @param array $data
      */
-    public function sync(array $data)
+    public function sync(array $data): void
     {
         $query = [
             'id' => $data['id']
@@ -99,13 +98,13 @@ class User
 
 
     /**
-     * Get user's folders and put into model
+     * Fill User's Folders by models
      *
      * @param int $limit    how much items do you need
      * @param int $skip     how much items needs to be skipped
      * @param array $sort   sort fields
      */
-    public function getFolders(int $limit = null, int $skip = null, array $sort = [])
+    public function fillFolders(int $limit = null, int $skip = null, array $sort = []): void
     {
         $foldersCollection = Folder::getCollectionName($this->id);
 
@@ -126,17 +125,16 @@ class User
             ->find($query, $options);
 
         foreach ($mongoResponse as $folder) {
-
             $this->folders[] = new Folder($this->id, null, $folder);
         }
     }
 
     /**
-     * Get user's data by id
+     * Find User by id and fill put data into model
      *
      * @var string $userId
      */
-    private function get(string $userId)
+    private function findAndFill(string $userId): void
     {
         $query = [
             'id' => $userId
@@ -154,12 +152,10 @@ class User
      *
      * @param array $data
      */
-    private function fillModel(array $data)
+    private function fillModel(array $data): void
     {
         foreach ($data as $key => $value) {
-
             if (property_exists($this, $key)) {
-
                 $this->$key = $value;
             }
         }

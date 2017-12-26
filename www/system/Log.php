@@ -18,7 +18,7 @@ class Log extends Logger
      */
     function __construct(string $logDir = '')
     {
-        $logDir = $logDir ?: Base::LOGS;
+        $logDir = $logDir ?: Config::DIR_LOGS;
 
         $path = PROJECTROOT . $logDir;
 

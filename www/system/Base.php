@@ -10,10 +10,10 @@ namespace App\System;
  */
 class Base
 {
-    CONST CONFIG     = 'config';
-    CONST SYSTEM     = 'system';
-    CONST VENDOR     = 'vendor';
-    CONST LOGS       = 'logs';
-    CONST PUBLIC     = 'public';
-    CONST COMPONENTS = 'components';
+    CONST DIR_CONFIG     = 'config';
+    CONST DIR_SYSTEM     = 'system';
+    CONST DIR_VENDOR     = 'vendor';
+    CONST DIR_LOGS       = 'logs';
+    CONST DIR_PUBLIC     = 'public';
+    CONST DIR_COMPONENTS = 'components';
 }

@@ -57,12 +57,12 @@ $c['notAllowedHandler'] = function ($c) {
 /**
  * Enable modules
  */
-require PROJECTROOT . Config::PUBLIC . DIRECTORY_SEPARATOR . 'modules.php';
+require PROJECTROOT . Config::DIR_PUBLIC . DIRECTORY_SEPARATOR . 'modules.php';
 
 /**
  * Set routes
  */
-require PROJECTROOT . Config::PUBLIC . DIRECTORY_SEPARATOR . 'routes.php';
+require PROJECTROOT . Config::DIR_PUBLIC . DIRECTORY_SEPARATOR . 'routes.php';
 
 /**
  * Run App

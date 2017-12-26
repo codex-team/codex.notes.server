@@ -90,7 +90,7 @@ class Api
         /**
          * Save request to the logs
          */
-       $this->logger->debug($requestBody);
+        $this->logger->debug($request->getBody());
 
         /** @var ExecutionResult|ExecutionResult[] $result */
         $result = $this->server->executePsrRequest($request);

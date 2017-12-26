@@ -7,7 +7,7 @@ use App\Components\Base\Models\Handlers\CodeExceptionHandler;
 use App\Components\Base\Models\Handlers\RouteExceptionHandler;
 use App\Components\Base\Models\Handlers\MethodNotAllowedExceptionHandler;
 
-define('PROJECTROOT', realpath(dirname(__FILE__)).'/../');
+define('PROJECTROOT', realpath(dirname(__FILE__)) . '/../');
 
 /**
  * Autoload vendor
@@ -18,7 +18,7 @@ require PROJECTROOT . 'vendor/autoload.php';
  * Load Dotenv
  * @see https://github.com/vlucas/phpdotenv
  */
-if (is_file(PROJECTROOT.'.env')) {
+if (is_file(PROJECTROOT . '.env')) {
     $dotenv = new \Dotenv\Dotenv(PROJECTROOT);
     $dotenv->load();
 }
@@ -53,12 +53,12 @@ $c['notAllowedHandler'] = function ($c) {
 /**
  * Enable modules
  */
-require PROJECTROOT.'public/modules.php';
+require PROJECTROOT . 'public/modules.php';
 
 /**
  * Set routes
  */
-require PROJECTROOT.'public/routes.php';
+require PROJECTROOT . 'public/routes.php';
 
 /**
  * Run App

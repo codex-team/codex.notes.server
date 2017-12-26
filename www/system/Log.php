@@ -20,7 +20,7 @@ class Log extends Logger
     {
         $logDir = $_SERVER['LOGS_DIR_PATH'] ?: $logDir;
 
-        $path = PROJECTROOT.$logDir;
+        $path = PROJECTROOT . $logDir;
 
         parent::__construct($path);
     }

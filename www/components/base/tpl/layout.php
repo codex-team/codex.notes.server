@@ -9,7 +9,7 @@
     <meta property="og:title" content="<?= $title ?? 'CodeX Notes' ?>" />
     <meta property="og:site_name" content="CodeX Notes" />
 
-    <link rel="stylesheet" href="/public/css/codex.css">
+    <link rel="stylesheet" href="/public/static/css/codex.css">
 
 </head>
 <body>

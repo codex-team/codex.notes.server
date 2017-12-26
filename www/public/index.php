@@ -2,19 +2,19 @@
 
 namespace App;
 
-define('DOCROOT', realpath(dirname(__FILE__ )).DIRECTORY_SEPARATOR);
+define('PROJECTROOT', realpath(dirname(__FILE__ ).'/../').DIRECTORY_SEPARATOR);
 
 /**
  * Autoload vendor
  */
-require DOCROOT.'vendor/autoload.php';
+require PROJECTROOT . 'vendor/autoload.php';
 
 /**
  * Load Dotenv
  * @see https://github.com/vlucas/phpdotenv
  */
 if (is_file('.env')) {
-    $dotenv = new \Dotenv\Dotenv(DOCROOT);
+    $dotenv = new \Dotenv\Dotenv(PROJECTROOT);
     $dotenv->load();
 }
 
@@ -29,12 +29,12 @@ $app = new \Slim\App([
 /**
  * Enable modules
  */
-require DOCROOT.'app/modules.php';
+require PROJECTROOT.'public/modules.php';
 
 /**
  * Set routes
  */
-require DOCROOT.'app/routes.php';
+require PROJECTROOT.'public/routes.php';
 
 /**
  * Run App

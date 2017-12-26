@@ -11,8 +11,8 @@ use App\Schema\Types;
 use App\Components\Api\Models\{
     User,
     Note,
-    Folder,
-    Collaborator
+    Folder
+//    Collaborator
 };
 /**
  * Class Query
@@ -108,24 +108,6 @@ class Query extends ObjectType
                             }
 
                             return $note;
-                        }
-                    ],
-
-                    'collaborator' => [
-                        'type' => Types::collaborator(),
-                        'description' => 'Return Collaborator by id',
-                        'args' => [
-                            'ownerId' => Type::nonNull(Type::id()),
-                            'folderId' => Type::nonNull(Type::id()),
-                            'id' => Type::nonNull(Type::id()),
-                        ],
-                        'resolve' => function($root, $args) {
-
-                            $collaborator = new Collaborator($args['ownerId'], $args['folderId'], $args['id']);
-
-                            $collaborator->fillUser();
-
-                            return $collaborator;
                         }
                     ],
                 ];

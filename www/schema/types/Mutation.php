@@ -122,7 +122,9 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
-                            $collaborator = new Collaborator($args['ownerId'], $args['folderId']);
+                            $folder = new Folder($args['ownerId'], $args['folderId']);
+
+                            $collaborator = new Collaborator($folder, $args['id']);
                             $collaborator->sync($args);
 
                             $selectedFields = $info->getFieldSelection();

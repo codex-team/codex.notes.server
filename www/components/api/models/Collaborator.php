@@ -45,18 +45,11 @@ class Collaborator
     public $isRemoved;
 
     /**
-     * Folder owners's id
+     * Folder model
      *
      * @var string|null
      */
-    private $ownerId;
-
-    /**
-     * Folder's id
-     *
-     * @var string|null
-     */
-    private $folderId;
+    private $folder;
 
     /**
      * Collection name
@@ -68,16 +61,14 @@ class Collaborator
     /**
      * Initializing model Collaborator
      *
-     * @param string $ownerId
-     * @param string $folderId
+     * @param object $folder
      * @param string $id
      * @param array  $data          init model from data
      */
-    public function __construct(string $ownerId, string $folderId = null, string $id = null, array $data = null)
+    public function __construct(Folder $folder = null, string $id = null, array $data = null)
     {
-        $this->ownerId = $ownerId;
-        $this->folderId = $folderId;
-        $this->collectionName = self::getCollectionName($this->ownerId, $this->folderId);
+        $this->folder = $folder;
+        $this->collectionName = self::getCollectionName($this->folder->ownerId, $this->folder->id);
 
         if ($id) {
             $this->findAndFill($id);

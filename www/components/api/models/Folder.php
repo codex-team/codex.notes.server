@@ -80,7 +80,7 @@ class Folder
      *
      * @var string|null
      */
-    private $ownerId;
+    public $ownerId;
 
     /**
      * Collection name for this Folder

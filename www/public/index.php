@@ -2,17 +2,20 @@
 
 namespace App;
 
-use App\Components\Base\Models\Handlers\AppExceptionHandler;
-use App\Components\Base\Models\Handlers\CodeExceptionHandler;
-use App\Components\Base\Models\Handlers\RouteExceptionHandler;
-use App\Components\Base\Models\Handlers\MethodNotAllowedExceptionHandler;
+use App\Components\Base\Models\Handlers\{
+    AppExceptionHandler,
+    CodeExceptionHandler,
+    RouteExceptionHandler,
+    MethodNotAllowedExceptionHandler
+};
+use App\System\Base;
 
-define('PROJECTROOT', realpath(dirname(__FILE__)) . '/../');
+define('PROJECTROOT', realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
 
 /**
  * Autoload vendor
  */
-require PROJECTROOT . 'vendor/autoload.php';
+require PROJECTROOT . Base::VENDOR . DIRECTORY_SEPARATOR . 'autoload.php';
 
 /**
  * Load Dotenv
@@ -24,7 +27,7 @@ if (is_file(PROJECTROOT . '.env')) {
 }
 
 /**
- * Init App
+ * Initialize App
  * @see \Slim\Container::$defaultSettings
  */
 $app = new \Slim\App([
@@ -53,12 +56,12 @@ $c['notAllowedHandler'] = function ($c) {
 /**
  * Enable modules
  */
-require PROJECTROOT . 'public/modules.php';
+require PROJECTROOT . Base::PUBLIC . DIRECTORY_SEPARATOR . 'modules.php';
 
 /**
  * Set routes
  */
-require PROJECTROOT . 'public/routes.php';
+require PROJECTROOT . Base::PUBLIC . DIRECTORY_SEPARATOR . 'routes.php';
 
 /**
  * Run App

@@ -8,14 +8,15 @@ use App\Components\Base\Models\Handlers\{
     RouteExceptionHandler,
     MethodNotAllowedExceptionHandler
 };
-use App\System\Base;
+use App\System\Config;
 
 define('PROJECTROOT', realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
 
 /**
  * Autoload vendor
  */
-require PROJECTROOT . Base::VENDOR . DIRECTORY_SEPARATOR . 'autoload.php';
+require PROJECTROOT . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
 
 /**
  * Load Dotenv
@@ -56,12 +57,12 @@ $c['notAllowedHandler'] = function ($c) {
 /**
  * Enable modules
  */
-require PROJECTROOT . Base::PUBLIC . DIRECTORY_SEPARATOR . 'modules.php';
+require PROJECTROOT . Config::PUBLIC . DIRECTORY_SEPARATOR . 'modules.php';
 
 /**
  * Set routes
  */
-require PROJECTROOT . Base::PUBLIC . DIRECTORY_SEPARATOR . 'routes.php';
+require PROJECTROOT . Config::PUBLIC . DIRECTORY_SEPARATOR . 'routes.php';
 
 /**
  * Run App

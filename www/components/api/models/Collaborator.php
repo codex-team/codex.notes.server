@@ -2,8 +2,7 @@
 
 namespace App\Components\Api\Models;
 
-use App\Components\Base\Models\BaseException;
-use App\Components\Base\Models\Exceptions\ModelException;
+use App\Components\Base\Models\Exceptions\CollaboratorException;
 use App\Components\Base\Models\Mongo;
 
 /**
@@ -14,7 +13,7 @@ use App\Components\Base\Models\Mongo;
 class Collaborator
 {
     /**
-     * Collaboratior's invite token
+     * Collaborator's Invitation Token
      *
      * @var string|null
      */
@@ -76,13 +75,15 @@ class Collaborator
      * @param Folder $folder
      * @param string $token
      * @param array  $data          init model from data
+     *
+     * @throws CollaboratorException
      */
     public function __construct(Folder $folder = null, string $token = null, array $data = null)
     {
         $this->folder = $folder;
 
         if (!$this->folder->ownerId || !$this->folder->id) {
-            throw new ModelException('Folder does not exist');
+            throw new CollaboratorException('Folder does not exist');
         }
 
         $this->collectionName = self::getCollectionName($this->folder->ownerId, $this->folder->id);

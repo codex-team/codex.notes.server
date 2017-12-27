@@ -2,6 +2,7 @@
 
 namespace App\Schema\Types;
 
+use App\Components\Base\Models\Exceptions\CollaboratorException;
 use GraphQL\Type\Definition\{
     ObjectType,
     ResolveInfo,
@@ -128,21 +129,19 @@ class Mutation extends ObjectType
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             try {
-                                $folder = new Folder($args['ownerId'],
-                                    $args['folderId']);
+                                $folder = new Folder($args['ownerId'], $args['folderId']);
 
-                                $collaborator = new Collaborator($folder,
-                                    $args['token']);
+                                $collaborator = new Collaborator($folder, $args['token']);
 
                                 $collaborator->sync($args);
 
                                 $selectedFields = $info->getFieldSelection();
-                                if (in_array('user', $selectedFields)) {
+                                if (isset($selectedFields['user'])) {
                                     $collaborator->fillUser();
                                 }
 
                                 return $collaborator;
-                            } catch (\Exception $e) {
+                            } catch (CollaboratorException $e) {
                                 return;
                             }
                         }

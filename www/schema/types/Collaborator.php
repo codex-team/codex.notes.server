@@ -21,7 +21,7 @@ class Collaborator extends ObjectType
                 return [
                     'token' => [
                         'type' => Type::string(),
-                        'description' => 'Collaborator\'s invite token',
+                        'description' => 'Collaborator\'s Invitation Token',
                     ],
                     'id' => [
                         'type' => Type::id(),

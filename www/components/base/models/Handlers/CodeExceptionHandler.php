@@ -3,8 +3,7 @@
 namespace App\Components\Base\Models\Handlers;
 
 use App\Components\Base\Models\BaseExceptionHandler;
-//use App\Versions\V1\Api;
-//use App\System\HTTP;
+use App\System\Config;
 
 class CodeExceptionHandler extends BaseExceptionHandler
 {
@@ -14,23 +13,17 @@ class CodeExceptionHandler extends BaseExceptionHandler
         parent::__construct();
     }
 
-//    public function __invoke($request, $response, $exception) {
-//
-//        $api = new Api();
-//        $_response = $api->getDefaultResponseAsArray();
-//
-//        $_response['code'] = HTTP::CODE_SERVER_ERROR;
-//        $_response['result'] = HTTP::STRING_SERVER_ERROR;
-//        $_response['success'] = false;
-//
-//        $message = $exception->getMessage() . ' in ' . $exception->getFile() . ' : ' . $exception->getLine();
-//
-//        $this->logger->emergency($message);
-//
-//        return $response->withJson(
-//            $_response,
-//            $_response['code']
-//        );
-//
-//    }
+    public function __invoke($request, $response, $exception)
+    {
+        $message = $exception->getMessage() . ' in ' . $exception->getFile() . ' : ' . $exception->getLine();
+
+        $message = Config::debug() ? $message : "Internal Server Error";
+
+        $this->logger->emergency($message);
+
+        return $response
+            ->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write($message);
+    }
 }

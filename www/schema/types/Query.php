@@ -4,7 +4,6 @@ namespace App\Schema\Types;
 
 use GraphQL\Type\Definition\{
     ObjectType,
-    ResolveInfo,
     Type
 };
 use App\Schema\Types;
@@ -12,7 +11,6 @@ use App\Components\Api\Models\{
     User,
     Note,
     Folder
-//    Collaborator
 };
 /**
  * Class Query

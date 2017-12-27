@@ -4,6 +4,7 @@
  * Internal components
  */
 $app->get('/', 'App\Components\Index\Index:page');
+$app->get('/oauth/code', 'App\Components\OAuth\OAuth:code');
 
 /**
  * GraphQL API endpoint

@@ -117,7 +117,8 @@ class Mutation extends ObjectType
                         'type' => Types::collaborator(),
                         'description' => 'Sync Collaborator',
                         'args' => [
-                            'id' => Type::id(),
+                            'token' => Type::string(),
+                            'userId' => Type::id(),
                             'ownerId' => Type::nonNull(Type::id()),
                             'folderId' => Type::nonNull(Type::id()),
                             'email' => Type::nonNull(Type::string()),
@@ -126,17 +127,24 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
-                            $folder = new Folder($args['ownerId'], $args['folderId']);
+                            try {
+                                $folder = new Folder($args['ownerId'],
+                                    $args['folderId']);
 
-                            $collaborator = new Collaborator($folder, $args['id']);
-                            $collaborator->sync($args);
+                                $collaborator = new Collaborator($folder,
+                                    $args['token']);
 
-                            $selectedFields = $info->getFieldSelection();
-                            if (in_array('user', $selectedFields)) {
-                                $collaborator->fillUser();
+                                $collaborator->sync($args);
+
+                                $selectedFields = $info->getFieldSelection();
+                                if (in_array('user', $selectedFields)) {
+                                    $collaborator->fillUser();
+                                }
+
+                                return $collaborator;
+                            } catch (\Exception $e) {
+                                return;
                             }
-
-                            return $collaborator;
                         }
                     ],
 

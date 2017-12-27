@@ -19,9 +19,13 @@ class Collaborator extends ObjectType
         $config = [
             'fields' => function() {
                 return [
+                    'token' => [
+                        'type' => Type::string(),
+                        'description' => 'Collaborator\'s invite token',
+                    ],
                     'id' => [
                         'type' => Type::id(),
-                        'description' => 'Collaborator\'s unique identifier',
+                        'description' => 'Collaborator User\'s id',
                     ],
                     'email' => [
                         'type' => Type::string(),

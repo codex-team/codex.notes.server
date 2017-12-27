@@ -2,6 +2,8 @@
 
 namespace App\Components\Api\Models;
 
+use App\Components\Base\Models\BaseException;
+use App\Components\Base\Models\Exceptions\ModelException;
 use App\Components\Base\Models\Mongo;
 
 /**
@@ -12,11 +14,11 @@ use App\Components\Base\Models\Mongo;
 class Collaborator
 {
     /**
-     * Collaboratior User's id
+     * Collaboratior's invite token
      *
      * @var string|null
      */
-    public $id;
+    public $token;
 
     /**
      * User's email address
@@ -33,7 +35,17 @@ class Collaborator
     public $dtInvite;
 
     /**
+     * Collaboratior User's id
+     * Null until user was not accepted the invitation
+     *
+     * @var string|null
+     */
+    public $userId;
+
+    /**
      * Collaboratior's User model
+     *
+     * @var string|null
      */
     public $user;
 
@@ -61,17 +73,22 @@ class Collaborator
     /**
      * Initializing model Collaborator
      *
-     * @param object $folder
-     * @param string $id
+     * @param Folder $folder
+     * @param string $token
      * @param array  $data          init model from data
      */
-    public function __construct(Folder $folder = null, string $id = null, array $data = null)
+    public function __construct(Folder $folder = null, string $token = null, array $data = null)
     {
         $this->folder = $folder;
+
+        if (!$this->folder->ownerId || !$this->folder->id) {
+            throw new ModelException('Folder does not exist');
+        }
+
         $this->collectionName = self::getCollectionName($this->folder->ownerId, $this->folder->id);
 
-        if ($id) {
-            $this->findAndFill($id);
+        if ($token) {
+            $this->findAndFill($token);
         }
 
         if ($data) {
@@ -87,7 +104,7 @@ class Collaborator
     public function sync(array $data): void
     {
         $query = [
-            'id' => $data['id']
+            'token' => $data['token']
         ];
 
         $update = [
@@ -112,7 +129,7 @@ class Collaborator
      */
     public function fillUser(): void
     {
-        $this->user = new User($this->id);
+        $this->user = new User($this->userId);
     }
 
     /**
@@ -120,10 +137,10 @@ class Collaborator
      *
      * @var string $id
      */
-    private function findAndFill(string $id): void
+    private function findAndFill(string $token): void
     {
         $query = [
-            'id' => $id,
+            'token' => $token,
             'isRemoved' => [
                 '$ne' => true
             ]
@@ -154,6 +171,7 @@ class Collaborator
      * Compose collection name by pattern collaborators:<owner_id>:<folder_id>
      *
      * @param string $ownerId
+     * @param string $folderId
      * @return string
      */
     public static function getCollectionName(string $ownerId, string $folderId): string

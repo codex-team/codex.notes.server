@@ -28,6 +28,6 @@ class Config extends Base
      */
     public static function debug(): bool
     {
-        return (boolean) self::get('debug');
+        return (boolean) self::get('DEBUG');
     }
 }

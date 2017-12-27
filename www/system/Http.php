@@ -17,6 +17,5 @@ class HTTP
     CONST CODE_BAD_REQUEST = 400;
     CONST CODE_SUCCESS = 200;
 
-    CONST STRING_SERVER_ERROR = 'Internal server error';
-    CONST STRING_NOT_ALLOWED_METHOD = 'Method must be one of: %s';
+    CONST STRING_SERVER_ERROR = 'Internal Server Error';
 }

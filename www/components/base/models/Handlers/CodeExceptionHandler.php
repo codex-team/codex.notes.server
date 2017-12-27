@@ -4,6 +4,7 @@ namespace App\Components\Base\Models\Handlers;
 
 use App\Components\Base\Models\BaseExceptionHandler;
 use App\System\Config;
+use App\System\HTTP;
 
 class CodeExceptionHandler extends BaseExceptionHandler
 {
@@ -17,12 +18,12 @@ class CodeExceptionHandler extends BaseExceptionHandler
     {
         $message = $exception->getMessage() . ' in ' . $exception->getFile() . ' : ' . $exception->getLine();
 
-        $message = Config::debug() ? $message : "Internal Server Error";
+        $message = Config::debug() ? $message : HTTP::STRING_SERVER_ERROR;
 
         $this->logger->emergency($message);
 
         return $response
-            ->withStatus(500)
+            ->withStatus(HTTP::CODE_SERVER_ERROR)
             ->withHeader('Content-Type', 'text/html')
             ->write($message);
     }

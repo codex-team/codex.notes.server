@@ -4,6 +4,7 @@ namespace App\Schema\Types;
 
 use GraphQL\Type\Definition\{
     ObjectType,
+    ResolveInfo,
     Type
 };
 use App\Schema\Types;
@@ -69,7 +70,7 @@ class Query extends ObjectType
                                 'defaultValue' => false
                             ]
                         ],
-                        'resolve' => function($root, $args) {
+                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             $folder = new Folder($args['ownerId'], $args['id']);
 
@@ -79,6 +80,12 @@ class Query extends ObjectType
 
                             if ($args['withNotes']) {
                                 $folder->fillNotes();
+                            }
+
+                            $selectedFields = $info->getFieldSelection();
+
+                            if (in_array('collaborators', $selectedFields)) {
+                                $folder->fillCollaborators();
                             }
 
                             return $folder;

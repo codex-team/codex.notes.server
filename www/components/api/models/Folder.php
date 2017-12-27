@@ -197,8 +197,9 @@ class Folder
             ->{$collaboratorsCollection}
             ->find($query, $options);
 
-        foreach ($mongoResponse as $note) {
-            $collaborator = new Collaborator($this->ownerId, $this->id, null, $note);
+        foreach ($mongoResponse as $collaboratorRow) {
+
+            $collaborator = new Collaborator($this, null, $collaboratorRow);
 
             $collaborator->fillUser();
 

@@ -28,7 +28,7 @@ class Query extends ObjectType
                 return [
                     'user' => [
                         'type' => Types::user(),
-                        'description' => 'Return user by id',
+                        'description' => 'Return User by id',
                         'args' => [
                             'id' => Type::nonNull(Type::id()),
                             'foldersLimit' => [
@@ -70,7 +70,7 @@ class Query extends ObjectType
                                 'defaultValue' => false
                             ]
                         ],
-                        'resolve' => function($root, $args) {
+                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             $folder = new Folder($args['ownerId'], $args['id']);
 
@@ -80,6 +80,12 @@ class Query extends ObjectType
 
                             if ($args['withNotes']) {
                                 $folder->fillNotes();
+                            }
+
+                            $selectedFields = $info->getFieldSelection();
+
+                            if (in_array('collaborators', $selectedFields)) {
+                                $folder->fillCollaborators();
                             }
 
                             return $folder;

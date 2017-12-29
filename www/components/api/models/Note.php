@@ -10,7 +10,7 @@ use App\Components\Base\Models\Mongo;
  *
  * @package App\Components\Api\Models
  */
-class Note
+class Note extends Base
 {
     /**
      * Note's id
@@ -160,20 +160,6 @@ class Note
             ->findOne($query);
 
         $this->fillModel($mongoResponse ?: []);
-    }
-
-    /**
-     * Fill model with values from data
-     *
-     * @param array $data
-     */
-    private function fillModel(array $data): void
-    {
-        foreach ($data as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
-        }
     }
 
     /**

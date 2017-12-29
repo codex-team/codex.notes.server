@@ -64,6 +64,10 @@ class Folder extends ObjectType
                             ]
                         ],
                     ],
+                    'collaborators' => [
+                        'type' => Type::listOf(Types::collaborator()),
+                        'description' => 'List of collaborators'
+                    ]
                 ];
             }
         ];

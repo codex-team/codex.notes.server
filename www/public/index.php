@@ -4,9 +4,7 @@ namespace App;
 
 use App\Components\Base\Models\Handlers\{
     AppExceptionHandler,
-    CodeExceptionHandler,
-    RouteExceptionHandler,
-    MethodNotAllowedExceptionHandler
+    CodeExceptionHandler
 };
 use App\System\Config;
 
@@ -42,16 +40,8 @@ $c['errorHandler'] = function ($c) {
     return new AppExceptionHandler();
 };
 
-$c['notFoundHandler'] = function ($c) {
-    return new RouteExceptionHandler();
-};
-
 $c['phpErrorHandler'] = function ($c) {
     return new CodeExceptionHandler();
-};
-
-$c['notAllowedHandler'] = function ($c) {
-    return new MethodNotAllowedExceptionHandler();
 };
 
 /**

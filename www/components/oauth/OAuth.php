@@ -33,7 +33,7 @@ class OAuth
         $googleCredentials = [
             'code' => $params['code'],
             'client_id' => Config::get('GOOGLE_CLIENT_ID'),
-            'client_secret' => Config::get('GOOGLE_CLIENT_SERCRET'),
+            'client_secret' => Config::get('GOOGLE_CLIENT_SECRET'),
             'redirect_uri' => $params['state'],
             'grant_type' => 'authorization_code'
         ];
@@ -48,6 +48,10 @@ class OAuth
 
         $profileInfo = HTTP::Request('GET', $profileURL, [], [$header]);
         $profileInfo = @json_decode($profileInfo);
+
+        if (!is_null($profileInfo->error)) {
+            return $res->withStatus(500);
+        }
 
         $userData = [
             'id' => $profileInfo->id,

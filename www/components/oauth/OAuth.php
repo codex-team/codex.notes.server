@@ -11,11 +11,14 @@ use \App\Components\Api\Models\User;
 
 use \App\System\{
     Config,
-    HTTP
+    HTTP,
+    Log
 };
 
 class OAuth
 {
+    const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
+    const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me';
 
     /**
      * Provide Google OAuth authorization flow
@@ -27,7 +30,6 @@ class OAuth
      */
     public function code(Request $req, Response $res, $args)
     {
-
         $params = $req->getQueryParams();
 
         $googleCredentials = [
@@ -38,24 +40,23 @@ class OAuth
             'grant_type' => 'authorization_code'
         ];
 
-        $tokenURL = 'https://www.googleapis.com/oauth2/v4/token';
-        $result = HTTP::Request('POST', $tokenURL, $googleCredentials);
+        $result = HTTP::request('POST', self::GOOGLE_TOKEN_URL, $googleCredentials);
 
         $token = @json_decode($result);
 
-        $profileURL =  'https://www.googleapis.com/userinfo/v2/me';
         $header = 'Authorization: ' . $token->token_type . ' ' . $token->access_token;
 
-        $profileInfo = HTTP::Request('GET', $profileURL, [], [$header]);
+        $profileInfo = HTTP::request('GET', self::GOOGLE_PROFILE_URL, [], [$header]);
         $profileInfo = @json_decode($profileInfo);
 
         if (!is_null($profileInfo->error)) {
-            return $res->withStatus(500);
+            $logger = new Log();
+            $logger->warning('Google OAuth failed. Reason: ' . $profileInfo->error->reason);
+            return $res->withStatus(HTTP::CODE_SERVER_ERROR, $profileInfo->error->reason);
         }
 
         $userData = [
-            'id' => $profileInfo->id,
-            'auth_type' => 'google',
+            'google_id' => $profileInfo->id,
             'photo' => $profileInfo->picture,
             'name' => $profileInfo->name
         ];
@@ -68,16 +69,14 @@ class OAuth
             'iss' => Config::get('JWT_ISS'),
             'aud' => Config::get('JWT_AUD'),
             'iat' => time(),
-            'id' => $userData['id'],
+            'id' => $userData['google_id'],
             'photo' => $userData['photo'],
             'name' => $userData['name'],
-        ], $userData['id'] . $userData['auth_type'] . Config::get('USER_SALT'));
+        ], $userData['google_id'] . Config::get('USER_SALT'));
 
         $body = $res->getBody();
         $body->write('<div id="jwt">' . $jwt . '</div>');
 
         return $res;
-
     }
-
 }

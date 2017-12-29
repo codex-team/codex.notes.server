@@ -30,9 +30,8 @@ class HTTP
      * @return string – response contents
      * @throws \Exception
      */
-    static public function Request(string $method, string $url, array $params=[], $headers=[]) : string
+    static public function request(string $method, string $url, array $params=[], $headers=[]) : string
     {
-
         $curl = curl_init();
         switch (strtoupper($method)) {
             case 'POST':
@@ -45,7 +44,6 @@ class HTTP
                 if (!count($params)) {
                     break;
                 }
-
 
                 $url .= '?' . http_build_query($params);
                 break;
@@ -61,9 +59,7 @@ class HTTP
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $result = curl_exec($curl);
         curl_close($curl);
+
         return $result;
-
-
     }
-
 }

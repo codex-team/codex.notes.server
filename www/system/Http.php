@@ -20,7 +20,17 @@ class HTTP
     CONST STRING_SERVER_ERROR = 'Internal server error';
     CONST STRING_NOT_ALLOWED_METHOD = 'Method must be one of: %s';
 
-    static public function Request($method, $url, $params=[], $headers=[])
+    /**
+     * Send cURL request with x-www-urlencoded Content-Type
+     *
+     * @param string $method - 'POST' or 'GET' http request methods
+     * @param string $url - requested url
+     * @param array $params - request params
+     * @param array $headers - request headers
+     * @return string – response contents
+     * @throws \Exception
+     */
+    static public function Request(string $method, string $url, array $params=[], $headers=[]) : string
     {
 
         $curl = curl_init();

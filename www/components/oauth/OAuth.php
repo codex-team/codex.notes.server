@@ -5,6 +5,15 @@ namespace App\Components\OAuth;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+use \Firebase\JWT\JWT;
+
+use \App\Components\Api\Models\User;
+
+use \App\System\{
+    Config,
+    HTTP
+};
+
 class OAuth
 {
 
@@ -21,42 +30,44 @@ class OAuth
 
         $params = $req->getQueryParams();
 
-        $data = [
+        $googleCredentials = [
             'code' => $params['code'],
-            'client_id' => $_SERVER['GOOGLE_CLIENT_ID'],
-            'client_secret' => $_SERVER['GOOGLE_CLIENT_SECRET'],
+            'client_id' => Config::get('GOOGLE_CLIENT_ID'),
+            'client_secret' => Config::get('GOOGLE_CLIENT_SERCRET'),
             'redirect_uri' => $params['state'],
             'grant_type' => 'authorization_code'
         ];
 
-        $url = 'https://www.googleapis.com/oauth2/v4/token';
-        $result = \App\System\HTTP::Request('POST', $url, $data);
+        $tokenURL = 'https://www.googleapis.com/oauth2/v4/token';
+        $result = HTTP::Request('POST', $tokenURL, $googleCredentials);
 
         $token = @json_decode($result);
-        $url =  'https://www.googleapis.com/userinfo/v2/me';
+
+        $profileURL =  'https://www.googleapis.com/userinfo/v2/me';
         $header = 'Authorization: ' . $token->token_type . ' ' . $token->access_token;
 
-        $profileInfo = \App\System\HTTP::Request('GET', $url, [], [$header]);
+        $profileInfo = HTTP::Request('GET', $profileURL, [], [$header]);
         $profileInfo = @json_decode($profileInfo);
 
         $userData = [
-            'id' => 'g' . $profileInfo->id,
+            'id' => $profileInfo->id,
+            'auth_type' => 'google',
             'photo' => $profileInfo->picture,
             'name' => $profileInfo->name
         ];
 
-        $user = new \App\Components\Api\Models\User($userData['id']);
-
+        /** Save new user to database */
+        $user = new User($userData['id']);
         $user->sync($userData);
 
-        $jwt = \Firebase\JWT\JWT::encode([
-            'iss' => 'CodeX Notes API Server',
-            'aud' => 'CodeX Notes Application',
+        $jwt = JWT::encode([
+            'iss' => Config::get('JWT_ISS'),
+            'aud' => Config::get('JWT_AUD'),
             'iat' => time(),
             'id' => $userData['id'],
             'photo' => $userData['photo'],
             'name' => $userData['name'],
-        ], $userData['id'] . $_SERVER['USER_SALT']);
+        ], $userData['id'] . $userData['auth_type'] . Config::get('USER_SALT'));
 
         $body = $res->getBody();
         $body->write('<div id="jwt">' . $jwt . '</div>');

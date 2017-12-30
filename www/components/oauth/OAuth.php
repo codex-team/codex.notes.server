@@ -69,7 +69,7 @@ class OAuth
             'iss' => Config::get('JWT_ISS'),
             'aud' => Config::get('JWT_AUD'),
             'iat' => time(),
-            'id' => $userData['google_id'],
+            'google_id' => $userData['google_id'],
             'photo' => $userData['photo'],
             'name' => $userData['name'],
         ], $userData['google_id'] . Config::get('USER_SALT'));

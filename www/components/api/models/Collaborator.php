@@ -82,6 +82,10 @@ class Collaborator extends Base
     {
         $this->folder = $folder;
 
+        if (!$this->folder->ownerId || !$this->folder->id) {
+            throw new CollaboratorException('Folder does not exist');
+        }
+
         $this->collectionName = self::getCollectionName($this->folder->ownerId, $this->folder->id);
 
         if ($token) {

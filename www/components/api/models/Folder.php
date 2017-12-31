@@ -150,7 +150,6 @@ class Folder extends Base
      */
     public function fillNotes(int $limit = null, int $skip = null, array $sort = []): void
     {
-
         /**
          * Where Notes stored
          */
@@ -159,9 +158,6 @@ class Folder extends Base
 //        } else {
 //            $notesCollection = Note::getCollectionName($this->ownerId, $this->id);
 //        }
-
-
-
 
         $query = [
             'isRemoved' => [

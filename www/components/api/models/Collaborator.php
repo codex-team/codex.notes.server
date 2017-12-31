@@ -82,6 +82,10 @@ class Collaborator extends Base
     {
         $this->folder = $folder;
 
+        if (!$this->folder->ownerId || !$this->folder->id) {
+            throw new CollaboratorException('Folder does not exist');
+        }
+
         $this->collectionName = self::getCollectionName($this->folder->ownerId, $this->folder->id);
 
         if ($token) {
@@ -148,25 +152,6 @@ class Collaborator extends Base
             ->findOne($query);
 
         $this->fillModel($mongoResponse ?: []);
-    }
-
-    /**
-     * Saves Shared Folder to the Collaborator's Folder's collection
-     *
-     * @param Folder $folder - Folder that was shared
-     */
-    public function saveFolder(Folder $folder): void
-    {
-        $acceptorsFolder = new Folder($this->userId);
-
-        $acceptorsFolder->sync([
-            'ownerId' => $folder->ownerId,
-            'isShared' => true,
-            'title' => $folder->title,
-            'dtCreate' => $folder->dtCreate,
-            'dtModify' => $folder->dtModify,
-            'isRemoved' => $folder->isRemoved,
-        ]);
     }
 
     /**

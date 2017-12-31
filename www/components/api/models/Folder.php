@@ -2,7 +2,6 @@
 
 namespace App\Components\Api\Models;
 
-use App\Components\Base\Models\Exceptions\FolderException;
 use App\Components\Base\Models\Mongo;
 
 /**
@@ -42,20 +41,18 @@ class Folder extends Base
     public $dtModify;
 
     /**
-     * Folder's shared status:
-     *  1) false — this is original Folder
-     *  2) true  — this is 'virtual' shared Folder
+     * Shared state
      *
-     * @var boolean
+     * @var boolean|null
      */
-    public $isShared = false;
+    public $isShared;
 
     /**
      * Removed state
      *
-     * @var boolean
+     * @var boolean|null
      */
-    public $isRemoved = false;
+    public $isRemoved;
 
     /**
      * List of models of Notes
@@ -150,18 +147,7 @@ class Folder extends Base
      */
     public function fillNotes(int $limit = null, int $skip = null, array $sort = []): void
     {
-
-        /**
-         * Where Notes stored
-         */
-//        if (!$this->isShared) {
-            $notesCollection = Note::getCollectionName($this->ownerId, $this->id);
-//        } else {
-//            $notesCollection = Note::getCollectionName($this->ownerId, $this->id);
-//        }
-
-
-
+        $notesCollection = Note::getCollectionName($this->ownerId, $this->id);
 
         $query = [
             'isRemoved' => [
@@ -193,10 +179,6 @@ class Folder extends Base
      */
     public function fillCollaborators(int $limit = null, int $skip = null, array $sort = []): void
     {
-        if (!$this->ownerId || !$this->id) {
-            throw new FolderException('Folder does not exist');
-        }
-
         $collaboratorsCollection = Collaborator::getCollectionName($this->ownerId, $this->id);
 
         $query = [

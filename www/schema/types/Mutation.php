@@ -2,10 +2,7 @@
 
 namespace App\Schema\Types;
 
-use App\Components\Base\Models\Exceptions\{
-    CollaboratorException,
-    FolderException
-};
+use App\Components\Base\Models\Exceptions\CollaboratorException;
 use GraphQL\Type\Definition\{
     ObjectType,
     ResolveInfo,
@@ -69,30 +66,24 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
-                            try {
-                                $folder = new Folder($args['ownerId']);
-                                $folder->sync($args);
+                            $folder = new Folder($args['ownerId']);
+                            $folder->sync($args);
 
-                                $selectedFields = $info->getFieldSelection();
+                            $selectedFields = $info->getFieldSelection();
 
-                                if (in_array('notes', $selectedFields)) {
-                                    $folder->fillNotes();
-                                }
-
-                                if (in_array('owner', $selectedFields)) {
-                                    $folder->fillOwner();
-                                }
-
-                                if (in_array('collaborators',
-                                    $selectedFields)
-                                ) {
-                                    $folder->fillCollaborators();
-                                }
-
-                                return $folder;
-                            } catch (FolderException $e) {
-                                return;
+                            if (in_array('notes', $selectedFields)) {
+                                $folder->fillNotes();
                             }
+
+                            if (in_array('owner', $selectedFields)) {
+                                $folder->fillOwner();
+                            }
+
+                            if (in_array('collaborators', $selectedFields)) {
+                                $folder->fillCollaborators();
+                            }
+
+                            return $folder;
                         }
                     ],
 
@@ -138,26 +129,11 @@ class Mutation extends ObjectType
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             try {
+                                $folder = new Folder($args['ownerId'], $args['folderId']);
 
-                                /**
-                                 * Add a Collaborator to the Shared Folder
-                                 */
-                                $originalFolder = new Folder($args['ownerId'], $args['folderId']);
+                                $collaborator = new Collaborator($folder, $args['token']);
 
-                                if (!$originalFolder->ownerId || !$originalFolder->id) {
-                                    throw new CollaboratorException('Folder does not exist');
-                                }
-
-                                $collaborator = new Collaborator($originalFolder, $args['token']);
                                 $collaborator->sync($args);
-
-                                /**
-                                 * Accept an Invitation
-                                 * Save Shared Folder to the Acceptor's Folders collection
-                                 */
-                                if (!empty($args['userId'])) {
-                                    $collaborator->saveFolder($originalFolder);
-                                }
 
                                 $selectedFields = $info->getFieldSelection();
                                 if (isset($selectedFields['user'])) {

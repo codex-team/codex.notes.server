@@ -105,8 +105,17 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
+                            /**
+                             * Get target Folder
+                             *
+                             * We need to get Folder's Owner. If this Folder
+                             * is a Shared, we'll get a real Owner to get right collection
+                             */
                             $folder = new Folder($args['authorId'], $args['folderId']);
 
+                            /**
+                             * Save Note
+                             */
                             $note = new Note($folder->ownerId, $folder->id);
                             $note->sync($args);
 

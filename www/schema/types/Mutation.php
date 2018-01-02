@@ -140,7 +140,7 @@ class Mutation extends ObjectType
                             try {
 
                                 if (!$args['token'] && !$args['email']) {
-                                    throw new CollaboratorException('Pass token to verify user or pass email to add a new one collaborator');
+                                    throw new CollaboratorException('Pass token to verify user or pass email to add a new Collaborator');
                                 }
 
                                 /**

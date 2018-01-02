@@ -188,7 +188,7 @@ class Collaborator extends Base
     }
 
     /**
-     * Generate invitation token
+     * Generate an Invitation token
      *
      * @param string $userId
      * @param string $folderId

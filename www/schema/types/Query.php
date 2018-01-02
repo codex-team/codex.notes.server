@@ -60,32 +60,20 @@ class Query extends ObjectType
                         'description' => 'Return Folder by id',
                         'args' => [
                             'ownerId' => Type::nonNull(Type::id()),
-                            'id' => Type::nonNull(Type::id()),
-                            'withOwner' => [
-                                'type' => Type::boolean(),
-                                'defaultValue' => false
-                            ],
-//                            'withNotes' => [
-//                                'type' => Type::boolean(),
-//                                'defaultValue' => false
-//                            ]
+                            'id' => Type::nonNull(Type::id())
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             $folder = new Folder($args['ownerId'], $args['id']);
 
-                            if ($args['withOwner']) {
-                                $folder->fillOwner();
-                            }
-
-//                            if ($args['withNotes']) {
-//                                $folder->fillNotes();
-//                            }
-
                             $selectedFields = $info->getFieldSelection();
 
                             if (in_array('collaborators', $selectedFields)) {
                                 $folder->fillCollaborators();
+                            }
+
+                            if (in_array('owner', $selectedFields)) {
+                                $folder->fillOwner();
                             }
 
                             return $folder;
@@ -98,19 +86,11 @@ class Query extends ObjectType
                         'args' => [
                             'authorId' => Type::nonNull(Type::id()),
                             'folderId' => Type::nonNull(Type::id()),
-                            'id' => Type::nonNull(Type::id()),
-                            'withAuthor' => [
-                                'type' => Type::boolean(),
-                                'defaultValue' => false
-                            ]
+                            'id' => Type::nonNull(Type::id())
                         ],
-                        'resolve' => function($root, $args) {
+                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             $note = new Note($args['authorId'], $args['folderId'], $args['id']);
-
-                            if ($args['withAuthor']) {
-                                $note->fillAuthor();
-                            }
 
                             return $note;
                         }

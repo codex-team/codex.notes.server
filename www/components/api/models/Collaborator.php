@@ -4,6 +4,7 @@ namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Exceptions\CollaboratorException;
 use App\Components\Base\Models\Mongo;
+use App\System\Config;
 
 /**
  * Collaborator Model
@@ -155,6 +156,27 @@ class Collaborator extends Base
     }
 
     /**
+     * On the Invitation acceptance
+     * Save Shared Folder to the Collaborator's Folders collection
+     *
+     * @param Folder $folder - Folder that was shared
+     */
+    public function saveFolder(Folder $folder): void
+    {
+        $acceptorsFolder = new Folder($this->userId);
+
+        $acceptorsFolder->sync([
+            'id' => $folder->id,
+            'ownerId' => $folder->ownerId,
+            'isShared' => true,
+            'title' => $folder->title,
+            'dtCreate' => $folder->dtCreate,
+            'dtModify' => $folder->dtModify,
+            'isRemoved' => $folder->isRemoved,
+        ]);
+    }
+
+    /**
      * Compose collection name by pattern collaborators:<owner_id>:<folder_id>
      *
      * @param string $ownerId
@@ -164,5 +186,19 @@ class Collaborator extends Base
     public static function getCollectionName(string $ownerId, string $folderId): string
     {
         return sprintf('collaborators:%s:%s', $ownerId, $folderId);
+    }
+
+    /**
+     * Generate an Invitation token
+     *
+     * @param string $userId
+     * @param string $folderId
+     * @param string $email
+     * @return string
+     */
+    public static function getInvitationToken(string $userId, string $folderId, string $email): string
+    {
+        $secretString = sprintf('%s:%s:%s', $userId , $folderId , $email);
+        return hash_hmac('sha256', $secretString, Config::get('INVITATION_SALT'));
     }
 }

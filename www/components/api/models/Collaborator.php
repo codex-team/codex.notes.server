@@ -198,8 +198,6 @@ class Collaborator extends Base
     public static function getInvitationToken(string $userId, string $folderId, string $email): string
     {
         $secretString = sprintf('%s:%s:%s', $userId , $folderId , $email);
-        $hash = hash_hmac('sha256', $secretString, Config::get('INVITATION_SALT'));
-
-        return $hash;
+        return hash_hmac('sha256', $secretString, Config::get('INVITATION_SALT'));
     }
 }

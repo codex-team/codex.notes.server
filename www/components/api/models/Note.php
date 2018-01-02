@@ -106,6 +106,20 @@ class Note extends Base
     }
 
     /**
+     * Overrides model fill method
+     * @param array $data
+     */
+    protected function fillModel(array $data): void
+    {
+        parent::fillModel($data);
+
+        /**
+         * And fill Author
+         */
+        $this->fillAuthor();
+    }
+
+    /**
      * Create or update an existed Note
      *
      * @param array $data

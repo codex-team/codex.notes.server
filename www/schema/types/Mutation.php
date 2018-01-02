@@ -75,10 +75,6 @@ class Mutation extends ObjectType
 
                                 $selectedFields = $info->getFieldSelection();
 
-//                            if (in_array('notes', $selectedFields)) {
-//                                $folder->fillNotes();
-//                            }
-
                                 if (in_array('owner', $selectedFields)) {
                                     $folder->fillOwner();
                                 }
@@ -111,13 +107,10 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
-                            $note = new Note($args['authorId'], $args['folderId']);
-                            $note->sync($args);
+                            $folder = new Folder($args['authorId'], $args['folderId']);
 
-                            $selectedFields = $info->getFieldSelection();
-                            if (in_array('author', $selectedFields)) {
-                                $note->fillAuthor();
-                            }
+                            $note = new Note($folder->ownerId, $folder->id);
+                            $note->sync($args);
 
                             return $note;
                         }

@@ -156,7 +156,8 @@ class Collaborator extends Base
     }
 
     /**
-     * Saves Shared Folder to the Collaborator's Folders collection
+     * On the Invitation acceptance
+     * Save Shared Folder to the Collaborator's Folders collection
      *
      * @param Folder $folder - Folder that was shared
      */

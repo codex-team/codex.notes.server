@@ -106,7 +106,7 @@ class Note extends Base
     }
 
     /**
-     * Overrides model fill method
+     * Override model fill method
      * @param array $data
      */
     protected function fillModel(array $data): void

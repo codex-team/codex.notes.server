@@ -168,11 +168,7 @@ class Folder extends Base
         /**
          * Where Notes stored
          */
-//        if (!$this->isShared) {
-            $notesCollection = Note::getCollectionName($this->ownerId, $this->id);
-//        } else {
-//            $notesCollection = Note::getCollectionName($this->ownerId, $this->id);
-//        }
+        $notesCollection = Note::getCollectionName($this->ownerId, $this->id);
 
         $query = [
             'isRemoved' => [

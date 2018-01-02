@@ -79,9 +79,7 @@ class Mutation extends ObjectType
                                     $folder->fillOwner();
                                 }
 
-                                if (in_array('collaborators',
-                                    $selectedFields)
-                                ) {
+                                if (in_array('collaborators', $selectedFields)) {
                                     $folder->fillCollaborators();
                                 }
 

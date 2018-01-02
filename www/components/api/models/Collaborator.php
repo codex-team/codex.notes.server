@@ -4,6 +4,7 @@ namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Exceptions\CollaboratorException;
 use App\Components\Base\Models\Mongo;
+use App\System\Config;
 
 /**
  * Collaborator Model
@@ -184,5 +185,22 @@ class Collaborator extends Base
     public static function getCollectionName(string $ownerId, string $folderId): string
     {
         return sprintf('collaborators:%s:%s', $ownerId, $folderId);
+    }
+
+    /**
+     * Generate invitation token
+     *
+     * @param string $userId
+     * @param string $folderId
+     * @param string $email
+     * @return string
+     */
+    public static function getInvitationToken(string $userId, string $folderId, string $email): string
+    {
+        $secretString = sprintf('%s:%s:%s', $userId , $folderId , $email);
+        $hash = hash_hmac('sha256', $secretString, Config::get('INVITATION_SALT'));
+
+//        return sprintf('%s:%s:%s', $userId, $folderId, $hash);
+        return $hash;
     }
 }

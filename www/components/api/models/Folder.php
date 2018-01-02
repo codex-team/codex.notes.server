@@ -112,6 +112,19 @@ class Folder extends Base
             $this->fillModel($data);
         }
 
+    }
+
+    /**
+     * Overrides model fill method
+     * @param array $data
+     */
+    protected function fillModel(array $data): void
+    {
+        parent::fillModel($data);
+
+        /**
+         * And fill Notes list
+         */
         $this->fillNotes();
     }
 

@@ -200,7 +200,6 @@ class Collaborator extends Base
         $secretString = sprintf('%s:%s:%s', $userId , $folderId , $email);
         $hash = hash_hmac('sha256', $secretString, Config::get('INVITATION_SALT'));
 
-//        return sprintf('%s:%s:%s', $userId, $folderId, $hash);
         return $hash;
     }
 }

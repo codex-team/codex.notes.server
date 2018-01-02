@@ -164,12 +164,12 @@ class Mutation extends ObjectType
                                     if (!empty($args['userId'])) {
                                         $collaborator->saveFolder($originalFolder);
                                     }
-                                }
 
-                                /**
-                                 * If email field is not null then we need to send an invite
-                                 */
-                                if ($args['email']) {
+                                } elseif ($args['email']) {
+
+                                    /**
+                                     * If email field is not null then we need to send an invite
+                                     */
 
                                     $args['token'] = Collaborator::getInvitationToken($args['ownerId'], $args['folderId'], $args['email']);
 

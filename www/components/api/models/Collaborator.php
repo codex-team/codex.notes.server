@@ -164,6 +164,7 @@ class Collaborator extends Base
         $acceptorsFolder = new Folder($this->userId);
 
         $acceptorsFolder->sync([
+            'id' => $folder->id,
             'ownerId' => $folder->ownerId,
             'isShared' => true,
             'title' => $folder->title,

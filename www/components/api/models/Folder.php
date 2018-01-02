@@ -111,6 +111,8 @@ class Folder extends Base
         if ($data) {
             $this->fillModel($data);
         }
+
+        $this->fillNotes();
     }
 
     /**

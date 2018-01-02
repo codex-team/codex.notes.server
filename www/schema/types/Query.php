@@ -65,10 +65,10 @@ class Query extends ObjectType
                                 'type' => Type::boolean(),
                                 'defaultValue' => false
                             ],
-                            'withNotes' => [
-                                'type' => Type::boolean(),
-                                'defaultValue' => false
-                            ]
+//                            'withNotes' => [
+//                                'type' => Type::boolean(),
+//                                'defaultValue' => false
+//                            ]
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
@@ -78,9 +78,9 @@ class Query extends ObjectType
                                 $folder->fillOwner();
                             }
 
-                            if ($args['withNotes']) {
-                                $folder->fillNotes();
-                            }
+//                            if ($args['withNotes']) {
+//                                $folder->fillNotes();
+//                            }
 
                             $selectedFields = $info->getFieldSelection();
 

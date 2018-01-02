@@ -75,9 +75,9 @@ class Mutation extends ObjectType
 
                                 $selectedFields = $info->getFieldSelection();
 
-                                if (in_array('notes', $selectedFields)) {
-                                    $folder->fillNotes();
-                                }
+//                            if (in_array('notes', $selectedFields)) {
+//                                $folder->fillNotes();
+//                            }
 
                                 if (in_array('owner', $selectedFields)) {
                                     $folder->fillOwner();

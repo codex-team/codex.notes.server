@@ -80,7 +80,7 @@ class Note extends Base
      *
      * @var string
      */
-    private $collectionName;
+    protected $collectionName;
 
     /**
      * Note constructor

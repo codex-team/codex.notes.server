@@ -17,7 +17,7 @@ class Auth {
 
         $authHeader = $req->getHeader('Authorization');
 
-        list($type, $token) = explode(' ', $authHeader);
+        list($type, $token) = explode(' ', $authHeader[0]);
 
         if (!$this->isSupported($type)) {
             return $res->withStatus(403);
@@ -29,6 +29,7 @@ class Auth {
         $key = OAuth::generateSignatureKey($payload->google_id);
 
         try {
+            // TODO: pass needed values from JWT to route handler
             $decoded = JWT::decode($token, $key, ['HS256']);
         } catch (\Exception $e) {
 

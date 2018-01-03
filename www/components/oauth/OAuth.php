@@ -72,11 +72,15 @@ class OAuth
             'google_id' => $userData['google_id'],
             'photo' => $userData['photo'],
             'name' => $userData['name'],
-        ], $userData['google_id'] . Config::get('USER_SALT'));
+        ], self::generateSignatureKey($userData['google_id']));
 
         $body = $res->getBody();
         $body->write('<div id="jwt">' . $jwt . '</div>');
 
         return $res;
+    }
+
+    public static function generateSignatureKey($userId) {
+        return $userId . Config::get('USER_SALT');
     }
 }

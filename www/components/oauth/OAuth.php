@@ -80,7 +80,8 @@ class OAuth
         return $res;
     }
 
-    public static function generateSignatureKey($userId) {
+    public static function generateSignatureKey($userId)
+    {
         return $userId . Config::get('USER_SALT');
     }
 }

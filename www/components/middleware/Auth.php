@@ -9,11 +9,12 @@ use \Firebase\JWT\JWT;
 use App\Components\OAuth\OAuth;
 use App\System\Log;
 
-class Auth {
-
+class Auth
+{
     const SUPPORTED_TYPES = ['Bearer'];
 
-    public function jwt(Request $req, Response $res, $next) {
+    public function jwt(Request $req, Response $res, $next)
+    {
 
         $authHeader = $req->getHeader('Authorization');
 
@@ -43,7 +44,8 @@ class Auth {
         return $next($req, $res);
     }
 
-    private function isSupported($type) {
+    private function isSupported($type)
+    {
         return in_array($type, self::SUPPORTED_TYPES);
     }
 }

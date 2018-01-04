@@ -11,7 +11,7 @@ use App\System\Log;
 
 class Auth {
 
-    const SUPPORTED_TYPES = ['Basic'];
+    const SUPPORTED_TYPES = ['Bearer'];
 
     public function jwt(Request $req, Response $res, $next) {
 

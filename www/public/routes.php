@@ -9,5 +9,11 @@ $app->get('/oauth/code', 'App\Components\OAuth\OAuth:code');
 /**
  * GraphQL API endpoint
  */
-$app->map(['GET', 'POST'], '/graphql', 'App\Components\Api\Api:graphql')
-    ->add('App\Components\Middleware\Auth:jwt');
+$graphqlRoute = $app->map(['GET', 'POST'], '/graphql', 'App\Components\Api\Api:graphql');
+
+/**
+ * Always load JWT Auth middleware except if 'JWT_AUTH=FALSE' is set in the .env file
+ */
+if (($_ENV['JWT_AUTH'] ?? "TRUE") !== "FALSE") {
+    $graphqlRoute->add('App\Components\Middleware\Auth:jwt');
+}

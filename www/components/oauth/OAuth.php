@@ -80,6 +80,12 @@ class OAuth
         return $res;
     }
 
+    /**
+     * Return key for JWT sign algorithm using $userId
+     *
+     * @param string $userId
+     * @return string
+     */
     public static function generateSignatureKey($userId)
     {
         return $userId . Config::get('USER_SALT');

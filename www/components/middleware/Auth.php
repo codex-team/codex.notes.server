@@ -13,6 +13,14 @@ class Auth
 {
     const SUPPORTED_TYPES = ['Bearer'];
 
+    /**
+     * Authenticate user by JWT
+     *
+     * @param Request $req
+     * @param Response $res
+     * @param $next
+     * @return Response - with 403 status if auth failed
+     */
     public function jwt(Request $req, Response $res, $next)
     {
 
@@ -44,6 +52,12 @@ class Auth
         return $next($req, $res);
     }
 
+    /**
+     * Check if passed HTTPAuth type is supported
+     *
+     * @param string $type - HTTPAuth type
+     * @return bool
+     */
     private function isSupported($type)
     {
         return in_array($type, self::SUPPORTED_TYPES);

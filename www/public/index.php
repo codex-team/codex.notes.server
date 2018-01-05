@@ -8,7 +8,7 @@ use App\Components\Base\Models\Handlers\{
 };
 use App\System\Config;
 
-define('PROJECTROOT', dirname(__FILE__, 2) . '/');
+define('PROJECTROOT', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
 /**
  * Autoload vendor
  */

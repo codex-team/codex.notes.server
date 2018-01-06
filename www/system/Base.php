@@ -11,6 +11,7 @@ namespace App\System;
 class Base
 {
     CONST DIR_CONFIG     = 'config';
+    CONST DIR_APP        = 'app';
     CONST DIR_SYSTEM     = 'system';
     CONST DIR_VENDOR     = 'vendor';
     CONST DIR_LOGS       = 'logs';

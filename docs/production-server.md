@@ -12,7 +12,7 @@ apt-get update
 Install necessary modules for PHP
 ```
 apt-get install php7.1
-apt-get install php7.1 php7.1-cli php7.1-common php7.1-json php7.1-opcache php7.1-mysql php7.1-mbstring php7.1-mcrypt php7.1-zip php7.1-fpm
+apt-get install php7.1 php7.1-cli php7.1-common php7.1-json php7.1-opcache php7.1-mbstring php7.1-mcrypt php7.1-zip php7.1-fpm
 ```
 
 Build mongodb extension for PHP v7.1

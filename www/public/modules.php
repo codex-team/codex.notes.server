@@ -3,6 +3,6 @@
 use RKA\Middleware\IpAddress;
 
 /**
- * Модуль позволяет получить ip запроса через $request
+ * Allow to get an IP address from $request
  */
 $app->add(new IpAddress());

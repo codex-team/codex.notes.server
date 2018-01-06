@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Case insensitive modules autoloader.
+ * Load classes (ex: App\Components\Index\Index) from related files (ex: components/index/Index.php)
+ * Remove namespace prefix (App) and lowercase all path parts except the last one (Index).
+ */
 spl_autoload_register(function ($classname) {
     $pathParts = explode('\\', $classname);
     $pathToFile = PROJECTROOT . '/';

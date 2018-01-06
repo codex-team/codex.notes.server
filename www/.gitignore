@@ -8,3 +8,4 @@ composer.lock
 composer-setup.php 
 composer.phar
 .env
+package-lock.json

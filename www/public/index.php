@@ -8,13 +8,17 @@ use App\Components\Base\Models\Handlers\{
 };
 use App\System\Config;
 
-define('PROJECTROOT', realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
+define('PROJECTROOT', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
 
 /**
  * Autoload vendor
  */
 require PROJECTROOT . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
+/**
+ * Custom autoloader
+ */
+require_once 'autoload.php';
 
 /**
  * Load Dotenv
@@ -34,7 +38,6 @@ $app = new \Slim\App([
 ]);
 
 $c = $app->getContainer();
-
 
 $c['errorHandler'] = function ($c) {
     return new AppExceptionHandler();

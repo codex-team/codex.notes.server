@@ -84,7 +84,7 @@ class Renderer
          */
         ob_start();
 
-        include $file;
+        include PROJECTROOT . $file;
 
         return ob_get_clean();
     }

@@ -2,8 +2,10 @@
 
 namespace App\Tests\Helpers;
 
+use App\Tests\Helpers\WebTestClient;
+
 /**
- * Class LocalWebTestCase
+ * Class WebTestCase
  * @package Tests
  *
  * Class for performing application testing with HTTP Requests

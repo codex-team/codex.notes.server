@@ -91,7 +91,10 @@ class Api
         /**
          * Save request to the logs
          */
-        $this->logger->debug($request->getBody());
+//        $this->logger->debug($request->getBody());
+        $f=fopen("/tmp/log.txt", "w");
+        fwrite($f, $request->getBody()->getContents());
+//        var_dump($request->getBody()->getContents());
 
         /** @var ExecutionResult|ExecutionResult[] $result */
         $result = $this->server->executePsrRequest($request);

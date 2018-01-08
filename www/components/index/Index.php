@@ -12,9 +12,9 @@ class Index
     /**
      * Index page action
      */
-    public function page()
+    public function page($req, $res)
     {
-        Renderer::render('index.php', [ 'title' => 'CodeX Notes' ]);
+        $res->write(Renderer::render('index.php', [ 'title' => 'CodeX Notes' ]));
     }
 
 }

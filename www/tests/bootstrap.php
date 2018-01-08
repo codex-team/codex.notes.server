@@ -10,7 +10,7 @@ define('PROJECTROOT', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
 /**
  * Enable autoloaders
  */
-include_once PROJECTROOT . "components/autoload.php";
+include_once PROJECTROOT . "public/autoload.php";
 include_once PROJECTROOT . "vendor/autoload.php";
 
 /**
@@ -41,12 +41,12 @@ class LocalWebTestCase extends WebTestCase {
         /**
          * Enable modules
          */
-        include PROJECTROOT . 'components/modules.php';
+        include PROJECTROOT . 'public/modules.php';
 
         /**
          * Set routes
          */
-        include PROJECTROOT . 'components/routes.php';
+        include PROJECTROOT . 'public/routes.php';
 
         return $app;
     }

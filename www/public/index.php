@@ -13,7 +13,7 @@ define('PROJECTROOT', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
 /**
  * Custom autoloader
  */
-require PROJECTROOT . 'components/autoload.php';
+require 'autoload.php';
 
 /**
  * Autoload vendor
@@ -51,12 +51,12 @@ $c['phpErrorHandler'] = function ($c) {
 /**
  * Enable modules
  */
-require PROJECTROOT . Config::DIR_COMPONENTS . DIRECTORY_SEPARATOR . 'modules.php';
+require 'modules.php';
 
 /**
  * Set routes
  */
-require PROJECTROOT . Config::DIR_COMPONENTS . DIRECTORY_SEPARATOR . 'routes.php';
+require 'routes.php';
 
 /**
  * Run App

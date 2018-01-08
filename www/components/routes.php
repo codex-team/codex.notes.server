@@ -14,6 +14,6 @@ $graphqlRoute = $app->map(['GET', 'POST'], '/graphql', 'App\Components\Api\Api:g
 /**
  * Always load JWT Auth middleware except if 'JWT_AUTH=FALSE' is set in the .env file
  */
-//if (($_ENV['JWT_AUTH'] ?? "TRUE") !== "FALSE") {
-//    $graphqlRoute->add('App\Components\Middleware\Auth:jwt');
-//}
+if (($_ENV['JWT_AUTH'] ?? "TRUE") !== "FALSE") {
+    $graphqlRoute->add('App\Components\Middleware\Auth:jwt');
+}

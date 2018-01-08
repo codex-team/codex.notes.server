@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-require_once "helpers/WebTestCase.php";
+use Tests\Helpers\WebTestCase;
 
 /**
  * Class EnvTest

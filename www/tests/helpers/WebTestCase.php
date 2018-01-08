@@ -2,6 +2,8 @@
 
 namespace Tests\Helpers;
 
+use Tests\Helpers\WebTestClient;
+
 abstract class WebTestCase extends \PHPUnit\Framework\TestCase
 {
     /** @var \Slim\App */

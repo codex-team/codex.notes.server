@@ -16,11 +16,6 @@ spl_autoload_register(function ($classname) {
         $pathToFile = PROJECTROOT . $namespace;
     }
 
-    // if namespace is not default App
-    if ($namespace !== "App") {
-        $pathToFile .= strtolower($namespace) . '/';
-    }
-
     for ($i = 0; $i < count($pathParts); $i++) {
         $pathToFile .= ($i + 1 == count($pathParts)) ? $pathParts[$i] . '.php' : strtolower($pathParts[$i]) . '/';
     }

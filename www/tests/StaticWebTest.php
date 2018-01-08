@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests;
+namespace App\Tests;
 
-use Tests\Helpers\WebTestCase;
+use App\Tests\Helpers\WebTestCase;
 
 /**
  * Class EnvTest
@@ -10,7 +10,7 @@ use Tests\Helpers\WebTestCase;
  *
  * Test existence and validity of environment settings and .env file
  */
-class StaticWebTest extends LocalWebTestCase
+class StaticWebTest extends WebTestCase
 {
     /**
      * Test if main page is accessible via HTTP GET Request

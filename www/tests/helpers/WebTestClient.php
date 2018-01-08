@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Helpers;
+namespace App\Tests\Helpers;
 
 use Slim\App;
 use Slim\Http\Environment;

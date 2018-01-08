@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests;
+namespace App\Tests;
 
-require_once "helpers/WebTestCase.php";
+use App\Tests\Helpers\WebTestCase;
 
 /**
  * Class EnvTest
@@ -10,7 +10,7 @@ require_once "helpers/WebTestCase.php";
  *
  * Test existence and validity of environment settings and .env file
  */
-class GraphQlNaiveTest extends LocalWebTestCase
+class GraphQlNaiveTest extends WebTestCase
 {
     /**
      * Test if main page is accessible via HTTP GET Request

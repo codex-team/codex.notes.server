@@ -11,7 +11,7 @@
          syntaxCheck="true">
     <testsuites>
         <testsuite name="Bootstrap Test Suite">
-            <directory suffix=".php">./tests/</directory>
+            <directory suffix="Test.php">./tests/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests;
+namespace App\Tests;
 
-//use Tests\Helpers\WebTestCase;
-use There4\Slim\Test\WebTestCase;
+use App\Tests\Helpers\WebTestCase;
+use App\Tests\Helpers\WebTestClient;
 
 define('PROJECTROOT', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
 
@@ -12,43 +12,4 @@ define('PROJECTROOT', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
  */
 include_once PROJECTROOT . "public/autoload.php";
 include_once PROJECTROOT . "vendor/autoload.php";
-
-/**
- * Class LocalWebTestCase
- * @package Tests
- *
- * Class for performing application testing with HTTP Requests
- */
-class LocalWebTestCase extends WebTestCase {
-
-    /**
-     * Register application instance for testing
-     */
-    public function getSlimInstance() {
-        $app = new \Slim\App([
-            'settings' => ['displayErrorDetails' => false]
-        ]);
-
-        /**
-         * Load Dotenv
-         * @see https://github.com/vlucas/phpdotenv
-         */
-        if (is_file(PROJECTROOT . '.env')) {
-            $dotenv = new \Dotenv\Dotenv(PROJECTROOT);
-            $dotenv->load();
-        }
-
-        /**
-         * Enable modules
-         */
-        include PROJECTROOT . 'public/modules.php';
-
-        /**
-         * Set routes
-         */
-        include PROJECTROOT . 'public/routes.php';
-
-        return $app;
-    }
-};
 

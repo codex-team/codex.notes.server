@@ -2,9 +2,6 @@
 
 namespace App\Tests;
 
-use App\Tests\Helpers\WebTestCase;
-use App\Tests\Helpers\WebTestClient;
-
 define('PROJECTROOT', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
 
 /**

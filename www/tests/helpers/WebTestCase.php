@@ -2,8 +2,6 @@
 
 namespace App\Tests\Helpers;
 
-use App\Tests\Helpers\WebTestClient;
-
 /**
  * Class WebTestCase
  * @package Tests

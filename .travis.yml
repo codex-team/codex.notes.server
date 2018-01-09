@@ -7,5 +7,6 @@ install:
   - pecl install -f mongodb
   - cd www
   - composer install --dev --no-interaction --prefer-source
+  - cp .env.example .env
 script:
   - composer test

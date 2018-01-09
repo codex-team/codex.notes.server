@@ -1,13 +1,10 @@
 language: php
 php:
   - 7.1
-
 services:
   - mongodb
-
-before_script:
+install:
   - pecl install -f mongodb
   - composer install --dev --no-interaction --prefer-source
-
 script:
   - composer test

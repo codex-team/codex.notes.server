@@ -17,7 +17,7 @@ class Renderer
      * @param  array|null $viewData   - data passed to the template
      * @return string
      */
-    public static function render(string $tpl, array $viewData = null): void
+    public static function render(string $tpl, array $viewData = null): string
     {
         /**
          * Get caller classname
@@ -44,7 +44,7 @@ class Renderer
          * Render layout with the template content
          */
         $layoutData = array_merge($viewData, ['content' => $templateContent]);
-        echo self::renderTemplate(self::getTemplateDirectory('base') . 'layout.php', $layoutData);
+        return self::renderTemplate(self::getTemplateDirectory('base') . 'layout.php', $layoutData);
 
     }
 

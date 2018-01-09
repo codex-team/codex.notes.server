@@ -5,6 +5,7 @@ services:
   - mongodb
 install:
   - pecl install -f mongodb
+  - cd www
   - composer install --dev --no-interaction --prefer-source
 script:
   - composer test

@@ -4,7 +4,7 @@ namespace App\Tests\Helpers;
 
 /**
  * Class WebTestCase
- * @package Tests
+ * @package App\Tests\Helpers
  *
  * Class for performing application testing with HTTP Requests
  */
@@ -31,14 +31,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase {
             'settings' => ['displayErrorDetails' => false]
         ]);
 
-        /**
-         * Load Dotenv
-         * @see https://github.com/vlucas/phpdotenv
-         */
-        if (is_file(PROJECTROOT . '.env')) {
-            $dotenv = new \Dotenv\Dotenv(PROJECTROOT);
-            $dotenv->load();
-        }
+        $this->loadEnvironment();
 
         /**
          * Enable modules
@@ -51,6 +44,21 @@ class WebTestCase extends \PHPUnit\Framework\TestCase {
         include PROJECTROOT . 'public/routes.php';
 
         return $app;
+    }
+
+    /**
+     * Load environment variables
+     */
+    public function loadEnvironment()
+    {
+        /**
+         * Load Dotenv
+         * @see https://github.com/vlucas/phpdotenv
+         */
+        if (is_file(PROJECTROOT . '.env')) {
+            $dotenv = new \Dotenv\Dotenv(PROJECTROOT);
+            $dotenv->load();
+        }
     }
 };
 

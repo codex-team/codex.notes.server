@@ -4,7 +4,7 @@ namespace App\Tests;
 
 /**
  * Class EnvTest
- * @package Tests
+ * @package App\Tests
  *
  * Test existence and validity of environment settings and .env file
  */

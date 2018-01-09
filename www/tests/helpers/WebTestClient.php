@@ -12,7 +12,7 @@ use Slim\Http\Uri;
 
 /**
  * Class WebTestClient
- * @package Tests
+ * @package App\Tests\Helpers
  *
  * Class for performing HTTP queries to a REST API
  */

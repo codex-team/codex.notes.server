@@ -5,13 +5,22 @@ namespace App\Tests;
 use App\Tests\Helpers\WebTestCase;
 
 /**
- * Class EnvTest
- * @package Tests
+ * Class GraphQlNaiveTest
+ * @package App\Tests
  *
- * Test existence and validity of environment settings and .env file
+ * Test GraphQl basic mutations
  */
 class GraphQlNaiveTest extends WebTestCase
 {
+    /**
+     * Load environment variables
+     */
+    public function loadEnvironment()
+    {
+        parent::loadEnvironment();
+        $_ENV['JWT_AUTH'] = 'FALSE';
+    }
+
     /**
      * Test if main page is accessible via HTTP GET Request
      */
@@ -32,6 +41,8 @@ class GraphQlNaiveTest extends WebTestCase
             'operationName' => 'CreateNewUser'
         ];
         $output = $this->client->post('/graphql', $data);
+
+        $this->assertFalse($this->client->response->isForbidden(), 'Auth Error (403).');
 
         $data = json_decode($output, true);
 

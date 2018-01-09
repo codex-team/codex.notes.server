@@ -5,10 +5,10 @@ namespace App\Tests;
 use App\Tests\Helpers\WebTestCase;
 
 /**
- * Class EnvTest
- * @package Tests
+ * Class StaticWebTest
+ * @package App\Tests
  *
- * Test existence and validity of environment settings and .env file
+ * Test static routes
  */
 class StaticWebTest extends WebTestCase
 {

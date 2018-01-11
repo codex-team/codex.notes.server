@@ -27,7 +27,8 @@ class Renderer
         /**
          * Extract component name from string like 'App\Components\Index\Index'
          */
-        $componentName = strtolower(array_pop(explode('\\', $callerClass)));
+        $componentPath = explode('\\', $callerClass);
+        $componentName = strtolower(array_pop($componentPath));
 
         /**
          * Compose template path

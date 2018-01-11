@@ -39,7 +39,7 @@ class Base {
     public function __construct()
     {
         if (!$this->logger) {
-            $this->logger = new Log();
+            $this->logger = Log::instance();
         }
     }
 }

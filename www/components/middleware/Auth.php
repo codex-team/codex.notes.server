@@ -41,9 +41,7 @@ class Auth
             // TODO: pass needed values from JWT to route handler
             $decoded = JWT::decode($token, $key, ['HS256']);
         } catch (\Exception $e) {
-
-            $logger = new Log();
-            $logger->notice("Auth for {$payload->google_id} failed because of {$e->getMessage()}");
+            Log::instance()->notice("Auth for {$payload->google_id} failed because of {$e->getMessage()}");
 
             return $res->withStatus(403);
 

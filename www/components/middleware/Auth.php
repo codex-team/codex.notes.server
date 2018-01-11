@@ -29,7 +29,7 @@ class Auth
         list($type, $token) = explode(' ', $authHeader[0]);
 
         if (!$this->isSupported($type)) {
-            return $res->withStatus(403);
+            return $res->withStatus(403, 'Unsupported HTTPAuth type');
         }
 
         $payload = explode('.', $token)[1];
@@ -38,18 +38,31 @@ class Auth
         $key = OAuth::generateSignatureKey($payload->google_id);
 
         try {
-            // TODO: pass needed values from JWT to route handler
             $decoded = JWT::decode($token, $key, ['HS256']);
+            $GLOBALS['user'] = (array) $decoded;
         } catch (\Exception $e) {
-
             $logger = new Log();
             $logger->notice("Auth for {$payload->google_id} failed because of {$e->getMessage()}");
 
-            return $res->withStatus(403);
-
+            return $res->withStatus(403, 'Invalid JWT');
         }
 
         return $next($req, $res);
+    }
+
+    /**
+     * Return true if current user has passed $userId
+     *
+     * @param string $userId
+     * @return bool
+     */
+    public static function checkUserAccess($userId)
+    {
+        if ($userId != $GLOBALS['user']['google_id']) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

@@ -11,14 +11,15 @@ namespace App\System;
  */
 class HTTP
 {
-    CONST CODE_SERVER_ERROR = 500;
-    CONST CODE_NOT_ALLOWED_METHOD = 405;
-    CONST CODE_NOT_FOUND = 404;
-    CONST CODE_BAD_REQUEST = 400;
-    CONST CODE_SUCCESS = 200;
+    const CODE_SERVER_ERROR = 500;
+    const CODE_NOT_ALLOWED_METHOD = 405;
+    const CODE_NOT_FOUND = 404;
+    const CODE_FORBIDDEN = 403;
+    const CODE_BAD_REQUEST = 400;
+    const CODE_SUCCESS = 200;
 
-    CONST STRING_SERVER_ERROR = 'Internal server error';
-    CONST STRING_NOT_ALLOWED_METHOD = 'Method must be one of: %s';
+    const STRING_SERVER_ERROR = 'Internal server error';
+    const STRING_NOT_ALLOWED_METHOD = 'Method must be one of: %s';
 
     /**
      * Send cURL request with x-www-urlencoded Content-Type

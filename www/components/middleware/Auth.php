@@ -7,7 +7,10 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 use \Firebase\JWT\JWT;
 use App\Components\OAuth\OAuth;
-use App\System\Log;
+use App\System\{
+    Log,
+    HTTP
+};
 
 class Auth
 {
@@ -21,7 +24,7 @@ class Auth
      * @param $next
      * @return Response - with 403 status if auth failed
      */
-    public function jwt(Request $req, Response $res, $next)
+    public function jwt(Request $req, Response $res, $next) : Response
     {
 
         $authHeader = $req->getHeader('Authorization');
@@ -29,7 +32,7 @@ class Auth
         list($type, $token) = explode(' ', $authHeader[0]);
 
         if (!$this->isSupported($type)) {
-            return $res->withStatus(403, 'Unsupported HTTPAuth type');
+            return $res->withStatus(HTTP::CODE_FORBIDDEN, 'Unsupported HTTPAuth type');
         }
 
         $payload = explode('.', $token)[1];
@@ -44,7 +47,7 @@ class Auth
             $logger = new Log();
             $logger->notice("Auth for {$payload->google_id} failed because of {$e->getMessage()}");
 
-            return $res->withStatus(403, 'Invalid JWT');
+            return $res->withStatus(HTTP::CODE_FORBIDDEN, 'Invalid JWT');
         }
 
         return $next($req, $res);
@@ -56,7 +59,7 @@ class Auth
      * @param string $userId
      * @return bool
      */
-    public static function checkUserAccess($userId)
+    public static function checkUserAccess($userId) : bool
     {
         if ($userId != $GLOBALS['user']['google_id']) {
             return false;
@@ -71,7 +74,7 @@ class Auth
      * @param string $type - HTTPAuth type
      * @return bool
      */
-    private function isSupported($type)
+    private function isSupported($type) : bool
     {
         return in_array($type, self::SUPPORTED_TYPES);
     }

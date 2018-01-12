@@ -4,7 +4,8 @@ namespace App\Schema\Types;
 
 use App\Components\Base\Models\Exceptions\{
     CollaboratorException,
-    FolderException
+    FolderException,
+    AuthException
 };
 use GraphQL\Type\Definition\{
     ObjectType,
@@ -45,7 +46,7 @@ class Mutation extends ObjectType
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             if (!Auth::checkUserAccess($args['id'])) {
-                                throw new \Exception('Access denied');
+                                throw new AuthException('Access denied');
                             }
 
                             $user = new User();
@@ -77,7 +78,7 @@ class Mutation extends ObjectType
                             try {
 
                                 if (!Auth::checkUserAccess($args['id'])) {
-                                    throw new FolderException('Access denied');
+                                    throw new AuthException('Access denied');
                                 }
 
                                 $folder = new Folder($args['ownerId']);
@@ -116,7 +117,7 @@ class Mutation extends ObjectType
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             if (!Auth::checkUserAccess($args['id'])) {
-                                throw new \Exception('Access denied');
+                                throw new AuthException('Access denied');
                             }
 
                             /**
@@ -154,7 +155,7 @@ class Mutation extends ObjectType
                             try {
 
                                 if (!Auth::checkUserAccess($args['userId'])) {
-                                    throw new CollaboratorException('Access denied');
+                                    throw new AuthException('Access denied');
                                 }
 
                                 if (!$args['token'] && !$args['email']) {

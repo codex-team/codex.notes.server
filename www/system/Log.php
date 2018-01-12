@@ -10,18 +10,32 @@ use Katzgrau\KLogger\Logger;
  * Прослойка для стороннего модуля логирования
  * @package App\System
  */
-class Log extends Logger
+class Log
 {
+
+    private static $instance = null;
+
+    private function __construct(){}
+    private function __clone(){}
+
     /**
-     * Инициализируем логгер с помощью указания пути к папке с логами
-     * @param string $logDir
+     * Return Logger instance
+     *
+     * @param string|null $logDir
+     * @return Logger|null
      */
-    function __construct(string $logDir = '')
+    public static function instance(string $logDir = null)
     {
-        $logDir = $logDir ?: Config::DIR_LOGS;
 
-        $path = PROJECTROOT . $logDir;
+        if (is_null(self::$instance) || !is_null($logDir)) {
+            $logDir = $logDir ?: Config::DIR_LOGS;
 
-        parent::__construct($path);
+            $path = PROJECTROOT . $logDir;
+
+            self::$instance = new Logger($path);
+        }
+
+        return self::$instance;
+
     }
 }

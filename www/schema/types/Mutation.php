@@ -4,7 +4,8 @@ namespace App\Schema\Types;
 
 use App\Components\Base\Models\Exceptions\{
     CollaboratorException,
-    FolderException
+    FolderException,
+    AuthException
 };
 use GraphQL\Type\Definition\{
     ObjectType,
@@ -18,6 +19,7 @@ use App\Components\Api\Models\{
     Folder,
     Collaborator
 };
+use App\Components\Middleware\Auth;
 
 /**
  * Class Mutation
@@ -42,6 +44,10 @@ class Mutation extends ObjectType
                             'dtReg' => Type::int()
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
+
+                            if (!Auth::checkUserAccess($args['id'])) {
+                                throw new AuthException('Access denied');
+                            }
 
                             $user = new User();
                             $user->sync($args);
@@ -70,6 +76,11 @@ class Mutation extends ObjectType
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             try {
+
+                                if (!Auth::checkUserAccess($args['id'])) {
+                                    throw new AuthException('Access denied');
+                                }
+
                                 $folder = new Folder($args['ownerId']);
                                 $folder->sync($args);
 
@@ -105,6 +116,10 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
+                            if (!Auth::checkUserAccess($args['id'])) {
+                                throw new AuthException('Access denied');
+                            }
+
                             /**
                              * Get target Folder
                              *
@@ -138,6 +153,10 @@ class Mutation extends ObjectType
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
                             try {
+
+                                if (!Auth::checkUserAccess($args['userId'])) {
+                                    throw new AuthException('Access denied');
+                                }
 
                                 if (!$args['token'] && !$args['email']) {
                                     throw new CollaboratorException('Pass token to verify user or pass email to add a new Collaborator');
@@ -189,8 +208,7 @@ class Mutation extends ObjectType
                                 return;
                             }
                         }
-                    ],
-
+                    ]
                 ];
             }
         ];

@@ -32,7 +32,7 @@ class Auth
         list($type, $token) = explode(' ', $authHeader[0]);
 
         if (!$this->isSupported($type)) {
-            return $res->withStatus(HTTP::CODE_FORBIDDEN, 'Unsupported HTTPAuth type');
+            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Unsupported HTTPAuth type');
         }
 
         $payload = explode('.', $token)[1];
@@ -47,7 +47,7 @@ class Auth
             $logger = new Log();
             $logger->notice("Auth for {$payload->google_id} failed because of {$e->getMessage()}");
 
-            return $res->withStatus(HTTP::CODE_FORBIDDEN, 'Invalid JWT');
+            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Invalid JWT');
         }
 
         return $next($req, $res);

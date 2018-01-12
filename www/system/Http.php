@@ -15,6 +15,7 @@ class HTTP
     const CODE_NOT_ALLOWED_METHOD = 405;
     const CODE_NOT_FOUND = 404;
     const CODE_FORBIDDEN = 403;
+    const CODE_UNAUTHORIZED = 401;
     const CODE_BAD_REQUEST = 400;
     const CODE_SUCCESS = 200;
 

@@ -44,8 +44,7 @@ class Auth
             $decoded = JWT::decode($token, $key, ['HS256']);
             $GLOBALS['user'] = (array) $decoded;
         } catch (\Exception $e) {
-            $logger = new Log();
-            $logger->notice("Auth for {$payload->google_id} failed because of {$e->getMessage()}");
+            Log::instance()->notice("Auth for {$payload->google_id} failed because of {$e->getMessage()}");
 
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Invalid JWT');
         }

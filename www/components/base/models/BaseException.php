@@ -11,7 +11,7 @@ class BaseException extends Exception {
 
     public function __construct($message, $code = 0, $previous = null)
     {
-        $this->logger = new Log();
+        $this->logger = Log::instance();
 
         $this->logger->warning($message);
 

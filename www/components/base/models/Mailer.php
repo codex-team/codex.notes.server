@@ -15,6 +15,9 @@ use App\System\Config;
 class Mailer
 {
 
+    const LOCALHOST = 'localhost';
+    const SMTP_PORT = 25;
+
     /**
      * @var $_instance
      * Instance holder
@@ -26,7 +29,8 @@ class Mailer
      */
     private $mailer = null;
 
-    public static function instance() {
+    public static function instance()
+    {
 
         if (!isset(self::$_instance)) {
             self::$_instance = new self();
@@ -36,16 +40,19 @@ class Mailer
     }
 
     /**
-     * @param string $subject
-     * @param array $sendFrom
-     * @param array|string $body
-     * @param array $receivers
-     * @param array $headers
-     * @param array $attachments
+     * Method that send sends a message
+     *
+     * @param string $subject - title of message
+     * @param array $sendFrom - list of senders email or name
+     * @param array|string $body - message body with content-type
+     * @param array $recipients - list of recipients emails
+     * @param array $headers - specific headers. Rarely used
+     * @param array $attachments - message atthachments
      *
      * @return {boolean}
      */
-    public function send(string $subject, array $sendFrom, array $recipients, $body, array $headers = [], array $attachments = []) {
+    public function send(string $subject, array $sendFrom, array $recipients, $body, array $headers = [], array $attachments = [])
+    {
 
         // Create a message
         $message = (new Swift_Message($subject));
@@ -105,10 +112,11 @@ class Mailer
         return $this->mailer->send($message);
     }
 
-    private function __construct() {
+    private function __construct()
+    {
 
-        $server = Config::get('MAILER_SERVER') ?? 'localhost';
-        $port = Config::get('MAILER_POST') ?? 25; // local sendmail port
+        $server = Config::get('MAILER_SERVER') ?? self::LOCALHOST;
+        $port = Config::get('MAILER_POST') ?? self::SMTP_PORT; // local sendmail port
 
         $username = Config::get('MAILER_USERNAME') ?? 'admin';
         $password = Config::get('MAILER_PASSWORD') ?? 'admin';

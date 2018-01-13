@@ -6,6 +6,7 @@ use \Swift_SmtpTransport;
 use \Swift_Message;
 use \Swift_Mailer;
 use \Swift_Attachment;
+use App\System\Config;
 
 /**
  * Class Mailer
@@ -14,7 +15,15 @@ use \Swift_Attachment;
 class Mailer
 {
 
+    /**
+     * @var $_instance
+     * Instance holder
+     */
     private static $_instance;
+
+    /**
+     * @var null|Swift_Mailer
+     */
     private $mailer = null;
 
     public static function instance() {
@@ -33,6 +42,8 @@ class Mailer
      * @param array $receivers
      * @param array $headers
      * @param array $attachments
+     *
+     * @return {boolean}
      */
     public function send(string $subject, array $sendFrom, array $recipients, $body, array $headers = [], array $attachments = []) {
 
@@ -96,11 +107,16 @@ class Mailer
 
     private function __construct() {
 
+        $server = Config::get('MAILER_SERVER') ?? 'localhost';
+        $port = Config::get('MAILER_POST') ?? 25; // local sendmail port
+
+        $username = Config::get('MAILER_USERNAME') ?? 'admin';
+        $password = Config::get('MAILER_PASSWORD') ?? 'admin';
+
         // Create the Transport
-        $transport = (new Swift_SmtpTransport('smtp.example.org', 25))
-            ->setUsername('your username')
-            ->setPassword('your password')
-        ;
+        $transport = (new Swift_SmtpTransport($server, $port))
+            ->setUsername($username)
+            ->setPassword($password);
 
         // Create the Mailer using your created Transport
         $this->mailer = new Swift_Mailer($transport);

@@ -20,6 +20,18 @@ class Config extends Base
         return $_SERVER[$param] ?? null;
     }
 
+    /**
+     * Return boolean value for param from .env
+     *
+     * @param string $param
+     * @return bool
+     */
+    public static function getBool(string $param): ?bool
+    {
+        $value = filter_var(self::get($param), FILTER_VALIDATE_BOOLEAN);
+
+        return $value;
+    }
 
     /**
      * Return true if debug flag enabled in the .env config file
@@ -28,6 +40,6 @@ class Config extends Base
      */
     public static function debug(): bool
     {
-        return (boolean) self::get('DEBUG');
+        return self::getBool('DEBUG');
     }
 }

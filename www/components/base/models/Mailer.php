@@ -5,6 +5,7 @@ namespace App\Components\Base\Models;
 use \Swift_SmtpTransport;
 use \Swift_Message;
 use \Swift_Mailer;
+use \Swift_Attachment;
 
 /**
  * Class Mailer
@@ -14,24 +15,12 @@ class Mailer
 {
 
     private static $_instance;
-    private static $_connection;
+    private $mailer = null;
 
     public static function instance() {
 
         if (!isset(self::$_instance)) {
             self::$_instance = new self();
-        }
-
-        if (!isset(self::$_connection)) {
-
-            // Create the Transport
-            $transport = (new Swift_SmtpTransport('smtp.example.org', 25))
-                ->setUsername('your username')
-                ->setPassword('your password')
-            ;
-
-            // Create the Mailer using your created Transport
-            self::$_connection = new Swift_Mailer($transport);
         }
 
         return self::$_instance;
@@ -40,6 +29,7 @@ class Mailer
     /**
      * @param string $subject
      * @param array $sendFrom
+     * @param array|string $body
      * @param array $receivers
      * @param array $headers
      * @param array $attachments
@@ -78,6 +68,7 @@ class Mailer
             $message->setBody($body);
         }
 
+        // If message has specific headers
         if (!empty($headers)) {
             $headers = $message->getHeaders();
             foreach($headers as $header => $value) {
@@ -87,9 +78,34 @@ class Mailer
             }
         }
 
+        if (!empty($attachments)) {
+            foreach($attachments as $file => $contentType) {
+                if (is_int($file)) {
+                    $attachment = Swift_Attachment::fromPath($file, $contentType);
+                } else {
+                    // send attachment without content-type
+                    $attachment = Swift_Attachment::fromPath($contentType);
+                }
+
+                $message->attach($attachment);
+            }
+        }
+
+        return $this->mailer->send($message);
     }
 
-    private function __construct() { }
+    private function __construct() {
+
+        // Create the Transport
+        $transport = (new Swift_SmtpTransport('smtp.example.org', 25))
+            ->setUsername('your username')
+            ->setPassword('your password')
+        ;
+
+        // Create the Mailer using your created Transport
+        $this->mailer = new Swift_Mailer($transport);
+
+    }
 
     private function __sleep() { }
 

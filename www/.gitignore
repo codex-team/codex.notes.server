@@ -2,6 +2,7 @@
 .idea
 config/mongo.php
 config/user.php
+config/mailer.php
 vendor/*
 logs/*
 composer.lock

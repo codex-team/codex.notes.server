@@ -14,7 +14,6 @@ use App\System\Config;
  */
 class Mailer
 {
-
     const LOCALHOST = 'localhost';
     const SMTP_PORT = 25;
 
@@ -31,7 +30,6 @@ class Mailer
 
     public static function instance()
     {
-
         if (!isset(self::$_instance)) {
             self::$_instance = new self();
         }
@@ -53,7 +51,6 @@ class Mailer
      */
     public function send(string $subject, array $sendFrom, array $recipients, $body, array $headers = [], array $attachments = [])
     {
-
         // Create a message
         $message = (new Swift_Message($subject));
 
@@ -114,7 +111,6 @@ class Mailer
 
     private function __construct()
     {
-
         $server = Config::get('MAILER_SERVER') ?? self::LOCALHOST;
         $port = Config::get('MAILER_POST') ?? self::SMTP_PORT; // local sendmail port
 

@@ -50,8 +50,8 @@ class OAuth
         $profileInfo = @json_decode($profileInfo);
 
         if (!is_null($profileInfo->error)) {
-            Log::instance()->warning('Google OAuth failed. Reason: ' . $profileInfo->error->reason);
-            return $res->withStatus(HTTP::CODE_SERVER_ERROR, $profileInfo->error->reason);
+            Log::instance()->warning('Google OAuth failed. Reason: ' . $profileInfo->error->message);
+            return $res->withStatus(HTTP::CODE_SERVER_ERROR, $profileInfo->error->message);
         }
 
         $userData = [

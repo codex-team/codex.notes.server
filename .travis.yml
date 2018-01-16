@@ -11,6 +11,6 @@ install:
   - pecl install -f mongodb
   - cd www
   - composer install
-  - cp .env.example .env
+  - cp tests/helpers/.env.test .env
 script:
   - composer test

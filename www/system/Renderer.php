@@ -54,7 +54,7 @@ class Renderer
      * @param  string $componentName  - component name
      * @return string
      */
-    private function getTemplateDirectory( string $componentName ): string
+    private static  function getTemplateDirectory( string $componentName ): string
     {
         /**
          * Path to the /components directory

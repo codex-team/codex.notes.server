@@ -9,7 +9,7 @@ use \Firebase\JWT\JWT;
 use App\Components\OAuth\OAuth;
 use App\System\{
     Log,
-    HTTP
+    Http
 };
 
 class Auth

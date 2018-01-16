@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use App\System\Config;
 use App\Tests\Helpers\WebTestCase;
 
 /**
@@ -18,7 +19,7 @@ class GraphQlNaiveTest extends WebTestCase
     public function loadEnvironment()
     {
         parent::loadEnvironment();
-        $_ENV['JWT_AUTH'] = 'FALSE';
+        Config::set('JWT_AUTH', "FALSE");
     }
 
     /**
@@ -26,17 +27,19 @@ class GraphQlNaiveTest extends WebTestCase
      */
     public function testCreateNewUser() {
         $data = [
-            'query' => 'mutation CreateNewUser($id: ID!, $name: String!, $email: String!) {
-                          user(id: $id, name: $name, email: $email) {
+            'query' => 'mutation CreateNewUser($id: ID!, $name: String!, $email: String!, $dtReg: Int!) {
+                          user(id: $id, name: $name, email: $email, dtReg: $dtReg) {
                             id,
                             name,
-                            email
+                            email,
+                            dtReg
                           }
                         }',
             'variables' => [
                 'id' => 1,
                 'name' => 'testUser',
-                'email' => 'testUser@ifmo.su'
+                'email' => 'testUser@ifmo.su',
+                'dtReg' => 123
             ],
             'operationName' => 'CreateNewUser'
         ];
@@ -45,6 +48,8 @@ class GraphQlNaiveTest extends WebTestCase
         $this->assertFalse($this->client->response->isForbidden(), 'Auth Error (403).');
 
         $data = json_decode($output, true);
+
+        var_dump($data);
 
         $this->assertArrayHasKey('data', $data);
         $this->assertArrayHasKey('user', $data['data']);

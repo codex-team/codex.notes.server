@@ -8,8 +8,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use \Firebase\JWT\JWT;
 use App\Components\OAuth\OAuth;
 use App\System\{
-    Log,
-    HTTP
+    Config, Log, HTTP
 };
 
 class Auth
@@ -60,6 +59,10 @@ class Auth
      */
     public static function checkUserAccess($userId) : bool
     {
+        if (!Config::getBool('JWT_AUTH')) {
+            return true;
+        }
+
         if ($userId != $GLOBALS['user']['google_id']) {
             return false;
         }

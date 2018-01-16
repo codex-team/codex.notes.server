@@ -1,4 +1,8 @@
 language: php
+before_install:
+  - sh -c "mkdir -p ${TRAVIS_BUILD_DIR}/travis/module-cache/`php-config --vernum`"
+before_script:
+  - MODULES="apcu.so:apcu-beta memcached.so:memcached mongodb.so:mongodb" ./travis/modulecache.sh
 php:
   - 7.1
 services:
@@ -7,6 +11,7 @@ cache:
   bundler: true
   directories:
     - www/vendor
+    - ${TRAVIS_BUILD_DIR}/travis/module-cache
 install:
   - pecl install -f mongodb
   - cd www

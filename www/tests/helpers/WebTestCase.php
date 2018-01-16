@@ -28,7 +28,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase {
      */
     public function getSlimInstance() {
         $app = new \Slim\App([
-            'settings' => ['displayErrorDetails' => false]
+            'settings' => ['displayErrorDetails' => true]
         ]);
 
         $this->loadEnvironment();

@@ -21,6 +21,8 @@ class EnvTest extends \PHPUnit\Framework\TestCase
      * Default salt value should be changed
      */
     public function testEnvFileSaltChanged() {
+        $dotenv = new \Dotenv\Dotenv(PROJECTROOT);
+        $dotenv->load();
         $this->assertNotEquals(getenv('INVITATION_SALT'), 'somesalt123');
     }
 

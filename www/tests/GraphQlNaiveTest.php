@@ -49,8 +49,6 @@ class GraphQlNaiveTest extends WebTestCase
 
         $data = json_decode($output, true);
 
-        var_dump($data);
-
         $this->assertArrayHasKey('data', $data);
         $this->assertArrayHasKey('user', $data['data']);
 
@@ -59,6 +57,7 @@ class GraphQlNaiveTest extends WebTestCase
         $this->assertEquals('1', $user['id']);
         $this->assertEquals('testUser', $user['name']);
         $this->assertEquals('testUser@ifmo.su', $user['email']);
+        $this->assertEquals('123', $user['dtReg']);
     }
 
 }

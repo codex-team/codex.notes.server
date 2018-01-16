@@ -3,10 +3,14 @@ php:
   - 7.1
 services:
   - mongodb
+cache:
+  bundler: true
+  directories:
+    - www/vendor
 install:
   - pecl install -f mongodb
   - cd www
-  - composer install --dev --no-interaction --prefer-source
+  - composer install
   - cp .env.example .env
 script:
   - composer test

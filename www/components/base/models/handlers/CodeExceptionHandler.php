@@ -4,7 +4,7 @@ namespace App\Components\Base\Models\Handlers;
 
 use App\Components\Base\Models\BaseExceptionHandler;
 use App\System\Config;
-use App\System\HTTP;
+use App\System\Http;
 
 class CodeExceptionHandler extends BaseExceptionHandler
 {

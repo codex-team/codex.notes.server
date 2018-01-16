@@ -43,13 +43,13 @@ class Mailer
      * @param string $subject - title of message
      * @param array $sendFrom - list of senders email or name
      * @param array|string $body - message body with content-type
-     * @param array $recipients - list of recipients emails
+     * @param array|string $recipients - list of recipients emails or single email address
      * @param array $headers - specific headers. Rarely used
      * @param array $attachments - message atthachments
      *
-     * @return {boolean}
+     * @return bool
      */
-    public function send(string $subject, array $sendFrom, array $recipients, $body, array $headers = [], array $attachments = [])
+    public function send(string $subject, array $sendFrom, $recipients, $body, array $headers = [], array $attachments = [])
     {
         // Create a message
         $message = (new Swift_Message($subject));
@@ -63,6 +63,8 @@ class Mailer
                     $message->setFrom([$address => $name]);
                 }
             }
+        } elseif (is_string($recipients)) {
+            $message->setFrom($recipients);
         }
 
         // Configure recipients
@@ -95,7 +97,7 @@ class Mailer
 
         if (!empty($attachments)) {
             foreach($attachments as $file => $contentType) {
-                if (is_int($file)) {
+                if (!is_int($file)) {
                     $attachment = Swift_Attachment::fromPath($file, $contentType);
                 } else {
                     // send attachment without content-type

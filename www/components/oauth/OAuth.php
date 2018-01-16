@@ -72,7 +72,7 @@ class OAuth
             'photo' => $userData['photo'],
             'name' => $userData['name'],
             'user_id' => $user->id,
-        ], self::generateSignatureKey($user->id);
+        ], self::generateSignatureKey($user->id));
 
         $body = $res->getBody();
         $body->write('<div id="jwt">' . $jwt . '</div>');

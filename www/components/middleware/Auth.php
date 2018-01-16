@@ -8,7 +8,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use \Firebase\JWT\JWT;
 use App\Components\OAuth\OAuth;
 use App\System\{
-    Config, Log, HTTP
+    Config, Log, Http
 };
 
 class Auth

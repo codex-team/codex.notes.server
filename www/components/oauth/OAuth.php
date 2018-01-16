@@ -11,7 +11,7 @@ use \App\Components\Api\Models\User;
 
 use \App\System\{
     Config,
-    HTTP,
+    Http,
     Log
 };
 

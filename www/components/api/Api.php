@@ -56,7 +56,7 @@ class Api
         $config = ServerConfig::create()
             ->setSchema($this->schema)
             ->setErrorFormatter(function ($e) {
-                $message = sprintf("%s\n%s", $e->getMessage(), $e->getTraceAsString());
+                $message = sprintf("%s in %s:%s\n%s", $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
                 $this->logger->error($message);
                 return FormattedError::createFromException($e);
             });
@@ -69,12 +69,12 @@ class Api
             /**
              * Continue error throwing to the logs/log_YYYY-MM-DD.txt
              */
-            $config->setDebug(Debug::INCLUDE_TRACE);
+            $config->setDebug(Debug::INCLUDE_DEBUG_MESSAGE);
         } else {
             /**
              * Show original error message instead of 'Internal server error'
              */
-            $config->setDebug(Debug::INCLUDE_DEBUG_MESSAGE);
+            $config->setDebug(Debug::RETHROW_INTERNAL_EXCEPTIONS);
         }
 
         /**

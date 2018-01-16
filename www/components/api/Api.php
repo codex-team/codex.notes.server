@@ -5,15 +5,14 @@ namespace App\Components\Api;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use App\{
-    Schema\Types,
-    System\Config,
-    System\Log
+    Schema\Types, System\Config, System\Log
 };
 use GraphQL\{
     Type\Schema,
     Server\StandardServer,
     Server\ServerConfig,
     Error\Debug,
+    Error\FormattedError,
     Executor\ExecutionResult
 };
 
@@ -42,7 +41,7 @@ class Api
     public function __construct()
     {
         if (!$this->logger) {
-            $this->logger = new Log();
+            $this->logger = Log::instance();
         }
 
         $this->schema = new Schema([
@@ -55,7 +54,12 @@ class Api
          * @see https://github.com/webonyx/graphql-php/blob/master/docs/reference.md#graphqlserverserverconfig
          */
         $config = ServerConfig::create()
-            ->setSchema($this->schema);
+            ->setSchema($this->schema)
+            ->setErrorFormatter(function ($e) {
+                $message = sprintf("%s in %s:%s\n%s", $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
+                $this->logger->error($message);
+                return FormattedError::createFromException($e);
+            });
 
         /**
          * Enable debugging tools
@@ -63,12 +67,12 @@ class Api
          */
         if (Config::debug()){
             /**
-             * Show original error message instead of 'Internal server error'
+             * Continue error throwing to the logs/log_YYYY-MM-DD.txt
              */
             $config->setDebug(Debug::INCLUDE_DEBUG_MESSAGE);
         } else {
             /**
-             * Continue error throwing to the logs/log_YYYY-MM-DD.txt
+             * Show original error message instead of 'Internal server error'
              */
             $config->setDebug(Debug::RETHROW_INTERNAL_EXCEPTIONS);
         }

@@ -71,7 +71,8 @@ class OAuth
             'google_id' => $userData['google_id'],
             'photo' => $userData['photo'],
             'name' => $userData['name'],
-        ], self::generateSignatureKey($userData['google_id']));
+            'user_id' => $user->id,
+        ], self::generateSignatureKey($user->id);
 
         $body = $res->getBody();
         $body->write('<div id="jwt">' . $jwt . '</div>');

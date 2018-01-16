@@ -60,7 +60,7 @@ class Auth
      */
     public static function checkUserAccess($userId) : bool
     {
-        if ($userId != $GLOBALS['user']['google_id']) {
+        if ($userId != $GLOBALS['user']['user_id']) {
             return false;
         }
 

@@ -34,32 +34,32 @@ class Mutation extends ObjectType
         $config = [
             'fields' => function() {
                 return [
-                    'user' => [
-                        'type' => Types::user(),
-                        'description' => 'Sync User',
-                        'args' => [
-                            'id' => Type::nonNull(Type::id()),
-                            'name' => Type::nonNull(Type::string()),
-                            'email' => Type::nonNull(Type::string()),
-                            'dtReg' => Type::int()
-                        ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
-                            if (!Auth::checkUserAccess($args['id'])) {
-                                throw new AuthException('Access denied');
-                            }
-
-                            $user = new User();
-                            $user->sync($args);
-
-                            $selectedFields = $info->getFieldSelection();
-                            if (in_array('folders', $selectedFields)) {
-                                $user->fillFolders();
-                            }
-
-                            return $user;
-                        }
-                    ],
+//                    'user' => [
+//                        'type' => Types::user(),
+//                        'description' => 'Sync User',
+//                        'args' => [
+//                            'id' => Type::nonNull(Type::id()),
+//                            'name' => Type::nonNull(Type::string()),
+//                            'email' => Type::nonNull(Type::string()),
+//                            'dtReg' => Type::int()
+//                        ],
+//                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
+//
+//                            if (!Auth::checkUserAccess($args['id'])) {
+//                                throw new AuthException('Access denied');
+//                            }
+//
+//                            $user = new User();
+//                            $user->sync($args);
+//
+//                            $selectedFields = $info->getFieldSelection();
+//                            if (in_array('folders', $selectedFields)) {
+//                                $user->fillFolders();
+//                            }
+//
+//                            return $user;
+//                        }
+//                    ],
 
                     'folder' => [
                         'type' => Types::folder(),

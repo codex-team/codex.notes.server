@@ -45,9 +45,13 @@ class Auth
                 throw new AuthException('Unsupported HTTPAuth type');
             }
 
+            $jwtParts = explode('.', $token);
 
-            $payload = explode('.', $token)[1];
-            $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($payload));
+            if (empty($jwtParts[1])) {
+                throw new AuthException('JWT is invalid');
+            }
+
+            $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($jwtParts[1]));
 
             $key = OAuth::generateSignatureKey($payload->user_id);
 

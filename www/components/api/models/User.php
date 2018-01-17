@@ -3,6 +3,7 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
+use MongoDB\BSON\ObjectId;
 
 /**
  * Model User
@@ -14,7 +15,7 @@ class User extends Base
     /**
      * Users unique identifier
      *
-     * @var int|null
+     * @var string|null
      */
     public $id;
 
@@ -75,9 +76,15 @@ class User extends Base
      */
     public function sync(array $data): void
     {
-        $query = [
-            'id' => $data['id']
-        ];
+        $query = [];
+
+        if (isset($data['id'])) {
+            $query['_id'] = new ObjectId($data['id']);
+        }
+
+        if (isset($data['google_id'])) {
+            $query['google_id'] = $data['google_id'];
+        }
 
         $update = [
             '$set' => $data
@@ -137,7 +144,7 @@ class User extends Base
     private function findAndFill(string $userId): void
     {
         $query = [
-            'id' => $userId
+            '_id' => new ObjectId($userId)
         ];
 
         $mongoResponse = Mongo::connect()
@@ -145,6 +152,19 @@ class User extends Base
             ->findOne($query);
 
         $this->fillModel($mongoResponse ?: []);
+    }
+
+    /**
+     * Fill model with values from data
+     * Rewrite MongoID _id to string id
+     *
+     * @param array $data
+     */
+    protected function fillModel(array $data): void
+    {
+        $data['id'] = (string) $data['_id'];
+
+        parent::fillModel($data);
     }
 
     /**

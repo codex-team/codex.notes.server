@@ -2,10 +2,17 @@
 
 namespace App\Components\Middleware;
 
+use App\Components\Base\Models\Exceptions\AuthException;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-use \Firebase\JWT\JWT;
+use \Firebase\JWT\{
+    JWT,
+    BeforeValidException,
+    ExpiredException,
+    SignatureInvalidException
+};
+
 use App\Components\OAuth\OAuth;
 use App\System\{
     Config, Log, Http
@@ -23,29 +30,59 @@ class Auth
      * @param $next
      * @return Response - with 403 status if auth failed
      */
-    public function jwt(Request $req, Response $res, $next) : Response
+    public function jwt(Request $req, Response $res, $next): Response
     {
-
-        $authHeader = $req->getHeader('Authorization');
-
-        list($type, $token) = explode(' ', $authHeader[0]);
-
-        if (!$this->isSupported($type)) {
-            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Unsupported HTTPAuth type');
-        }
-
-        $payload = explode('.', $token)[1];
-        $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($payload));
-
-        $key = OAuth::generateSignatureKey($payload->google_id);
-
         try {
-            $decoded = JWT::decode($token, $key, ['HS256']);
-            $GLOBALS['user'] = (array) $decoded;
-        } catch (\Exception $e) {
-            Log::instance()->notice("Auth for {$payload->google_id} failed because of {$e->getMessage()}");
+            $authHeader = $req->getHeader('Authorization');
 
-            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Invalid JWT');
+            if (empty($authHeader[0])) {
+                throw new AuthException('JWT is missing');
+            }
+
+            $parsedAuthHeader = explode(' ', $authHeader[0]);
+
+            if (empty($parsedAuthHeader[0]) || empty($parsedAuthHeader[1])) {
+                throw new AuthException('JWT is missing');
+            }
+
+            list($type, $token) = $parsedAuthHeader;
+
+            if (!$this->isSupported($type)) {
+                throw new AuthException('Unsupported HTTPAuth type');
+            }
+
+            $jwtParts = explode('.', $token);
+
+            if (empty($jwtParts[1])) {
+                throw new AuthException('JWT is invalid');
+            }
+
+            $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($jwtParts[1]));
+
+            if (empty($payload->user_id)) {
+                throw new AuthException('JWT is invalid');
+            }
+            
+            $key = OAuth::generateSignatureKey($payload->user_id);
+
+            $decoded = JWT::decode($token, $key, ['HS256']);
+            $GLOBALS['user'] = (array)$decoded;
+
+        } catch (AuthException $e) {
+
+            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, $e->getMessage());
+
+        } catch (\UnexpectedValueException $e) {
+
+            Log::instance()->notice(sprintf("[Auth] %s", $e->getMessage()));
+
+            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is invalid');
+
+        } catch (\DomainException $e) {
+
+            Log::instance()->notice(sprintf("[Auth] %s", $e->getMessage()));
+
+            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is invalid');
         }
 
         return $next($req, $res);
@@ -57,13 +94,13 @@ class Auth
      * @param string $userId
      * @return bool
      */
-    public static function checkUserAccess($userId) : bool
+    public static function checkUserAccess($userId): bool
     {
         if (!Config::getBool('JWT_AUTH')) {
             return true;
         }
 
-        if ($userId != $GLOBALS['user']['google_id']) {
+        if ($userId != $GLOBALS['user']['user_id']) {
             return false;
         }
 
@@ -76,7 +113,7 @@ class Auth
      * @param string $type - HTTPAuth type
      * @return bool
      */
-    private function isSupported($type) : bool
+    private function isSupported($type): bool
     {
         return in_array($type, self::SUPPORTED_TYPES);
     }

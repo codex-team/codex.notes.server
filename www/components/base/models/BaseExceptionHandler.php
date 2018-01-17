@@ -2,16 +2,45 @@
 
 namespace App\Components\Base\Models;
 
-use App\System\Log;
+use App\System\{
+    Config, Http, Log
+};
+use Hawk\HawkCatcher;
 
-class BaseExceptionHandler {
+class BaseExceptionHandler
+{
+    public function __construct() {}
 
-    protected $logger;
-
-    public function __construct()
+    public function __invoke($request, $response, $exception)
     {
-        if (!$this->logger) {
-            $this->logger = Log::instance();
-        }
+        HawkCatcher::catchException($exception);
+
+        /**
+         * Log exception
+         */
+        $logMessage = sprintf(
+            "%s in %s:%s\n%s",
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine(),
+            $exception->getTraceAsString()
+        );
+
+        Log::instance()->error($logMessage);
+
+        /**
+         * Return message to user
+         */
+        $showMessage = !Config::debug() ? HTTP::STRING_SERVER_ERROR : sprintf(
+            "%s in %s:%s",
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine()
+        );
+
+        return $response
+            ->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write($showMessage);
     }
 }

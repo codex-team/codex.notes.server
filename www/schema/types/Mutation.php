@@ -77,7 +77,7 @@ class Mutation extends ObjectType
 
                             try {
 
-                                if (!Auth::checkUserAccess($args['id'])) {
+                                if (!Auth::checkUserAccess($args['ownerId'])) {
                                     throw new AuthException('Access denied');
                                 }
 
@@ -116,7 +116,7 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 
-                            if (!Auth::checkUserAccess($args['id'])) {
+                            if (!Auth::checkUserAccess($args['authorId'])) {
                                 throw new AuthException('Access denied');
                             }
 
@@ -154,7 +154,7 @@ class Mutation extends ObjectType
 
                             try {
 
-                                if (!Auth::checkUserAccess($args['userId'])) {
+                                if (!Auth::checkUserAccess($args['ownerId'])) {
                                     throw new AuthException('Access denied');
                                 }
 

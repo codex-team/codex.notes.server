@@ -49,26 +49,31 @@ class OAuth
         $profileInfo = HTTP::request('GET', self::GOOGLE_PROFILE_URL, [], [$header]);
         $profileInfo = @json_decode($profileInfo);
 
-        if (!is_null($profileInfo->error)) {
+        Log::instance()->debug('Profile info from Google: ' . json_encode($profileInfo));
+
+        if (isset($profileInfo->error)) {
             Log::instance()->warning('Google OAuth failed. Reason: ' . $profileInfo->error->message);
             return $res->withStatus(HTTP::CODE_SERVER_ERROR, $profileInfo->error->message);
         }
 
         $userData = [
+            'name' => $profileInfo->name,
+            'email' => $profileInfo->email,
             'google_id' => $profileInfo->id,
             'photo' => $profileInfo->picture,
-            'name' => $profileInfo->name
         ];
 
         /** Save new user to database */
-        $user = new User($userData['id']);
+        $user = new User();
         $user->sync($userData);
+
+        Log::instance()->debug('User model from DB: ' . json_encode($user));
 
         $jwt = JWT::encode([
             'iss' => Config::get('JWT_ISS'),
             'aud' => Config::get('JWT_AUD'),
             'iat' => time(),
-            'google_id' => $userData['google_id'],
+//            'google_id' => $userData['google_id'],
             'photo' => $userData['photo'],
             'name' => $userData['name'],
             'user_id' => $user->id,

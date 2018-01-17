@@ -25,5 +25,4 @@ class EnvTest extends \PHPUnit\Framework\TestCase
         $dotenv->load();
         $this->assertNotEquals(getenv('INVITATION_SALT'), 'somesalt123');
     }
-
 }

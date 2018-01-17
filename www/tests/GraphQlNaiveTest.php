@@ -19,13 +19,13 @@ class GraphQlNaiveTest extends WebTestCase
     public function loadEnvironment()
     {
         parent::loadEnvironment();
-        Config::set('JWT_AUTH', "FALSE");
     }
 
     /**
      * Test if main page is accessible via HTTP GET Request
      */
-    public function testCreateNewUser() {
+    public function testCreateNewUser()
+    {
         $data = [
             'query' => 'mutation CreateNewUser($id: ID!, $name: String!, $email: String!, $dtReg: Int!) {
                           user(id: $id, name: $name, email: $email, dtReg: $dtReg) {
@@ -36,7 +36,7 @@ class GraphQlNaiveTest extends WebTestCase
                           }
                         }',
             'variables' => [
-                'id' => 1,
+                'id' => "56732d3dda14d81214634921",
                 'name' => 'testUser',
                 'email' => 'testUser@ifmo.su',
                 'dtReg' => 123
@@ -54,10 +54,9 @@ class GraphQlNaiveTest extends WebTestCase
 
         $user = $data['data']['user'];
 
-        $this->assertEquals('1', $user['id']);
+        $this->assertEquals('56732d3dda14d81214634921', $user['id']);
         $this->assertEquals('testUser', $user['name']);
         $this->assertEquals('testUser@ifmo.su', $user['email']);
         $this->assertEquals('123', $user['dtReg']);
     }
-
 }

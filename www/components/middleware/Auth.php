@@ -59,6 +59,10 @@ class Auth
 
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($jwtParts[1]));
 
+            if (empty($payload->user_id)) {
+                throw new AuthException('JWT is invalid');
+            }
+            
             $key = OAuth::generateSignatureKey($payload->user_id);
 
             $decoded = JWT::decode($token, $key, ['HS256']);

@@ -8,8 +8,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use \Firebase\JWT\JWT;
 use App\Components\OAuth\OAuth;
 use App\System\{
-    Log,
-    Http
+    Config, Log, Http
 };
 
 class Auth
@@ -24,9 +23,8 @@ class Auth
      * @param $next
      * @return Response - with 403 status if auth failed
      */
-    public function jwt(Request $req, Response $res, $next) : Response
+    public function jwt(Request $req, Response $res, $next): Response
     {
-
         $authHeader = $req->getHeader('Authorization');
 
         list($type, $token) = explode(' ', $authHeader[0]);
@@ -58,8 +56,12 @@ class Auth
      * @param string $userId
      * @return bool
      */
-    public static function checkUserAccess($userId) : bool
+    public static function checkUserAccess($userId): bool
     {
+        if (!Config::getBool('JWT_AUTH')) {
+            return true;
+        }
+
         if ($userId != $GLOBALS['user']['user_id']) {
             return false;
         }
@@ -73,7 +75,7 @@ class Auth
      * @param string $type - HTTPAuth type
      * @return bool
      */
-    private function isSupported($type) : bool
+    private function isSupported($type): bool
     {
         return in_array($type, self::SUPPORTED_TYPES);
     }

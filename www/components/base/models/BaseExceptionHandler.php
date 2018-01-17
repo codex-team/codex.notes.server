@@ -5,6 +5,7 @@ namespace App\Components\Base\Models;
 use App\System\{
     Config, Http, Log
 };
+use Hawk\HawkCatcher;
 
 class BaseExceptionHandler
 {
@@ -12,6 +13,7 @@ class BaseExceptionHandler
 
     public function __invoke($request, $response, $exception)
     {
+        HawkCatcher::catchException($exception);
 
         /**
          * Log exception

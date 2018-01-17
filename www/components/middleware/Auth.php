@@ -35,11 +35,17 @@ class Auth
         try {
             $authHeader = $req->getHeader('Authorization');
 
-            if (isset($authHeader[0])) {
+            if (empty($authHeader[0])) {
                 throw new AuthException('JWT is missing');
             }
 
-            list($type, $token) = explode(' ', $authHeader[0]);
+            $parsedAuthHeader = explode(' ', $authHeader[0]);
+
+            if (empty($parsedAuthHeader[0]) || empty($parsedAuthHeader[1])) {
+                throw new AuthException('JWT is missing');
+            }
+
+            list($type, $token) = $parsedAuthHeader;
 
             if (!$this->isSupported($type)) {
                 throw new AuthException('Unsupported HTTPAuth type');
@@ -47,7 +53,7 @@ class Auth
 
             $jwtParts = explode('.', $token);
 
-            if (isset($jwtParts[1])) {
+            if (empty($jwtParts[1])) {
                 throw new AuthException('JWT is invalid');
             }
 

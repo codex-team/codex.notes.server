@@ -35,7 +35,7 @@ class Auth
         try {
             $authHeader = $req->getHeader('Authorization');
 
-            if (empty($authHeader[0])) {
+            if (isset($authHeader[0])) {
                 throw new AuthException('JWT is missing');
             }
 
@@ -47,7 +47,7 @@ class Auth
 
             $jwtParts = explode('.', $token);
 
-            if (empty($jwtParts[1])) {
+            if (isset($jwtParts[1])) {
                 throw new AuthException('JWT is invalid');
             }
 

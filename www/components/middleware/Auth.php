@@ -55,7 +55,7 @@ class Auth
 
             $key = OAuth::generateSignatureKey($payload->user_id);
 
-            $decoded         = JWT::decode($token, $key, ['HS256']);
+            $decoded = JWT::decode($token, $key, ['HS256']);
             $GLOBALS['user'] = (array)$decoded;
 
         } catch (AuthException $e) {

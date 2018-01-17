@@ -36,13 +36,13 @@ class Auth
         $payload = explode('.', $token)[1];
         $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($payload));
 
-        $key = OAuth::generateSignatureKey($payload->google_id);
+        $key = OAuth::generateSignatureKey($payload->user_id);
 
         try {
             $decoded = JWT::decode($token, $key, ['HS256']);
             $GLOBALS['user'] = (array) $decoded;
         } catch (\Exception $e) {
-            Log::instance()->notice("Auth for {$payload->google_id} failed because of {$e->getMessage()}");
+            Log::instance()->notice("Auth for user {$payload->id} failed because of {$e->getMessage()}");
 
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Invalid JWT');
         }

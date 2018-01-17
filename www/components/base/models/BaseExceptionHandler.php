@@ -26,7 +26,7 @@ class BaseExceptionHandler
             $exception->getTraceAsString()
         );
 
-        Log::instance()->debug($logMessage);
+        Log::instance()->error($logMessage);
 
         /**
          * Return message to user

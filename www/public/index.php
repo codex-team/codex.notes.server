@@ -74,7 +74,9 @@ $c['notFoundHandler'] = function ($c) {
 /**
  * Enable Hawk Catcher
  */
-\Hawk\HawkCatcher::instance(Config::get('HAWK_TOKEN'));
+if (!empty(Config::get('HAWK_TOKEN'))) {
+    \Hawk\HawkCatcher::instance(Config::get('HAWK_TOKEN'));
+}
 
 /**
  * Enable modules

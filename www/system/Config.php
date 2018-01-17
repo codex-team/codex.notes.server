@@ -21,6 +21,18 @@ class Config extends Base
     }
 
     /**
+     * Set server config variable
+     *
+     * @param string $param
+     * @param string $value
+     * @return string $value
+     */
+    public static function set(string $param, string $value): ?string
+    {
+        return $_SERVER[$param] = $value;
+    }
+
+    /**
      * Return boolean value for param from .env
      *
      * @param string $param

@@ -8,8 +8,8 @@ namespace App\Tests\Helpers;
  *
  * Class for performing application testing with HTTP Requests
  */
-class WebTestCase extends \PHPUnit\Framework\TestCase {
-
+class WebTestCase extends \PHPUnit\Framework\TestCase
+{
     /** @var \Slim\App */
     protected $app;
     /** @var WebTestClient */
@@ -26,10 +26,9 @@ class WebTestCase extends \PHPUnit\Framework\TestCase {
     /**
      * Register application instance for testing
      */
-    public function getSlimInstance() {
-        $app = new \Slim\App([
-            'settings' => ['displayErrorDetails' => false]
-        ]);
+    public function getSlimInstance()
+    {
+        $app = new \Slim\App();
 
         $this->loadEnvironment();
 

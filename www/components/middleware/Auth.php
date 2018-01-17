@@ -25,20 +25,24 @@ class Auth
      */
     public function jwt(Request $req, Response $res, $next): Response
     {
-        $authHeader = $req->getHeader('Authorization');
+        try {
+            $authHeader = $req->getHeader('Authorization');
 
-        list($type, $token) = explode(' ', $authHeader[0]);
+            list($type, $token) = explode(' ', $authHeader[0]);
 
-        if (!$this->isSupported($type)) {
-            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Unsupported HTTPAuth type');
+            if (!$this->isSupported($type)) {
+                return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Unsupported HTTPAuth type');
+            }
+        } catch (\Exception $e) {
+            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is missing');
         }
 
-        $payload = explode('.', $token)[1];
-        $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($payload));
-
-        $key = OAuth::generateSignatureKey($payload->user_id);
-
         try {
+            $payload = explode('.', $token)[1];
+            $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($payload));
+
+            $key = OAuth::generateSignatureKey($payload->user_id);
+
             $decoded = JWT::decode($token, $key, ['HS256']);
             $GLOBALS['user'] = (array) $decoded;
         } catch (\Exception $e) {

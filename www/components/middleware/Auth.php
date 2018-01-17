@@ -2,10 +2,17 @@
 
 namespace App\Components\Middleware;
 
+use App\Components\Base\Models\Exceptions\AuthException;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-use \Firebase\JWT\JWT;
+use \Firebase\JWT\{
+    JWT,
+    BeforeValidException,
+    ExpiredException,
+    SignatureInvalidException
+};
+
 use App\Components\OAuth\OAuth;
 use App\System\{
     Config, Log, Http
@@ -28,27 +35,40 @@ class Auth
         try {
             $authHeader = $req->getHeader('Authorization');
 
+            if (empty($authHeader[0])) {
+                throw new AuthException('JWT is missing');
+            }
+
             list($type, $token) = explode(' ', $authHeader[0]);
 
             if (!$this->isSupported($type)) {
-                return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Unsupported HTTPAuth type');
+                throw new AuthException('Unsupported HTTPAuth type');
             }
-        } catch (\Exception $e) {
-            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is missing');
-        }
 
-        try {
+
             $payload = explode('.', $token)[1];
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($payload));
 
             $key = OAuth::generateSignatureKey($payload->user_id);
 
-            $decoded = JWT::decode($token, $key, ['HS256']);
-            $GLOBALS['user'] = (array) $decoded;
-        } catch (\Exception $e) {
-            Log::instance()->notice("Auth for user {$payload->id} failed because of {$e->getMessage()}");
+            $decoded         = JWT::decode($token, $key, ['HS256']);
+            $GLOBALS['user'] = (array)$decoded;
 
-            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'Invalid JWT');
+        } catch (AuthException $e) {
+
+            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, $e->getMessage());
+
+        } catch (\UnexpectedValueException $e) {
+
+            Log::instance()->notice(sprintf("[Auth] %s", $e->getMessage()));
+
+            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is invalid');
+
+        } catch (\DomainException $e) {
+
+            Log::instance()->notice(sprintf("[Auth] %s", $e->getMessage()));
+
+            return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is invalid');
         }
 
         return $next($req, $res);

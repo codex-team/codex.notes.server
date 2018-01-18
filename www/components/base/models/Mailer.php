@@ -71,21 +71,14 @@ class Mailer
             throw new MailerException('Message recipients list is empty');
         }
 
-        // Configure senders
+        // Configure sender
         if (is_string($sendFrom))
         {
             $message->setFrom($sendFrom);
         }
-        elseif (is_array($sendFrom))
-        {
-            foreach($sendFrom as $address => $name)
-            {
-                $message->setFrom([$address => $name]);
-            }
-        }
         else
         {
-            throw new MailerException('Message sendFrom argument should be String or Array');
+            throw new MailerException('Message sendFrom argument should be a String');
         }
 
 

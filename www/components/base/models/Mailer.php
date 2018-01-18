@@ -2,6 +2,7 @@
 
 namespace App\Components\Base\Models;
 
+use App\Components\Base\Models\Exceptions\MailerException;
 use \Swift_SmtpTransport;
 use \Swift_Message;
 use \Swift_Mailer;
@@ -14,8 +15,8 @@ use App\System\Config;
  */
 class Mailer
 {
-    const LOCALHOST = 'localhost';
-    const SMTP_PORT = 25;
+    const DEFAULT_HOST = 'smtp.mailtrap.io';
+    const DEFAULT_SMTP_PORT = 25;
 
     /**
      * @var $_instance
@@ -28,6 +29,11 @@ class Mailer
      */
     private $mailer = null;
 
+    /**
+     * Return Mailer instance
+     *
+     * @return Mailer
+     */
     public static function instance()
     {
         if (!isset(self::$_instance)) {
@@ -38,70 +44,103 @@ class Mailer
     }
 
     /**
-     * Method that send sends a message
+     * Send a message
      *
-     * @param string $subject - title of message
-     * @param array $sendFrom - list of senders email or name
+     * @param string $subject - message title
+     * @param string $sendFrom - list of senders email or name
      * @param array|string $body - message body with content-type
      * @param array|string $recipients - list of recipients emails or single email address
      * @param array $headers - specific headers. Rarely used
-     * @param array $attachments - message atthachments
+     * @param array $attachments - message attachments
      *
      * @return bool
      */
-    public function send(string $subject, array $sendFrom, $recipients, $body, array $headers = [], array $attachments = [])
+    public function send(string $subject, string $sendFrom, $recipients, $body, array $headers = [], array $attachments = []): bool
     {
-        // Create a message
+        // Create a new message
         $message = (new Swift_Message($subject));
 
-        // Configure senders
-        if (!empty($sendFrom)) {
-            foreach($sendFrom as $address => $name) {
-                if (is_int($address)) {
-                    $message->setFrom($name);
-                } else {
-                    $message->setFrom([$address => $name]);
-                }
-            }
-        } elseif (is_string($recipients)) {
-            $message->setFrom($recipients);
+        // Check inputs
+        if (empty($sendFrom))
+        {
+            throw new MailerException('Message sendFrom list is empty');
         }
 
-        // Configure recipients
-        if (!empty($recipients)) {
-            foreach($recipients as $address => $name) {
-                if (is_int($address)) {
-                    $message->setTo($name);
-                } else {
-                    $message->setTo([$address => $name]);
-                }
+        if (empty($recipients))
+        {
+            throw new MailerException('Message recipients list is empty');
+        }
+
+        // Configure senders
+        if (is_string($sendFrom))
+        {
+            $message->setFrom($sendFrom);
+        }
+        elseif (is_array($sendFrom))
+        {
+            foreach($sendFrom as $address => $name)
+            {
+                $message->setFrom([$address => $name]);
             }
+        }
+        else
+        {
+            throw new MailerException('Message sendFrom argument should be String or Array');
+        }
+
+
+        // Configure recipients
+        if (is_string($recipients))
+        {
+            $message->setTo($recipients);
+        }
+        elseif (is_array($recipients))
+        {
+            foreach($recipients as $address => $name)
+            {
+                $message->setTo([$address => $name]);
+            }
+        }
+        else
+        {
+            throw new MailerException('Message recipients argument should be String or Array');
         }
 
         // Body can contain content-type
-        if (is_array($body)) {
+        if (is_array($body))
+        {
             $message->setBody($body['text'], $body['content-type']);
-        } else {
+        }
+        else
+        {
             $message->setBody($body);
         }
 
         // If message has specific headers
-        if (!empty($headers)) {
+        if (!empty($headers))
+        {
             $headers = $message->getHeaders();
-            foreach($headers as $header => $value) {
-                if (!is_int($header)) {
+            foreach($headers as $header => $value)
+            {
+                if (is_string($header)) {
                     $headers->addTextHeader($header, $value);
                 }
             }
         }
 
-        if (!empty($attachments)) {
-            foreach($attachments as $file => $contentType) {
-                if (!is_int($file)) {
-                    $attachment = Swift_Attachment::fromPath($file, $contentType);
-                } else {
-                    // send attachment without content-type
-                    $attachment = Swift_Attachment::fromPath($contentType);
+        if (!empty($attachments))
+        {
+            foreach($attachments as $key => $payload)
+            {
+                // key is a filename and payload is content-type
+                if (is_string($key))
+                {
+                    $attachment = Swift_Attachment::fromPath($key, $payload);
+                }
+                else
+                {
+                    // payload is a filename
+                    $attachment = Swift_Attachment::fromPath($payload);
                 }
 
                 $message->attach($attachment);
@@ -113,16 +152,19 @@ class Mailer
 
     private function __construct()
     {
-        $server = Config::get('MAILER_SERVER') ?? self::LOCALHOST;
-        $port = Config::get('MAILER_POST') ?? self::SMTP_PORT; // local sendmail port
+        $server = Config::get('MAILER_SERVER') ?? self::DEFAULT_HOST;
+        $port = Config::get('MAILER_PORT') ?? self::DEFAULT_SMTP_PORT;
 
-        $username = Config::get('MAILER_USERNAME') ?? 'admin';
-        $password = Config::get('MAILER_PASSWORD') ?? 'admin';
+        $username = Config::get('MAILER_USERNAME') ?? '';
+        $password = Config::get('MAILER_PASSWORD') ?? '';
 
         // Create the Transport
-        $transport = (new Swift_SmtpTransport($server, $port))
-            ->setUsername($username)
-            ->setPassword($password);
+        $transport = (new Swift_SmtpTransport($server, $port));
+
+        if (!empty($username) && !empty($password))
+        {
+            $transport->setUsername($username)->setPassword($password);
+        }
 
         // Create the Mailer using your created Transport
         $this->mailer = new Swift_Mailer($transport);

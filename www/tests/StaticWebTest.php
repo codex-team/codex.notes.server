@@ -15,7 +15,8 @@ class StaticWebTest extends WebTestCase
     /**
      * Test if main page is accessible via HTTP GET Request
      */
-    public function testMainPageIsOk() {
+    public function testMainPageIsOk()
+    {
         $this->client->get('/');
         $this->assertTrue($this->client->response->isOk());
     }
@@ -23,7 +24,8 @@ class StaticWebTest extends WebTestCase
     /**
      * Test if main page has default test
      */
-    public function testMainPageTextIsVisible() {
+    public function testMainPageTextIsVisible()
+    {
         $output = $this->client->get('/');
         $this->assertContains('<h1>CodeX Notes</h1>', $output);
     }
@@ -31,7 +33,8 @@ class StaticWebTest extends WebTestCase
     /**
      * Test if undefined page is not defined
      */
-    public function testPageNotFound() {
+    public function testPageNotFound()
+    {
         $this->client->get('/unexisted/page');
         $this->assertTrue($this->client->response->isNotFound());
     }

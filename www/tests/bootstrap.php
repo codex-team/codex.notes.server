@@ -9,4 +9,3 @@ define('PROJECTROOT', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
  */
 include_once PROJECTROOT . "public/autoload.php";
 include_once PROJECTROOT . "vendor/autoload.php";
-

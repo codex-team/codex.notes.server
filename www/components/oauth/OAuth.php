@@ -11,7 +11,7 @@ use \App\Components\Api\Models\User;
 
 use \App\System\{
     Config,
-    HTTP,
+    Http,
     Log
 };
 
@@ -49,29 +49,36 @@ class OAuth
         $profileInfo = HTTP::request('GET', self::GOOGLE_PROFILE_URL, [], [$header]);
         $profileInfo = @json_decode($profileInfo);
 
-        if (!is_null($profileInfo->error)) {
-            Log::instance()->warning('Google OAuth failed. Reason: ' . $profileInfo->error->reason);
-            return $res->withStatus(HTTP::CODE_SERVER_ERROR, $profileInfo->error->reason);
+        Log::instance()->debug('[OAuth] Profile info from Google: ' . json_encode($profileInfo));
+
+        if (!empty($profileInfo->error)) {
+            Log::instance()->warning('[OAuth] Google OAuth failed. Reason: ' . $profileInfo->error->message);
+            return $res->withStatus(HTTP::CODE_SERVER_ERROR, $profileInfo->error->message);
         }
 
         $userData = [
+            'name' => $profileInfo->name,
+            'email' => $profileInfo->email,
             'google_id' => $profileInfo->id,
             'photo' => $profileInfo->picture,
-            'name' => $profileInfo->name
         ];
 
         /** Save new user to database */
-        $user = new User($userData['id']);
+        $user = new User();
         $user->sync($userData);
+
+        Log::instance()->debug('[OAuth] User model from DB: ' . json_encode($user));
 
         $jwt = JWT::encode([
             'iss' => Config::get('JWT_ISS'),
             'aud' => Config::get('JWT_AUD'),
             'iat' => time(),
-            'google_id' => $userData['google_id'],
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
             'photo' => $userData['photo'],
-            'name' => $userData['name'],
-        ], self::generateSignatureKey($userData['google_id']));
+            'google_id' => $userData['google_id'],
+        ], self::generateSignatureKey($user->id));
 
         $body = $res->getBody();
         $body->write('<div id="jwt">' . $jwt . '</div>');

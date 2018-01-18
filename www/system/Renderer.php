@@ -54,7 +54,7 @@ class Renderer
      * @param  string $componentName  - component name
      * @return string
      */
-    private function getTemplateDirectory( string $componentName ): string
+    private static function getTemplateDirectory( string $componentName ): string
     {
         /**
          * Path to the /components directory
@@ -74,7 +74,7 @@ class Renderer
      * @param  array $vars  - variables for the template
      * @return string
      */
-    private function renderTemplate($file, array $vars = null): string
+    private static function renderTemplate($file, array $vars = null): string
     {
         if (is_array($vars) && !empty($vars)) {
             extract($vars);

@@ -7,7 +7,8 @@
         "webonyx/graphql-php": "^0.11.5",
         "vlucas/phpdotenv": "^2.4",
         "firebase/php-jwt": "^5.0",
-        "swiftmailer/swiftmailer": "^6.0"
+        "swiftmailer/swiftmailer": "^6.0",
+        "codex-team/hawk.php": "^1.1"
     },
     "autoload": {
         "psr-4": {

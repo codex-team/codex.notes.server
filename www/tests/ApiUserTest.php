@@ -16,12 +16,18 @@ use MongoDB\BSON\ObjectId;
  */
 class ApiUserTest extends WebTestCase
 {
+    /**
+     * Setup testing environment
+     */
     public function setup()
     {
         parent::setup();
         $this->dropCollection();
     }
 
+    /**
+     * Drop user collection from test database
+     */
     private function dropCollection()
     {
         Mongo::connect()
@@ -32,7 +38,7 @@ class ApiUserTest extends WebTestCase
     /**
      * Test API Mutation – Create new user
      *
-     * Create new user with GraphQl request and find it with model
+     * Create new user with GraphQl request and find him with model
      */
     public function testCreateNewUser()
     {
@@ -59,7 +65,9 @@ class ApiUserTest extends WebTestCase
     }
 
     /**
+     * Test API Mutation – Create new user and find him
      *
+     * Create new user and find him with GraphQl requests
      */
     public function testCreateNewUserAndFind()
     {
@@ -85,7 +93,7 @@ class ApiUserTest extends WebTestCase
     /**
      * Test API Query – Find user
      *
-     * Create new user with model and find it with GraphQl
+     * Create new user with model and find him with GraphQl
      */
     public function testFindUser()
     {

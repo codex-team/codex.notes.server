@@ -54,8 +54,11 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
          * Load Dotenv
          * @see https://github.com/vlucas/phpdotenv
          */
-        if (is_file(PROJECTROOT . '.env')) {
-            $dotenv = new \Dotenv\Dotenv(PROJECTROOT);
+        $env_path = PROJECTROOT . 'tests/helpers/';
+        $env_name = '.env.test';
+
+        if (is_file($env_path . $env_name)) {
+            $dotenv = new \Dotenv\Dotenv($env_path, $env_name);
             $dotenv->load();
         }
     }

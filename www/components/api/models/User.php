@@ -70,7 +70,7 @@ class User extends Base
     }
 
     /**
-     * Create or update an existed User
+     * Create a new User or update existing
      *
      * @param array $data
      */
@@ -172,7 +172,7 @@ class User extends Base
      *
      * @return string
      */
-    private static function getCollectionName(): string
+    public static function getCollectionName(): string
     {
         return 'users';
     }

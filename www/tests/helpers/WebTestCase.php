@@ -56,6 +56,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
          */
         $env_path = PROJECTROOT . 'tests/helpers/';
         $env_name = '.env.test';
+
         if (is_file($env_path . $env_name)) {
             $dotenv = new \Dotenv\Dotenv($env_path, $env_name);
             $dotenv->load();

@@ -44,20 +44,25 @@ class ApiUserTest extends WebTestCase
     {
         $userId = new ObjectId();
 
+        // create new user with GraphQl request
         $userMutation = UsersModel::getCreateNewUserMutation((string)$userId, 'testCreateNewUser', 'testCreateNewUser@ifmo.su', 123);
         $output = $this->client->post('/graphql', $userMutation);
 
+        // check if response is not forbidden
         $this->assertFalse($this->client->response->isForbidden(), 'Auth Error (403).');
 
         $data = json_decode($output, true);
 
+        // check json ouput structure
         $this->assertArrayHasKey('data', $data);
         $this->assertArrayHasKey('user', $data['data']);
 
         $user = $data['data']['user'];
 
+        // get User from DB by model
         $userModel = new User($userId);
 
+        // check if initial and saved models are equal
         $this->assertEquals($userModel->id, $user['id']);
         $this->assertEquals($userModel->name, $user['name']);
         $this->assertEquals($userModel->email, $user['email']);
@@ -72,6 +77,8 @@ class ApiUserTest extends WebTestCase
     public function testCreateNewUserAndFind()
     {
         $userId = new ObjectId();
+
+        // create new user with GraphQl request
         $userMutation = UsersModel::getCreateNewUserMutation((string)$userId, 'testCreateNewUserAndFind', 'testCreateNewUserAndFind@ifmo.su', 123);
         $output = $this->client->post('/graphql', $userMutation);
         $data = json_decode($output, true);
@@ -81,12 +88,19 @@ class ApiUserTest extends WebTestCase
 
         $createdUser = $data['data']['user'];
 
+        // get user by Id with GraphQl request
         $userQuery = UsersModel::getFindUserQuery($userId);
         $output = $this->client->post('/graphql', $userQuery);
 
         $data = json_decode($output, true);
+
+        // check json ouput structure
+        $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('user', $data['data']);
+
         $foundUser = $data['data']['user'];
 
+        // check if initial and saved models are equal
         $this->assertEquals($createdUser['id'], $foundUser['id']);
     }
 
@@ -97,12 +111,19 @@ class ApiUserTest extends WebTestCase
      */
     public function testFindUser()
     {
+        // save new user to DB by model
         $newUser = new UsersModel((string)new ObjectId(), 'testFindUser', 'testFindUser@ifmo.su', 123);
 
+        // get user by Id with GraphQl request
         $userQuery = UsersModel::getFindUserQuery($newUser->id);
         $output = $this->client->post('/graphql', $userQuery);
 
         $data = json_decode($output, true);
+
+        // check json ouput structure
+        $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('user', $data['data']);
+
         $user = $data['data']['user'];
 
         $this->assertEquals($newUser->id, $user['id']);
@@ -115,10 +136,15 @@ class ApiUserTest extends WebTestCase
      */
     public function testUserNotFoundQuery()
     {
+        // try to find unexisting user in DB
         $userQuery = UsersModel::getFindUserQuery("000000000000000000000000");
         $output = $this->client->post('/graphql', $userQuery);
 
         $data = json_decode($output, true);
+
+        // check json ouput structure
+        $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('user', $data['data']);
 
         $this->assertEmpty($data['data']['user']['id']);
     }

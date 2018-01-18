@@ -97,7 +97,7 @@ class ApiUserTest extends WebTestCase
      */
     public function testFindUser()
     {
-        $newUser = new UsersModel(new ObjectId(), 'testFindUser', 'testFindUser@ifmo.su', 123);
+        $newUser = new UsersModel((string)new ObjectId(), 'testFindUser', 'testFindUser@ifmo.su', 123);
 
         $userQuery = UsersModel::getFindUserQuery($newUser->id);
         $output = $this->client->post('/graphql', $userQuery);

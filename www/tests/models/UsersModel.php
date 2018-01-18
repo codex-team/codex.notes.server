@@ -8,7 +8,7 @@ class UsersModel extends User
 {
     public function __construct($id, $name, $email, $dtReg)
     {
-        parent::__construct($id);
+        parent::__construct(null);
 
         $data = [
             'id' => $id,

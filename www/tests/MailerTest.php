@@ -2,8 +2,10 @@
 
 namespace App\Tests;
 
+use App\Components\Base\Models\Exceptions\MailerException;
 use App\Components\Base\Models\Mailer;
 use App\System\Config;
+use PHPUnit\Framework\Exception;
 
 /**
  * Class MailerTest
@@ -24,34 +26,28 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $env_path = PROJECTROOT . 'tests/helpers/';
         $env_name = '.env.test';
 
-        if (is_file($env_path . $env_name))
-        {
+        if (is_file($env_path . $env_name)) {
+
             $dotenv = new \Dotenv\Dotenv($env_path, $env_name);
             $dotenv->overload();
+
         }
 
-        if (empty(Config::get('MAILER_SERVER')))
-        {
+        if (empty(Config::get('MAILER_SERVER'))) {
+
             $this->markTestSkipped('MAILER_SERVER is not set. Skipped.');
+
         }
     }
 
     /**
      * Test if mail can be successfully sent
      */
-    public function testEmailSend()
-    {
-        $mailer = Mailer::instance();
-        $output = $mailer->send("subject", "3285b08cb2-87bb61@inbox.mailtrap.io", "3285b08cb2-87bb61@inbox.mailtrap.io", "hello");
-        var_dump($output);
-    }
+    public function testEmailSend() {
 
-    /**
-     * Test if mail can be successfully sent
-     */
-    public function testManySenders()
-    {
         $mailer = Mailer::instance();
-        $mailer->send("subject", ['test@test1.com', 'test@test2.com'], "3285b08cb2-87bb61@inbox.mailtrap.io", "hello");
+        $result = $mailer->send("subject", "3285b08cb2-87bb61@inbox.mailtrap.io", "3285b08cb2-87bb61@inbox.mailtrap.io", "hello");
+        $this->assertTrue($result);
+
     }
 }

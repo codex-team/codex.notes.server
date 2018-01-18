@@ -22,7 +22,7 @@ class Mailer
      * @var $_instance
      * Instance holder
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var null|Swift_Mailer
@@ -36,11 +36,11 @@ class Mailer
      */
     public static function instance()
     {
-        if (!isset(self::$_instance)) {
-            self::$_instance = new self();
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
         }
 
-        return self::$_instance;
+        return self::$instance;
     }
 
     /**

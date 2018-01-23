@@ -71,7 +71,8 @@ class Mutation extends ObjectType
                             'dtCreate' => Type::int(),
                             'dtModify' => Type::int(),
                             'isShared' => Type::boolean(),
-                            'isRemoved' => Type::boolean()
+                            'isRemoved' => Type::boolean(),
+                            'isRoot' => Type::boolean()
                         ],
                         'resolve' => function($root, $args, $context, ResolveInfo $info) {
 

@@ -48,6 +48,10 @@ class Folder extends ObjectType
                         'type' => Type::boolean(),
                         'description' => 'Removed status: true if Folder marked as removed',
                     ],
+                    'isRoot' => [
+                        'type' => Type::boolean(),
+                        'description' => 'true if this Folder is Root',
+                    ],
                     'notes' => [
                         'type' => Type::listOf(Types::note()),
                         'description' => 'Notes list',

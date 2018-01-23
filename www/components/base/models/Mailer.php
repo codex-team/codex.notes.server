@@ -20,8 +20,7 @@ class Mailer
     const DEFAULT_SMTP_PORT = 25;
 
     /**
-     * @var $_instance
-     *                 Instance holder
+     * @var $_instance - Instance holder
      */
     private static $instance;
 

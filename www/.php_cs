@@ -11,6 +11,7 @@ return PhpCsFixer\Config::create()
         'blank_line_before_return' => true,
         'binary_operator_spaces' => true,
         'cast_spaces' => true,
+        'short_scalar_cast' => true,
         'declare_equal_normalize' => true,
         'method_argument_space' => true,
         'method_separation' => true,
@@ -29,6 +30,13 @@ return PhpCsFixer\Config::create()
         'concat_space' => ['spacing' => 'one'],
         'no_multiline_whitespace_before_semicolons' => true,
         'no_leading_import_slash' => true,
+        'no_trailing_comma_in_list_call' => true,
+        'no_trailing_comma_in_singleline_array' => true,
+        'phpdoc_add_missing_param_annotation' => true,
+        'phpdoc_align' => true,
+        'phpdoc_no_empty_return' => true,
+        'return_type_declaration' => true,
+        'ternary_operator_spaces' => true,
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()

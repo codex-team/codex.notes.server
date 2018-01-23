@@ -21,6 +21,7 @@
         "phpunit/phpunit": "^6.5"
     },
     "scripts": {
-        "test": "vendor/bin/phpunit --verbose --coverage-text"
+        "test": "vendor/bin/phpunit --verbose --coverage-text",
+        "prs4-fix" : "vendor/bin/php-cs-fixer fix --verbose"
     }
 }

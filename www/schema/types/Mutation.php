@@ -2,27 +2,22 @@
 
 namespace App\Schema\Types;
 
-use App\Components\Base\Models\Exceptions\{
-    CollaboratorException,
-    FolderException,
-    AuthException
-};
-use GraphQL\Type\Definition\{
-    ObjectType,
-    ResolveInfo,
-    Type
-};
-use App\Schema\Types;
-use App\Components\Api\Models\{
-    User,
-    Note,
-    Folder,
-    Collaborator
-};
+use App\Components\Api\Models\Collaborator;
+use App\Components\Api\Models\Folder;
+use App\Components\Api\Models\Note;
+use App\Components\Api\Models\User;
+use App\Components\Base\Models\Exceptions\AuthException;
+use App\Components\Base\Models\Exceptions\CollaboratorException;
+use App\Components\Base\Models\Exceptions\FolderException;
 use App\Components\Middleware\Auth;
+use App\Schema\Types;
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\Type;
 
 /**
  * Class Mutation
+ *
  * @package App\Schema\Types
  *
  * Mutation type for GraphQL schema
@@ -32,7 +27,7 @@ class Mutation extends ObjectType
     public function __construct()
     {
         $config = [
-            'fields' => function() {
+            'fields' => function () {
                 return [
                     'user' => [
                         'type' => Types::user(),
@@ -43,8 +38,7 @@ class Mutation extends ObjectType
                             'email' => Type::nonNull(Type::string()),
                             'dtReg' => Type::int()
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             if (!Auth::checkUserAccess($args['id'])) {
                                 throw new AuthException('Access denied');
                             }
@@ -73,10 +67,8 @@ class Mutation extends ObjectType
                             'isShared' => Type::boolean(),
                             'isRemoved' => Type::boolean()
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
-
                                 if (!Auth::checkUserAccess($args['ownerId'])) {
                                     throw new AuthException('Access denied');
                                 }
@@ -114,8 +106,7 @@ class Mutation extends ObjectType
                             'dtModify' => Type::int(),
                             'isRemoved' => Type::boolean()
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             if (!Auth::checkUserAccess($args['authorId'])) {
                                 throw new AuthException('Access denied');
                             }
@@ -150,10 +141,8 @@ class Mutation extends ObjectType
                             'dtInvite' => Type::int(),
                             'isRemoved' => Type::boolean()
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
-
                                 if (!Auth::checkUserAccess($args['ownerId'])) {
                                     throw new AuthException('Access denied');
                                 }
@@ -172,7 +161,6 @@ class Mutation extends ObjectType
                                 }
 
                                 if ($args['token']) {
-
                                     $collaborator = new Collaborator($originalFolder, $args['token']);
                                     $collaborator->sync($args);
 
@@ -183,7 +171,6 @@ class Mutation extends ObjectType
                                     if (!empty($args['userId'])) {
                                         $collaborator->saveFolder($originalFolder);
                                     }
-
                                 } elseif ($args['email']) {
 
                                     /**

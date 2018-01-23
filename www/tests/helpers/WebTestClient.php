@@ -12,6 +12,7 @@ use Slim\Http\Uri;
 
 /**
  * Class WebTestClient
+ *
  * @package App\Tests\Helpers
  *
  * Class for performing HTTP queries to a REST API
@@ -27,7 +28,7 @@ class WebTestClient
     /** @var  \Slim\Http\Response */
     public $response;
 
-    private $cookies = array();
+    private $cookies = [];
 
     public function __construct(App $slim)
     {
@@ -39,31 +40,31 @@ class WebTestClient
         throw new \BadMethodCallException(strtoupper($method) . ' is not supported');
     }
 
-    public function get($path, $data = array(), $optionalHeaders = array())
+    public function get($path, $data = [], $optionalHeaders = [])
     {
         return $this->request('get', $path, $data, $optionalHeaders);
     }
 
-    public function post($path, $data = array(), $optionalHeaders = array())
+    public function post($path, $data = [], $optionalHeaders = [])
     {
         return $this->request('post', $path, $data, $optionalHeaders);
     }
 
     // Abstract way to make a request to SlimPHP, this allows us to mock the
     // slim environment
-    private function request($method, $path, $data = array(), $optionalHeaders = array())
+    private function request($method, $path, $data = [], $optionalHeaders = [])
     {
         //Make method uppercase
         $method = strtoupper($method);
-        $options = array(
+        $options = [
             'REQUEST_METHOD' => $method,
-            'REQUEST_URI'    => $path
-        );
+            'REQUEST_URI' => $path
+        ];
 
         if ($method === 'GET') {
             $options['QUERY_STRING'] = http_build_query($data);
         } else {
-            $params  = json_encode($data);
+            $params = json_encode($data);
         }
 
         // Prepare a mock environment
@@ -80,17 +81,18 @@ class WebTestClient
             $body->write($params);
         }
 
-        $this->request  = new Request($method, $uri, $headers, $cookies, $serverParams, $body);
+        $this->request = new Request($method, $uri, $headers, $cookies, $serverParams, $body);
         $response = new Response();
 
         $this->response = $this->app->process($this->request, $response);
 
         // Return the application output.
-        return (string)$this->response->getBody();
+        return (string) $this->response->getBody();
     }
 
     /**
      * Set cookie $name with $value
+     *
      * @param $name
      * @param $value
      */

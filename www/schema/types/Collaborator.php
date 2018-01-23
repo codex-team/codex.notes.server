@@ -2,14 +2,13 @@
 
 namespace App\Schema\Types;
 
-use GraphQL\Type\Definition\{
-    ObjectType,
-    Type
-};
 use App\Schema\Types;
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
 
 /**
  * Collaborator type
+ *
  * @package App\Schema\Types
  */
 class Collaborator extends ObjectType
@@ -17,7 +16,7 @@ class Collaborator extends ObjectType
     public function __construct()
     {
         $config = [
-            'fields' => function() {
+            'fields' => function () {
                 return [
                     'token' => [
                         'type' => Type::string(),

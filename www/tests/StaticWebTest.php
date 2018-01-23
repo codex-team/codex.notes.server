@@ -6,6 +6,7 @@ use App\Tests\Helpers\WebTestCase;
 
 /**
  * Class StaticWebTest
+ *
  * @package App\Tests
  *
  * Test static routes

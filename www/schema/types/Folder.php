@@ -2,15 +2,13 @@
 
 namespace App\Schema\Types;
 
-use GraphQL\Type\Definition\{
-    ObjectType,
-    Type
-};
 use App\Schema\Types;
-
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
 
 /**
  * Folder type
+ *
  * @package App\Schema\Types
  */
 class Folder extends ObjectType
@@ -18,7 +16,7 @@ class Folder extends ObjectType
     public function __construct()
     {
         $config = [
-            'fields' => function() {
+            'fields' => function () {
                 return [
                     'id' => [
                         'type' => Type::id(),

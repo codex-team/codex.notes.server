@@ -3,14 +3,15 @@
 namespace App\Components\Base\Models;
 
 use App\Components\Base\Models\Exceptions\MailerException;
-use \Swift_SmtpTransport;
-use \Swift_Message;
-use \Swift_Mailer;
-use \Swift_Attachment;
 use App\System\Config;
+use Swift_Attachment;
+use Swift_Mailer;
+use Swift_Message;
+use Swift_SmtpTransport;
 
 /**
  * Class Mailer (Singleton)
+ *
  * @package App\Components\Base\Models
  */
 class Mailer
@@ -20,7 +21,7 @@ class Mailer
 
     /**
      * @var $_instance
-     * Instance holder
+     *                 Instance holder
      */
     private static $instance;
 
@@ -46,12 +47,12 @@ class Mailer
     /**
      * Send a message
      *
-     * @param string $subject - message title
-     * @param string $sendFrom - list of senders email or name
-     * @param array|string $body - message body with content-type
-     * @param array|string $recipients - list of recipients emails or single email address
-     * @param array $headers - specific headers. Rarely used
-     * @param array $attachments - message attachments
+     * @param string       $subject     - message title
+     * @param string       $sendFrom    - list of senders email or name
+     * @param array|string $body        - message body with content-type
+     * @param array|string $recipients  - list of recipients emails or single email address
+     * @param array        $headers     - specific headers. Rarely used
+     * @param array        $attachments - message attachments
      *
      * @return bool
      */
@@ -62,89 +63,60 @@ class Mailer
 
         // Check inputs
         if (empty($sendFrom)) {
-
             throw new MailerException('Message sendFrom list is empty');
-
         }
 
         if (empty($recipients)) {
-
             throw new MailerException('Message recipients list is empty');
-
         }
 
         // Configure sender
         if (is_string($sendFrom)) {
-
             $message->setFrom($sendFrom);
-
         } else {
-
             throw new MailerException('Message sendFrom argument should be a String');
-
         }
 
 
         // Configure recipients
         if (is_string($recipients)) {
-
             $message->setTo($recipients);
-
         } elseif (is_array($recipients)) {
-
-            foreach($recipients as $address => $name) {
-
+            foreach ($recipients as $address => $name) {
                 $message->setTo([$address => $name]);
-
             }
-
         } else {
-
             throw new MailerException('Message recipients argument should be String or Array');
-
         }
 
         // Body can contain content-type
         if (is_array($body)) {
-
             $message->setBody($body['text'], $body['content-type']);
-
         } else {
-
             $message->setBody($body);
-
         }
 
         // If message has specific headers
         if (!empty($headers)) {
-
             $headers = $message->getHeaders();
 
-            foreach($headers as $header => $value) {
-
+            foreach ($headers as $header => $value) {
                 if (is_string($header)) {
-
                     $headers->addTextHeader($header, $value);
-
                 }
-
             }
         }
 
         if (!empty($attachments)) {
-
-            foreach($attachments as $key => $payload) {
+            foreach ($attachments as $key => $payload) {
 
                 // key is a filename and payload is content-type
                 if (is_string($key)) {
-
                     $attachment = Swift_Attachment::fromPath($key, $payload);
-
                 } else {
 
                     // payload is a filename
                     $attachment = Swift_Attachment::fromPath($payload);
-
                 }
 
                 $message->attach($attachment);
@@ -166,17 +138,18 @@ class Mailer
         $transport = new Swift_SmtpTransport($server, $port);
 
         if (!empty($username) && !empty($password)) {
-
             $transport->setUsername($username)->setPassword($password);
-
         }
 
         // Create the Mailer using your created Transport
         $this->mailer = new Swift_Mailer($transport);
-
     }
 
-    private function __sleep() { }
+    private function __sleep()
+    {
+    }
 
-    private function __clone() { }
+    private function __clone()
+    {
+    }
 }

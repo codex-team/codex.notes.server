@@ -2,19 +2,17 @@
 
 namespace App\Schema\Types;
 
-use GraphQL\Type\Definition\{
-    ObjectType,
-    ResolveInfo,
-    Type
-};
+use App\Components\Api\Models\Folder;
+use App\Components\Api\Models\Note;
+use App\Components\Api\Models\User;
 use App\Schema\Types;
-use App\Components\Api\Models\{
-    User,
-    Note,
-    Folder
-};
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\Type;
+
 /**
  * Class Query
+ *
  * @package App\Schema\Types
  *
  * Query type for GraphQL schema
@@ -24,7 +22,7 @@ class Query extends ObjectType
     public function __construct()
     {
         $config = [
-            'fields' => function() {
+            'fields' => function () {
                 return [
                     'user' => [
                         'type' => Types::user(),
@@ -40,8 +38,7 @@ class Query extends ObjectType
                                 'defaultValue' => 0
                             ]
                         ],
-                        'resolve' => function($root, $args) {
-
+                        'resolve' => function ($root, $args) {
                             $user = new User($args['id']);
 
                             $limit = $args['foldersLimit'];
@@ -62,8 +59,7 @@ class Query extends ObjectType
                             'ownerId' => Type::nonNull(Type::id()),
                             'id' => Type::nonNull(Type::id())
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             $folder = new Folder($args['ownerId'], $args['id']);
 
                             $selectedFields = $info->getFieldSelection();
@@ -88,8 +84,7 @@ class Query extends ObjectType
                             'folderId' => Type::nonNull(Type::id()),
                             'id' => Type::nonNull(Type::id())
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             $note = new Note($args['authorId'], $args['folderId'], $args['id']);
 
                             return $note;

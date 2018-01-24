@@ -52,7 +52,7 @@ class Collaborator extends Base
     /**
      * Removed state
      *
-     * @var boolean|null
+     * @var bool|null
      */
     public $isRemoved;
 
@@ -75,7 +75,7 @@ class Collaborator extends Base
      *
      * @param Folder $folder
      * @param string $token
-     * @param array  $data          init model from data
+     * @param array  $data   init model from data
      *
      * @throws CollaboratorException
      */
@@ -181,6 +181,7 @@ class Collaborator extends Base
      *
      * @param string $ownerId
      * @param string $folderId
+     *
      * @return string
      */
     public static function getCollectionName(string $ownerId, string $folderId): string
@@ -194,11 +195,13 @@ class Collaborator extends Base
      * @param string $userId
      * @param string $folderId
      * @param string $email
+     *
      * @return string
      */
     public static function getInvitationToken(string $userId, string $folderId, string $email): string
     {
-        $secretString = sprintf('%s:%s:%s', $userId , $folderId , $email);
+        $secretString = sprintf('%s:%s:%s', $userId, $folderId, $email);
+
         return hash_hmac('sha256', $secretString, Config::get('INVITATION_SALT'));
     }
 }

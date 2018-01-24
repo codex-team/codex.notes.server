@@ -2,10 +2,11 @@
 
 namespace App\components\api\models;
 
-
 class Base
 {
-    public function __construct(){}
+    public function __construct()
+    {
+    }
 
     /**
      * Fill model with values from data

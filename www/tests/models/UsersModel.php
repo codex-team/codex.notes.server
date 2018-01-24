@@ -44,7 +44,7 @@ class UsersModel extends User
     public static function getFindUserQuery($id)
     {
         return [
-            'query' => 'query { user(id:"'.$id.'") {
+            'query' => 'query { user(id:"' . $id . '") {
                             id
                           }
                         }'

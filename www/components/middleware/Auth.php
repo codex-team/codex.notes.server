@@ -3,20 +3,15 @@
 namespace App\Components\Middleware;
 
 use App\Components\Base\Models\Exceptions\AuthException;
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
-
-use \Firebase\JWT\{
-    JWT,
-    BeforeValidException,
-    ExpiredException,
-    SignatureInvalidException
-};
-
 use App\Components\OAuth\OAuth;
 use App\System\{
-    Config, Log, Http
+    Config,
+    HTTP,
+    Log
 };
+use Firebase\JWT\JWT;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class Auth
 {
@@ -25,9 +20,10 @@ class Auth
     /**
      * Authenticate user by JWT
      *
-     * @param Request $req
+     * @param Request  $req
      * @param Response $res
      * @param $next
+     *
      * @return Response - with 403 status if auth failed
      */
     public function jwt(Request $req, Response $res, $next): Response
@@ -62,24 +58,18 @@ class Auth
             if (empty($payload->user_id)) {
                 throw new AuthException('JWT is invalid');
             }
-            
+
             $key = OAuth::generateSignatureKey($payload->user_id);
 
             $decoded = JWT::decode($token, $key, ['HS256']);
-            $GLOBALS['user'] = (array)$decoded;
-
+            $GLOBALS['user'] = (array) $decoded;
         } catch (AuthException $e) {
-
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, $e->getMessage());
-
         } catch (\UnexpectedValueException $e) {
-
             Log::instance()->notice(sprintf("[Auth] %s", $e->getMessage()));
 
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is invalid');
-
         } catch (\DomainException $e) {
-
             Log::instance()->notice(sprintf("[Auth] %s", $e->getMessage()));
 
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is invalid');
@@ -92,6 +82,7 @@ class Auth
      * Return true if current user has passed $userId
      *
      * @param string $userId
+     *
      * @return bool
      */
     public static function checkUserAccess($userId): bool
@@ -111,6 +102,7 @@ class Auth
      * Check if passed HTTPAuth type is supported
      *
      * @param string $type - HTTPAuth type
+     *
      * @return bool
      */
     private function isSupported($type): bool

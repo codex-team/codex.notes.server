@@ -2,8 +2,8 @@
 
 namespace App\Components\Base\Models;
 
-use Exception;
 use App\System\Log;
+use Exception;
 
 class BaseException extends Exception
 {

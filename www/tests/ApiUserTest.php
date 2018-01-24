@@ -10,6 +10,7 @@ use MongoDB\BSON\ObjectId;
 
 /**
  * Class ApiUserTest
+ *
  * @package App\Tests
  *
  * Test GraphQl user API endpoint
@@ -45,7 +46,7 @@ class ApiUserTest extends WebTestCase
         $userId = new ObjectId();
 
         // create new user with GraphQl request
-        $userMutation = UsersModel::getCreateNewUserMutation((string)$userId, 'testCreateNewUser', 'testCreateNewUser@ifmo.su', 123);
+        $userMutation = UsersModel::getCreateNewUserMutation((string) $userId, 'testCreateNewUser', 'testCreateNewUser@ifmo.su', 123);
         $output = $this->client->post('/graphql', $userMutation);
 
         // check if response is not forbidden
@@ -79,7 +80,7 @@ class ApiUserTest extends WebTestCase
         $userId = new ObjectId();
 
         // create new user with GraphQl request
-        $userMutation = UsersModel::getCreateNewUserMutation((string)$userId, 'testCreateNewUserAndFind', 'testCreateNewUserAndFind@ifmo.su', 123);
+        $userMutation = UsersModel::getCreateNewUserMutation((string) $userId, 'testCreateNewUserAndFind', 'testCreateNewUserAndFind@ifmo.su', 123);
         $output = $this->client->post('/graphql', $userMutation);
         $data = json_decode($output, true);
 
@@ -112,7 +113,7 @@ class ApiUserTest extends WebTestCase
     public function testFindUser()
     {
         // save new user to DB by model
-        $newUser = new UsersModel((string)new ObjectId(), 'testFindUser', 'testFindUser@ifmo.su', 123);
+        $newUser = new UsersModel((string) new ObjectId(), 'testFindUser', 'testFindUser@ifmo.su', 123);
 
         // get user by Id with GraphQl request
         $userQuery = UsersModel::getFindUserQuery($newUser->id);

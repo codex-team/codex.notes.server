@@ -25,21 +25,23 @@ class HTTP
     /**
      * Send cURL request with x-www-urlencoded Content-Type
      *
-     * @param string $method - 'POST' or 'GET' http request methods
-     * @param string $url - requested url
-     * @param array $params - request params
-     * @param array $headers - request headers
-     * @return string – response contents
+     * @param string $method  - 'POST' or 'GET' http request methods
+     * @param string $url     - requested url
+     * @param array  $params  - request params
+     * @param array  $headers - request headers
+     *
      * @throws \Exception
+     *
+     * @return string – response contents
      */
-    static public function request(string $method, string $url, array $params=[], $headers=[]) : string
+    public static function request(string $method, string $url, array $params = [], $headers = []) : string
     {
         $curl = curl_init();
         switch (strtoupper($method)) {
             case 'POST':
-                curl_setopt($curl, CURLOPT_POST,1);
+                curl_setopt($curl, CURLOPT_POST, 1);
                 if (count($params)) {
-                    curl_setopt($curl,CURLOPT_POSTFIELDS, http_build_query($params));
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
                 }
                 break;
             case 'GET':

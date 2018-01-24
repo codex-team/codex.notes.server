@@ -50,7 +50,7 @@ class Note extends Base
     /**
      * Removed state
      *
-     * @var boolean|null
+     * @var bool|null
      */
     public $isRemoved;
 
@@ -85,10 +85,10 @@ class Note extends Base
     /**
      * Note constructor
      *
-     * @param string $authorId
-     * @param string $folderId
-     * @param string|null $id      if passed, returns filled Note model
-     * @param array $data
+     * @param string      $authorId
+     * @param string      $folderId
+     * @param string|null $id       if passed, returns filled Note model
+     * @param array       $data
      */
     public function __construct(string $authorId, string $folderId, string $id = null, array $data = null)
     {
@@ -107,6 +107,7 @@ class Note extends Base
 
     /**
      * Override model fill method
+     *
      * @param array $data
      */
     protected function fillModel(array $data): void
@@ -181,6 +182,7 @@ class Note extends Base
      *
      * @param string $userId
      * @param string $folderId
+     *
      * @return string
      */
     public static function getCollectionName(string $userId, string $folderId): string

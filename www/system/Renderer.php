@@ -2,7 +2,6 @@
 
 namespace App\System;
 
-
 /**
  * Class Renderer
  * Provides template rendering methods
@@ -13,8 +12,10 @@ class Renderer
 {
     /**
      * Return template with passed data
-     * @param  string $tpl            - path to the template related to the current component\s tpl/ folder
-     * @param  array|null $viewData   - data passed to the template
+     *
+     * @param string     $tpl      - path to the template related to the current component\s tpl/ folder
+     * @param array|null $viewData - data passed to the template
+     *
      * @return string
      */
     public static function render(string $tpl, array $viewData = null): string
@@ -45,16 +46,18 @@ class Renderer
          * Render layout with the template content
          */
         $layoutData = array_merge($viewData, ['content' => $templateContent]);
-        return self::renderTemplate(self::getTemplateDirectory('base') . 'layout.php', $layoutData);
 
+        return self::renderTemplate(self::getTemplateDirectory('base') . 'layout.php', $layoutData);
     }
 
     /**
      * Returns template forder path from the component
-     * @param  string $componentName  - component name
+     *
+     * @param string $componentName - component name
+     *
      * @return string
      */
-    private static function getTemplateDirectory( string $componentName ): string
+    private static function getTemplateDirectory(string $componentName): string
     {
         /**
          * Path to the /components directory
@@ -70,8 +73,9 @@ class Renderer
     /**
      * Renders template with data
      *
-     * @param  string $file
-     * @param  array $vars  - variables for the template
+     * @param string $file
+     * @param array  $vars - variables for the template
+     *
      * @return string
      */
     private static function renderTemplate($file, array $vars = null): string

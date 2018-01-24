@@ -2,18 +2,15 @@
 
 namespace App\Components\OAuth;
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
-
-use \Firebase\JWT\JWT;
-
-use \App\Components\Api\Models\User;
-
-use \App\System\{
+use App\Components\Api\Models\User;
+use App\System\{
     Config,
-    Http,
+    HTTP,
     Log
 };
+use Firebase\JWT\JWT;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class OAuth
 {
@@ -23,9 +20,10 @@ class OAuth
     /**
      * Provide Google OAuth authorization flow
      *
-     * @param Request $req
+     * @param Request  $req
      * @param Response $res
      * @param $args
+     *
      * @return Response
      */
     public function code(Request $req, Response $res, $args)
@@ -53,6 +51,7 @@ class OAuth
 
         if (!empty($profileInfo->error)) {
             Log::instance()->warning('[OAuth] Google OAuth failed. Reason: ' . $profileInfo->error->message);
+
             return $res->withStatus(HTTP::CODE_SERVER_ERROR, $profileInfo->error->message);
         }
 
@@ -90,6 +89,7 @@ class OAuth
      * Return key for JWT sign algorithm using $userId
      *
      * @param string $userId
+     *
      * @return string
      */
     public static function generateSignatureKey($userId)

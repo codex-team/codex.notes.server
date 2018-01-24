@@ -4,6 +4,7 @@ namespace App\Tests\Helpers;
 
 /**
  * Class WebTestCase
+ *
  * @package App\Tests\Helpers
  *
  * Class for performing application testing with HTTP Requests
@@ -19,7 +20,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
     {
         // Establish a local reference to the Slim app object
         // Ensure no cache Router
-        $this->app    = $this->getSlimInstance();
+        $this->app = $this->getSlimInstance();
         $this->client = new WebTestClient($this->app);
     }
 
@@ -52,6 +53,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
     {
         /**
          * Load Dotenv
+         *
          * @see https://github.com/vlucas/phpdotenv
          */
         $env_path = PROJECTROOT . 'tests/helpers/';
@@ -62,5 +64,4 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
             $dotenv->load();
         }
     }
-};
-
+}

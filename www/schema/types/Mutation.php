@@ -2,27 +2,28 @@
 
 namespace App\Schema\Types;
 
-use App\Components\Base\Models\Exceptions\{
-    CollaboratorException,
-    FolderException,
-    AuthException
+use App\Components\Api\Models\{
+    Collaborator,
+    Folder,
+    Note,
+    User
 };
+use App\Components\Base\Models\Exceptions\{
+    AuthException,
+    CollaboratorException,
+    FolderException
+};
+use App\Components\Middleware\Auth;
+use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,
     ResolveInfo,
     Type
 };
-use App\Schema\Types;
-use App\Components\Api\Models\{
-    User,
-    Note,
-    Folder,
-    Collaborator
-};
-use App\Components\Middleware\Auth;
 
 /**
  * Class Mutation
+ *
  * @package App\Schema\Types
  *
  * Mutation type for GraphQL schema
@@ -32,7 +33,7 @@ class Mutation extends ObjectType
     public function __construct()
     {
         $config = [
-            'fields' => function() {
+            'fields' => function () {
                 return [
                     'user' => [
                         'type' => Types::user(),
@@ -43,8 +44,7 @@ class Mutation extends ObjectType
                             'email' => Type::nonNull(Type::string()),
                             'dtReg' => Type::int()
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             if (!Auth::checkUserAccess($args['id'])) {
                                 throw new AuthException('Access denied');
                             }
@@ -74,10 +74,8 @@ class Mutation extends ObjectType
                             'isRemoved' => Type::boolean(),
                             'isRoot' => Type::boolean()
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
-
                                 if (!Auth::checkUserAccess($args['ownerId'])) {
                                     throw new AuthException('Access denied');
                                 }
@@ -115,8 +113,7 @@ class Mutation extends ObjectType
                             'dtModify' => Type::int(),
                             'isRemoved' => Type::boolean()
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             if (!Auth::checkUserAccess($args['authorId'])) {
                                 throw new AuthException('Access denied');
                             }
@@ -151,10 +148,8 @@ class Mutation extends ObjectType
                             'dtInvite' => Type::int(),
                             'isRemoved' => Type::boolean()
                         ],
-                        'resolve' => function($root, $args, $context, ResolveInfo $info) {
-
+                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
-
                                 if (!Auth::checkUserAccess($args['ownerId'])) {
                                     throw new AuthException('Access denied');
                                 }
@@ -173,7 +168,6 @@ class Mutation extends ObjectType
                                 }
 
                                 if ($args['token']) {
-
                                     $collaborator = new Collaborator($originalFolder, $args['token']);
                                     $collaborator->sync($args);
 
@@ -184,7 +178,6 @@ class Mutation extends ObjectType
                                     if (!empty($args['userId'])) {
                                         $collaborator->saveFolder($originalFolder);
                                     }
-
                                 } elseif ($args['email']) {
 
                                     /**

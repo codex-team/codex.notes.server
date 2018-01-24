@@ -6,6 +6,7 @@ return PhpCsFixer\Config::create()
         '@PSR2' => true,
         'array_syntax' => ['syntax' => 'short'],
         'ordered_imports' => true,
+        'single_import_per_statement' => false,
         'no_whitespace_in_blank_line' => true,
         'no_unused_imports' => true,
         'blank_line_before_return' => true,

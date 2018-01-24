@@ -46,14 +46,14 @@ class Folder extends Base
      *  1) false — this is original Folder
      *  2) true  — this is 'virtual' shared Folder
      *
-     * @var boolean
+     * @var bool
      */
     public $isShared = false;
 
     /**
      * Removed state
      *
-     * @var boolean
+     * @var bool
      */
     public $isRemoved = false;
 
@@ -97,7 +97,7 @@ class Folder extends Base
      *
      * @param string $ownerId
      * @param string $id
-     * @param array  $data          init model from data
+     * @param array  $data    init model from data
      */
     public function __construct(string $ownerId, string $id = null, array $data = null)
     {
@@ -111,11 +111,11 @@ class Folder extends Base
         if ($data) {
             $this->fillModel($data);
         }
-
     }
 
     /**
      * Override model fill method
+     *
      * @param array $data
      */
     protected function fillModel(array $data): void
@@ -161,9 +161,9 @@ class Folder extends Base
     /**
      * Fill Notes in this Folder
      *
-     * @param int $limit    how much items do you need
-     * @param int $skip     how much items needs to be skipped
-     * @param array $sort   sort fields
+     * @param int   $limit how much items do you need
+     * @param int   $skip  how much items needs to be skipped
+     * @param array $sort  sort fields
      */
     public function fillNotes(int $limit = null, int $skip = null, array $sort = []): void
     {
@@ -196,9 +196,9 @@ class Folder extends Base
     /**
      * Fill Collaborators in this Folder
      *
-     * @param int $limit    how much items do you need
-     * @param int $skip     how much items needs to be skipped
-     * @param array $sort   sort fields
+     * @param int   $limit how much items do you need
+     * @param int   $skip  how much items needs to be skipped
+     * @param array $sort  sort fields
      */
     public function fillCollaborators(int $limit = null, int $skip = null, array $sort = []): void
     {
@@ -225,7 +225,6 @@ class Folder extends Base
             ->find($query, $options);
 
         foreach ($mongoResponse as $collaboratorRow) {
-
             $collaborator = new Collaborator($this, null, $collaboratorRow);
 
             $collaborator->fillUser();
@@ -267,6 +266,7 @@ class Folder extends Base
      * Compose collection name by pattern folders:<userId>
      *
      * @param string $ownerId
+     *
      * @return string
      */
     public static function getCollectionName(string $ownerId): string

@@ -225,6 +225,7 @@ class Collaborator extends Base
             Config::get('SERVER_URI') . 'join/' . $this->token;
 
         $mailer = Mailer::instance();
+
         return $mailer->send("Invitation to the folder in CodeX Notes", $this->email, "3285b08cb2-87bb61@inbox.mailtrap.io", $message);
     }
 }

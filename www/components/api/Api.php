@@ -2,23 +2,27 @@
 
 namespace App\Components\Api;
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
-use App\{
-    Schema\Types, System\Config, System\Log
+use App\Schema\Types;
+use App\System\{
+    Config,
+    Log
 };
-use GraphQL\{
-    Type\Schema,
-    Server\StandardServer,
-    Server\ServerConfig,
-    Error\Debug,
-    Error\FormattedError,
-    Executor\ExecutionResult
+use GraphQL\Error\{
+    Debug,
+    FormattedError
 };
-
+use GraphQL\Executor\ExecutionResult;
+use GraphQL\Server\{
+    ServerConfig,
+    StandardServer
+};
+use GraphQL\Type\Schema;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
  * Class Api
+ *
  * @package App\Components\Api
  */
 class Api
@@ -34,6 +38,7 @@ class Api
      * graphql-php Standard Server instance.
      * It supports more features out of the box, including parsing HTTP requests,
      * producing a spec-compliant response; batched queries; persisted queries.
+     *
      * @see http://webonyx.github.io/graphql-php/executing-queries/#using-server
      */
     protected $server;
@@ -51,6 +56,7 @@ class Api
 
         /**
          * Configure server
+         *
          * @see https://github.com/webonyx/graphql-php/blob/master/docs/reference.md#graphqlserverserverconfig
          */
         $config = ServerConfig::create()
@@ -58,14 +64,16 @@ class Api
             ->setErrorFormatter(function ($e) {
                 $message = sprintf("%s in %s:%s\n%s", $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
                 $this->logger->error($message);
+
                 return FormattedError::createFromException($e);
             });
 
         /**
          * Enable debugging tools
+         *
          * @see https://github.com/webonyx/graphql-php/blob/master/docs/error-handling.md#default-error-formatting
          */
-        if (Config::debug()){
+        if (Config::debug()) {
             /**
              * Continue error throwing to the logs/log_YYYY-MM-DD.txt
              */
@@ -85,9 +93,11 @@ class Api
 
     /**
      * Single endpoint for all GraphQL queries to the API
-     * @param Request $request
+     *
+     * @param Request  $request
      * @param Response $response
      * @param $args
+     *
      * @return Response
      */
     public function graphql(Request $request, Response $response, $args)

@@ -13,6 +13,7 @@ class Config extends Base
      * Return value from .env or null
      *
      * @param string $param
+     *
      * @return string
      */
     public static function get(string $param): ?string
@@ -25,6 +26,7 @@ class Config extends Base
      *
      * @param string $param
      * @param string $value
+     *
      * @return string $value
      */
     public static function set(string $param, string $value): ?string
@@ -36,6 +38,7 @@ class Config extends Base
      * Return boolean value for param from .env
      *
      * @param string $param
+     *
      * @return bool
      */
     public static function getBool(string $param): ?bool

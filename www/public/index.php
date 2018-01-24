@@ -3,10 +3,8 @@
 namespace App;
 
 use App\Components\Base\Models\BaseException;
-use App\Components\Base\Models\Handlers\{
-    AppExceptionHandler,
-    CodeExceptionHandler
-};
+use App\Components\Base\Models\Handlers\AppExceptionHandler;
+use App\Components\Base\Models\Handlers\CodeExceptionHandler;
 use App\System\Config;
 
 define('PROJECTROOT', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
@@ -24,6 +22,7 @@ require PROJECTROOT . Config::DIR_VENDOR . DIRECTORY_SEPARATOR . 'autoload.php';
 
 /**
  * Load Dotenv
+ *
  * @see https://github.com/vlucas/phpdotenv
  */
 if (is_file(PROJECTROOT . '.env')) {
@@ -33,6 +32,7 @@ if (is_file(PROJECTROOT . '.env')) {
 
 /**
  * Initialize App
+ *
  * @see \Slim\Container::$defaultSettings
  */
 $app = new \Slim\App();

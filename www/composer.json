@@ -8,7 +8,8 @@
         "vlucas/phpdotenv": "^2.4",
         "firebase/php-jwt": "^5.0",
         "swiftmailer/swiftmailer": "^6.0",
-        "codex-team/hawk.php": "^1.1"
+        "codex-team/hawk.php": "^1.1",
+        "friendsofphp/php-cs-fixer": "^2.10"
     },
     "autoload": {
         "psr-4": {
@@ -20,6 +21,7 @@
         "phpunit/phpunit": "^6.5"
     },
     "scripts": {
-        "test": "vendor/bin/phpunit --verbose --coverage-text"
+        "test": "vendor/bin/phpunit --verbose --coverage-text",
+        "prs4-fix" : "vendor/bin/php-cs-fixer fix --verbose"
     }
 }

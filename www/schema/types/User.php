@@ -2,14 +2,15 @@
 
 namespace App\Schema\Types;
 
+use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,
     Type
 };
-use App\Schema\Types;
 
 /**
  * User type
+ *
  * @package App\Schema\Types
  */
 class User extends ObjectType
@@ -17,7 +18,7 @@ class User extends ObjectType
     public function __construct()
     {
         $config = [
-            'fields' => function() {
+            'fields' => function () {
                 return [
                     'id' => [
                         'type' => Type::id(),

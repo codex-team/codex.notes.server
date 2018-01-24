@@ -3,16 +3,17 @@
 namespace App\Schema;
 
 use App\Schema\Types\{
-    Query,
-    User,
-    Folder,
-    Note,
     Collaborator,
-    Mutation
+    Folder,
+    Mutation,
+    Note,
+    Query,
+    User
 };
 
 /**
  * Class Types
+ *
  * @package App\Schema
  *
  * Registry of custom types for GraphQL schema
@@ -66,5 +67,4 @@ class Types
     {
         return self::$collaborator ?: (self::$collaborator = new Collaborator());
     }
-
 }

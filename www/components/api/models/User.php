@@ -57,7 +57,7 @@ class User extends Base
     /**
      * User constructor
      *
-     * @param string|null $id      if passed, returns filled User model
+     * @param string|null $id if passed, returns filled User model
      */
     public function __construct(string $id = null)
     {
@@ -66,7 +66,6 @@ class User extends Base
         if ($id) {
             $this->findAndFill($id);
         }
-
     }
 
     /**
@@ -103,13 +102,12 @@ class User extends Base
         $this->fillModel($mongoResponse ?: $data);
     }
 
-
     /**
      * Fill User's Folders by models
      *
-     * @param int $limit    how much items do you need
-     * @param int $skip     how much items needs to be skipped
-     * @param array $sort   sort fields
+     * @param int   $limit how much items do you need
+     * @param int   $skip  how much items needs to be skipped
+     * @param array $sort  sort fields
      */
     public function fillFolders(int $limit = null, int $skip = null, array $sort = []): void
     {

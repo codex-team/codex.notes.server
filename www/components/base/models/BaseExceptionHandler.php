@@ -3,13 +3,17 @@
 namespace App\Components\Base\Models;
 
 use App\System\{
-    Config, Http, Log
+    Config,
+    HTTP,
+    Log
 };
 use Hawk\HawkCatcher;
 
 class BaseExceptionHandler
 {
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function __invoke($request, $response, $exception)
     {

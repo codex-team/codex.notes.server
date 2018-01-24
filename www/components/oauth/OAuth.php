@@ -3,11 +3,11 @@
 namespace App\Components\OAuth;
 
 use App\Components\Api\Models\User;
-use App\System\Config;
-
-use App\System\Http;
-
-use App\System\Log;
+use App\System\{
+    Config,
+    HTTP,
+    Log
+};
 
 use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface as Response;

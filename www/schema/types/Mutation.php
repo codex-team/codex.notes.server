@@ -2,18 +2,26 @@
 
 namespace App\Schema\Types;
 
-use App\Components\Api\Models\Collaborator;
-use App\Components\Api\Models\Folder;
-use App\Components\Api\Models\Note;
-use App\Components\Api\Models\User;
-use App\Components\Base\Models\Exceptions\AuthException;
-use App\Components\Base\Models\Exceptions\CollaboratorException;
-use App\Components\Base\Models\Exceptions\FolderException;
+use App\Components\Api\Models\{
+    Collaborator,
+    Folder,
+    Note,
+    User
+};
+
+use App\Components\Base\Models\Exceptions\{
+    AuthException,
+    CollaboratorException,
+    FolderException
+};
+
 use App\Components\Middleware\Auth;
 use App\Schema\Types;
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
-use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\{
+    ObjectType,
+    ResolveInfo,
+    Type
+};
 
 /**
  * Class Mutation

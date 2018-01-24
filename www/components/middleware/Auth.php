@@ -4,11 +4,12 @@ namespace App\Components\Middleware;
 
 use App\Components\Base\Models\Exceptions\AuthException;
 use App\Components\OAuth\OAuth;
-use App\System\Config;
+use App\System\{
+    Config,
+    HTTP,
+    Log
+};
 
-use App\System\Http;
-
-use App\System\Log;
 use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;

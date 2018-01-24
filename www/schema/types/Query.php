@@ -2,13 +2,18 @@
 
 namespace App\Schema\Types;
 
-use App\Components\Api\Models\Folder;
-use App\Components\Api\Models\Note;
-use App\Components\Api\Models\User;
+use App\Components\Api\Models\{
+    Folder,
+    Note,
+    User
+};
+
 use App\Schema\Types;
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
-use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\{
+    ObjectType,
+    ResolveInfo,
+    Type
+};
 
 /**
  * Class Query

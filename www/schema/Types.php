@@ -2,12 +2,14 @@
 
 namespace App\Schema;
 
-use App\Schema\Types\Collaborator;
-use App\Schema\Types\Folder;
-use App\Schema\Types\Mutation;
-use App\Schema\Types\Note;
-use App\Schema\Types\Query;
-use App\Schema\Types\User;
+use App\Schema\Types\{
+    Collaborator,
+    Folder,
+    Mutation,
+    Note,
+    Query,
+    User
+};
 
 /**
  * Class Types

@@ -8,13 +8,11 @@ use App\Components\Api\Models\{
     Note,
     User
 };
-
 use App\Components\Base\Models\Exceptions\{
     AuthException,
     CollaboratorException,
     FolderException
 };
-
 use App\Components\Middleware\Auth;
 use App\Schema\Types;
 use GraphQL\Type\Definition\{

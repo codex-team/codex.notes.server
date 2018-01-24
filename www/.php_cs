@@ -9,6 +9,7 @@ return PhpCsFixer\Config::create()
         'single_import_per_statement' => false,
         'no_whitespace_in_blank_line' => true,
         'no_unused_imports' => true,
+        'no_blank_lines_before_namespace' => false,
         'blank_line_before_return' => true,
         'binary_operator_spaces' => true,
         'cast_spaces' => true,

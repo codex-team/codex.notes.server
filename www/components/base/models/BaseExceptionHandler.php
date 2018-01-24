@@ -7,7 +7,6 @@ use App\System\{
     HTTP,
     Log
 };
-
 use Hawk\HawkCatcher;
 
 class BaseExceptionHandler

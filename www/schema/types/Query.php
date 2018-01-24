@@ -7,7 +7,6 @@ use App\Components\Api\Models\{
     Note,
     User
 };
-
 use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,

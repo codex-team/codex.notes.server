@@ -3,13 +3,23 @@
 namespace App\Components\Api;
 
 use App\Schema\Types;
-use App\System\Config;
-use App\System\Log;
-use GraphQL\Error\Debug;
-use GraphQL\Error\FormattedError;
+
+use App\System\{
+    Config,
+    Log
+};
+
+use GraphQL\Error\{
+    Debug,
+    FormattedError
+};
+
 use GraphQL\Executor\ExecutionResult;
-use GraphQL\Server\ServerConfig;
-use GraphQL\Server\StandardServer;
+use GraphQL\Server\{
+    ServerConfig,
+    StandardServer
+};
+
 use GraphQL\Type\Schema;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;

@@ -125,7 +125,9 @@ class Folder extends Base
         /**
          * And fill Notes list
          */
-        $this->fillNotes();
+        if ($this->id) {
+            $this->fillNotes();
+        }
     }
 
     /**

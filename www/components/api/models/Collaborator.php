@@ -3,6 +3,7 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Exceptions\CollaboratorException;
+use App\Components\Base\Models\Mailer;
 use App\Components\Base\Models\Mongo;
 use App\System\Config;
 
@@ -52,7 +53,7 @@ class Collaborator extends Base
     /**
      * Removed state
      *
-     * @var boolean|null
+     * @var bool|null
      */
     public $isRemoved;
 
@@ -75,7 +76,7 @@ class Collaborator extends Base
      *
      * @param Folder $folder
      * @param string $token
-     * @param array  $data          init model from data
+     * @param array  $data   init model from data
      *
      * @throws CollaboratorException
      */
@@ -181,6 +182,7 @@ class Collaborator extends Base
      *
      * @param string $ownerId
      * @param string $folderId
+     *
      * @return string
      */
     public static function getCollectionName(string $ownerId, string $folderId): string
@@ -194,11 +196,35 @@ class Collaborator extends Base
      * @param string $userId
      * @param string $folderId
      * @param string $email
+     *
      * @return string
      */
     public static function getInvitationToken(string $userId, string $folderId, string $email): string
     {
-        $secretString = sprintf('%s:%s:%s', $userId , $folderId , $email);
+        $secretString = sprintf('%s:%s:%s', $userId, $folderId, $email);
+
         return hash_hmac('sha256', $secretString, Config::get('INVITATION_SALT'));
+    }
+
+    /**
+     * Send invitation email to the collaborator
+     *
+     */
+    public function sendInvitationEmail(): bool
+    {
+        $invitedUser = new User($this->userId);
+        $folderOwner = new User($this->folder->ownerId);
+
+        if (!$invitedUser || !$folderOwner) {
+            return false;
+        }
+
+        $message = 'Greetings, ' . $invitedUser->name . '!\n\nYour friend ' .
+            $folderOwner->name . ' invited you to his folder \'' .
+            $this->folder->title . '\'\n\nIf you would like to access, please follow the link: ' .
+            Config::get('SERVER_URI') . 'join/' . $this->token;
+
+        $mailer = Mailer::instance();
+        return $mailer->send("Invitation to the folder in CodeX Notes", $this->email, "3285b08cb2-87bb61@inbox.mailtrap.io", $message);
     }
 }

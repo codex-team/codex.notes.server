@@ -71,7 +71,8 @@ class Mutation extends ObjectType
                             'dtCreate' => Type::int(),
                             'dtModify' => Type::int(),
                             'isShared' => Type::boolean(),
-                            'isRemoved' => Type::boolean()
+                            'isRemoved' => Type::boolean(),
+                            'isRoot' => Type::boolean()
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
@@ -188,7 +189,7 @@ class Mutation extends ObjectType
                                     $collaborator = new Collaborator($originalFolder);
                                     $collaborator->sync($args);
 
-                                    // @todo send an email invite
+                                    $collaborator->sendInvitationEmail();
                                 }
 
                                 $selectedFields = $info->getFieldSelection();

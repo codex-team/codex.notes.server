@@ -58,6 +58,13 @@ class Folder extends Base
     public $isRemoved = false;
 
     /**
+     * Is this Root Folder
+     *
+     * @var bool
+     */
+    public $isRoot = false;
+
+    /**
      * List of models of Notes
      *
      * @var array
@@ -125,7 +132,9 @@ class Folder extends Base
         /**
          * And fill Notes list
          */
-        $this->fillNotes();
+        if ($this->id) {
+            $this->fillNotes();
+        }
     }
 
     /**

@@ -60,7 +60,7 @@ class Folder extends Base
     /**
      * Is this Root Folder
      *
-     * @var bool|null
+     * @var bool
      */
     public $isRoot = false;
 

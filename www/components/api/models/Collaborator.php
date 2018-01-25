@@ -230,6 +230,7 @@ class Collaborator extends Base
         );
 
         $mailer = Mailer::instance();
+
         return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, $this->email, $invitedUser->email, $message);
     }
 }

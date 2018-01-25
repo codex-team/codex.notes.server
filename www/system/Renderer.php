@@ -1,6 +1,7 @@
 <?php
 
 namespace App\System;
+
 use App\Components\Base\Models\Exceptions\RenderException;
 
 /**
@@ -14,9 +15,9 @@ class Renderer
     /**
      * Return template with passed data
      *
-     * @param string     $tpl      - path to the template related to the current component\s tpl/ folder
-     * @param array|null $viewData - data passed to the template
-     * @param string|null $layout – layout filename
+     * @param string      $tpl      - path to the template related to the current component\s tpl/ folder
+     * @param array|null  $viewData - data passed to the template
+     * @param string|null $layout   – layout filename
      *
      * @return string
      */
@@ -35,7 +36,7 @@ class Renderer
         if ($componentIndex === false) {
             throw new RenderException('Components directory not found in use string');
         }
-        if ($componentIndex + 1 > count($componentPath) ) {
+        if ($componentIndex + 1 > count($componentPath)) {
             throw new RenderException('Component index doesn\'t exist in use string');
         }
         $componentName = strtolower($componentPath[$componentIndex + 1]);
@@ -54,15 +55,11 @@ class Renderer
          * Render layout with the template content or not
          */
         if (isset($layout)) {
-
             $layoutData = array_merge($viewData, ['content' => $templateContent]);
+
             return self::renderTemplate(self::getTemplateDirectory('base') . $layout, $layoutData);
-
-        }
-        else {
-
+        } else {
             return $templateContent;
-
         }
     }
 

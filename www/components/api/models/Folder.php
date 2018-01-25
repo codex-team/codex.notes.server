@@ -62,7 +62,7 @@ class Folder extends Base
      *
      * @var bool|null
      */
-    public $isRoot;
+    public $isRoot = false;
 
     /**
      * List of models of Notes

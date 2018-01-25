@@ -25,6 +25,7 @@ class Index
      *
      * @param mixed $req
      * @param mixed $res
+     * @param mixed $args
      */
     public function join($req, $res, $args)
     {

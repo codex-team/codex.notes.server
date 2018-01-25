@@ -6,7 +6,7 @@ use App\Components\Api\Models\User;
 
 class UsersModel extends User
 {
-    public function __construct($id, $name, $email, $dtReg)
+    public function __construct(string $id, string $name, string $email, int $dtReg)
     {
         parent::__construct(null);
 
@@ -20,7 +20,7 @@ class UsersModel extends User
         $this->sync($data);
     }
 
-    public static function getCreateNewUserMutation($id, $name, $email, $dtReg)
+    public static function getCreateNewUserMutation(string $id, string $name, string $email, int $dtReg)
     {
         return [
             'query' => 'mutation CreateNewUser($id: ID!, $name: String!, $email: String!, $dtReg: Int!) {
@@ -41,7 +41,7 @@ class UsersModel extends User
         ];
     }
 
-    public static function getFindUserQuery($id)
+    public static function getFindUserQuery(string $id)
     {
         return [
             'query' => 'query { user(id:"' . $id . '") {

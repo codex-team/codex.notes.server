@@ -43,10 +43,10 @@ class ApiUserTest extends WebTestCase
      */
     public function testCreateNewUser()
     {
-        $userId = new ObjectId();
+        $userId = (string) new ObjectId();
 
         // create new user with GraphQl request
-        $userMutation = UsersModel::getCreateNewUserMutation((string) $userId, 'testCreateNewUser', 'testCreateNewUser@ifmo.su', 123);
+        $userMutation = UsersModel::getCreateNewUserMutation($userId, 'testCreateNewUser', 'testCreateNewUser@ifmo.su', 123);
         $output = $this->client->post('/graphql', $userMutation);
 
         // check if response is not forbidden
@@ -77,10 +77,10 @@ class ApiUserTest extends WebTestCase
      */
     public function testCreateNewUserAndFind()
     {
-        $userId = new ObjectId();
+        $userId = (string) new ObjectId();
 
         // create new user with GraphQl request
-        $userMutation = UsersModel::getCreateNewUserMutation((string) $userId, 'testCreateNewUserAndFind', 'testCreateNewUserAndFind@ifmo.su', 123);
+        $userMutation = UsersModel::getCreateNewUserMutation($userId, 'testCreateNewUserAndFind', 'testCreateNewUserAndFind@ifmo.su', 123);
         $output = $this->client->post('/graphql', $userMutation);
         $data = json_decode($output, true);
 

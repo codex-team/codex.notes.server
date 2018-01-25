@@ -6,7 +6,7 @@ use App\Components\Api\Models\Folder;
 
 class FoldersModel extends Folder
 {
-    public function __construct($ownerId, $id, $title, $folderData)
+    public function __construct(string $ownerId, string $id, string $title, array $folderData)
     {
         parent::__construct($ownerId, $id, $folderData);
 
@@ -20,7 +20,7 @@ class FoldersModel extends Folder
         $this->sync($data);
     }
 
-    public static function getCreateNewUserMutation($id, $ownerId, $title, $dtCreate, $dtModify, $isShared, $isRemoved)
+    public static function getCreateNewUserMutation(string $id, string $ownerId, string $title, int $dtCreate, int $dtModify, bool $isShared, bool $isRemoved)
     {
         return [
             'query' => 'mutation CreateNewFolder($id: ID!, $ownerId: ID!, $title: String!, $dtCreate: Int!, $dtModify:Int!, $isShared: Boolean!, $isRemoved: Boolean!) {
@@ -49,7 +49,7 @@ class FoldersModel extends Folder
         ];
     }
 
-    public static function getFindFolderQuery($id, $ownerId)
+    public static function getFindFolderQuery(string $id, string $ownerId)
     {
         return [
             'query' => 'query { folder (id:"' . $id . '", ownerId: "' . $ownerId . '") {

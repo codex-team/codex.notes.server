@@ -34,7 +34,7 @@ class HTTP
      *
      * @return string – response contents
      */
-    public static function request(string $method, string $url, array $params = [], $headers = []) : string
+    public static function request(string $method, string $url, array $params = [], $headers = []): string
     {
         $curl = curl_init();
         switch (strtoupper($method)) {

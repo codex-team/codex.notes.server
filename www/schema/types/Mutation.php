@@ -189,7 +189,7 @@ class Mutation extends ObjectType
                                     $collaborator = new Collaborator($originalFolder);
                                     $collaborator->sync($args);
 
-                                    // @todo send an email invite
+                                    $collaborator->sendInvitationEmail();
                                 }
 
                                 $selectedFields = $info->getFieldSelection();

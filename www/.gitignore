@@ -9,3 +9,4 @@ composer-setup.php
 composer.phar
 .env
 package-lock.json
+tests/helpers/.env.test

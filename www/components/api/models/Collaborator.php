@@ -3,8 +3,10 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Exceptions\CollaboratorException;
+use App\Components\Base\Models\Mailer;
 use App\Components\Base\Models\Mongo;
 use App\System\Config;
+use App\System\Renderer;
 
 /**
  * Collaborator Model
@@ -203,5 +205,32 @@ class Collaborator extends Base
         $secretString = sprintf('%s:%s:%s', $userId, $folderId, $email);
 
         return hash_hmac('sha256', $secretString, Config::get('INVITATION_SALT'));
+    }
+
+    /**
+     * Send invitation email to the collaborator
+     *
+     */
+    public function sendInvitationEmail(): bool
+    {
+        $invitedUser = new User($this->userId);
+        $folderOwner = new User($this->folder->ownerId);
+
+        if (!$invitedUser || !$folderOwner) {
+            return false;
+        }
+
+        $message = Renderer::render(
+            'email.php', [
+                'invited_username' => $invitedUser->name,
+                'owner_username' => $folderOwner->name,
+                'folder_title' => $this->folder->title,
+                'join_link' => Config::get('SERVER_URI') . 'join/' . urlencode($invitedUser->email) . '/' . $this->token
+            ], null
+        );
+
+        $mailer = Mailer::instance();
+
+        return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, $this->email, $invitedUser->email, $message);
     }
 }

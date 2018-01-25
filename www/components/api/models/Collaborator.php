@@ -222,7 +222,7 @@ class Collaborator extends Base
         $message = 'Greetings, ' . $invitedUser->name . '!\n\nYour friend ' .
             $folderOwner->name . ' invited you to his folder \'' .
             $this->folder->title . '\'\n\nIf you would like to access, please follow the link: ' .
-            Config::get('SERVER_URI') . 'join/' . $this->token;
+            Config::get('SERVER_URI') . 'join/'. urlencode($invitedUser->email) . '/' . $this->token;
 
         $mailer = Mailer::instance();
 

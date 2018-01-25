@@ -6,6 +6,7 @@ use App\System\Config;
  * Internal components
  */
 $app->get('/', 'App\Components\Index\Index:page');
+$app->get('/join/{email}/{token}', 'App\Components\Index\Index:join');
 $app->get('/oauth/code', 'App\Components\OAuth\OAuth:code');
 
 /**

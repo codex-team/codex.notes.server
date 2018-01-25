@@ -6,6 +6,7 @@ use App\Components\Base\Models\Exceptions\CollaboratorException;
 use App\Components\Base\Models\Mailer;
 use App\Components\Base\Models\Mongo;
 use App\System\Config;
+use App\System\Renderer;
 
 /**
  * Collaborator Model
@@ -219,13 +220,16 @@ class Collaborator extends Base
             return false;
         }
 
-        $message = 'Greetings, ' . $invitedUser->name . '!\n\nYour friend ' .
-            $folderOwner->name . ' invited you to his folder \'' .
-            $this->folder->title . '\'\n\nIf you would like to access, please follow the link: ' .
-            Config::get('SERVER_URI') . 'join/' . urlencode($invitedUser->email) . '/' . $this->token;
+        $message = Renderer::render(
+            'email.php', [
+                'invited_username' => $invitedUser->name,
+                'owner_username' => $folderOwner->name,
+                'folder_title' => $this->folder->title,
+                'join_link' => Config::get('SERVER_URI') . 'join/' . urlencode($invitedUser->email) . '/' . $this->token
+            ], null
+        );
 
         $mailer = Mailer::instance();
-
-        return $mailer->send("Invitation to the folder in CodeX Notes", $this->email, "3285b08cb2-87bb61@inbox.mailtrap.io", $message);
+        return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, $this->email, $invitedUser->email, $message);
     }
 }

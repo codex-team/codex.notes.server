@@ -172,7 +172,7 @@ class ApiFolderTest extends WebTestCase
         // check if initial and found models are equal
         $this->assertEquals($createdFolder['id'], $foundFolder['id']);
         $this->assertEquals($createdFolder['title'], $foundFolder['title']);
-        $this->assertEquals($createdFolder['ownder']['id'], $foundFolder['ownder']['id']);
+        $this->assertEquals($createdFolder['owner']['id'], $foundFolder['owner']['id']);
         $this->assertEquals($createdFolder['dtCreate'], $foundFolder['dtCreate']);
         $this->assertEquals($createdFolder['dtModify'], $foundFolder['dtModify']);
         $this->assertEquals($createdFolder['isShared'], $foundFolder['isShared']);

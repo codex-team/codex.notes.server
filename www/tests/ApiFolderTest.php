@@ -40,20 +40,38 @@ class ApiFolderTest extends WebTestCase
     }
 
     /**
+     * Compare model and array structure
+     *
+     * @param $folderModel
+     * @param $folder
+     */
+    private function compare($folderModel, $folder)
+    {
+        // check if initial and saved models are equal
+        $this->assertEquals($folderModel->id, $folder['id']);
+        $this->assertEquals($folderModel->title, $folder['title']);
+        $this->assertEquals($folderModel->ownerId, $folder['owner']['id']);
+        $this->assertEquals($folderModel->dtCreate, $folder['dtCreate']);
+        $this->assertEquals($folderModel->dtModify, $folder['dtModify']);
+        $this->assertEquals($folderModel->isShared, $folder['isShared']);
+        $this->assertEquals($folderModel->isRemoved, $folder['isRemoved']);
+    }
+
+    /**
      * Test Folder Model – Create new folder
      *
-     * Create new folder with GraphQl request and find it with model
+     * Create new folder with model and find it with model
      */
     public function testCreateNewFolderOnlyModel()
     {
         $userId = (string) new ObjectId();
         $folderId = (string) new ObjectId();
 
-        // Create new user
+        // Create new folder
         $newUser = new UsersModel($userId, 'testFindUser', 'testFindUser@ifmo.su', 123);
 
         // Create folder for the user
-        $newFolder = new FoldersModel($userId, $folderId, 'new folder', []);
+        $newFolder = new FoldersModel($userId, $folderId, ['title' => 'new folder']);
 
         // Find the folder via model
         $checkFolder = new Folder($userId, $folderId);
@@ -68,31 +86,98 @@ class ApiFolderTest extends WebTestCase
      */
     public function testCreateNewFolder()
     {
+        $userId = (string) new ObjectId();
+        $folderId = (string) new ObjectId();
 
+        // Create new folder
+        $newUser = new UsersModel($userId, 'testFindUser', 'testFindUser@ifmo.su', 123);
+        $folderMutation = FoldersModel::getCreateNewFolderMutation((string) $folderId, (string) $userId, 'new folder', 123, 123, false, false);
+        $output = $this->client->post('/graphql', $folderMutation);
+        $data = json_decode($output, true);
 
+        // check json output structure
+        $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('folder', $data['data']);
+        $this->assertArrayHasKey('owner', $data['data']['folder']);
+
+        $folder = $data['data']['folder'];
+
+        // get Folder from DB by model
+        $folderModel = new Folder($userId, $folderId);
+
+        // check if initial and saved models are equal
+        $this->compare($folderModel, $folder);
     }
 
-//    public function testFolderCreateGrap
-//
-    public function testQueryFolder()
+    /**
+     * Test API Mutation – Create new folder and find it
+     *
+     * Create new folder with model and find it with GraphQl request
+     */
+    public function testFindFolder()
     {
         $userId = (string) new ObjectId();
         $folderId = (string) new ObjectId();
-        $userIdToInvite = (string) new ObjectId();
 
+        // Create new folder
         $newUser = new UsersModel($userId, 'testFindUser', 'testFindUser@ifmo.su', 123);
-        $userToInvite = new UsersModel($userIdToInvite, 'userToInvite', '3285b08cb2-87bb61@inbox.mailtrap.io', 123);
+        $folderModel = new FoldersModel($userId, $folderId, ['title' => 'new folder']);
 
-        $newFolder = new FoldersModel($userId, $folderId, 'new folder', []);
-
-        $folderQuery = FoldersModel::getFindFolderQuery((string) $folderId, (string) $userId);
+        $folderQuery = FoldersModel::getFindFolderQuery($folderModel->id, $userId);
         $output = $this->client->post('/graphql', $folderQuery);
         $data = json_decode($output, true);
 
-        $collaboratorMutation = CollaboratorsModel::getCreateNewCollaboratorMutation((string) $userIdToInvite, (string) $userId, (string) $folderId, 'userToInvite@ifmo.su', 123, false);
+        $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('folder', $data['data']);
+        $this->assertArrayHasKey('owner', $data['data']['folder']);
 
-        $folderMutation = FoldersModel::getCreateNewUserMutation((string) $folderId, (string) $userId, 'new folder', 123, 123, false, false);
-        $output = $this->client->post('/graphql', $collaboratorMutation);
-        $data = json_decode($output, true);
+        $folder = $data['data']['folder'];
+
+        // check if initial and found models are equal
+        $this->compare($folderModel, $folder);
     }
+
+    /**
+     * Test API Mutation – Create new folder and find it
+     *
+     * Create new folder find it with GraphQl requests
+     */
+    public function testCreateNewFolderAndFind()
+    {
+        $userId = (string) new ObjectId();
+        $folderId = (string) new ObjectId();
+
+        // Create new folder
+        $newUser = new UsersModel($userId, 'testFindUser', 'testFindUser@ifmo.su', 123);
+        $folderMutation = FoldersModel::getCreateNewFolderMutation((string) $folderId, (string) $userId, 'new folder', 123, 123, false, false);
+        $output = $this->client->post('/graphql', $folderMutation);
+        $data = json_decode($output, true);
+
+        // check json output structure
+        $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('folder', $data['data']);
+        $this->assertArrayHasKey('owner', $data['data']['folder']);
+
+        $createdFolder = $data['data']['folder'];
+
+        $folderQuery = FoldersModel::getFindFolderQuery($folderId, $userId);
+        $output = $this->client->post('/graphql', $folderQuery);
+        $data = json_decode($output, true);
+
+        $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('folder', $data['data']);
+        $this->assertArrayHasKey('owner', $data['data']['folder']);
+
+        $foundFolder = $data['data']['folder'];
+
+        // check if initial and found models are equal
+        $this->assertEquals($createdFolder['id'], $foundFolder['id']);
+        $this->assertEquals($createdFolder['title'], $foundFolder['title']);
+        $this->assertEquals($createdFolder['ownder']['id'], $foundFolder['ownder']['id']);
+        $this->assertEquals($createdFolder['dtCreate'], $foundFolder['dtCreate']);
+        $this->assertEquals($createdFolder['dtModify'], $foundFolder['dtModify']);
+        $this->assertEquals($createdFolder['isShared'], $foundFolder['isShared']);
+        $this->assertEquals($createdFolder['isRemoved'], $foundFolder['isRemoved']);
+    }
+
 }

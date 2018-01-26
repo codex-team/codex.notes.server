@@ -54,7 +54,7 @@ class ApiUserTest extends WebTestCase
 
         $data = json_decode($output, true);
 
-        // check json ouput structure
+        // check json output structure
         $this->assertArrayHasKey('data', $data);
         $this->assertArrayHasKey('user', $data['data']);
 

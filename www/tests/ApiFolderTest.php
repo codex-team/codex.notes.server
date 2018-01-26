@@ -5,7 +5,6 @@ namespace App\Tests;
 use App\Components\Api\Models\Folder;
 use App\Components\Base\Models\Mongo;
 use App\Tests\Helpers\WebTestCase;
-use App\Tests\Models\CollaboratorsModel;
 use App\Tests\Models\FoldersModel;
 use App\Tests\Models\UsersModel;
 use MongoDB\BSON\ObjectId;
@@ -179,5 +178,4 @@ class ApiFolderTest extends WebTestCase
         $this->assertEquals($createdFolder['isShared'], $foundFolder['isShared']);
         $this->assertEquals($createdFolder['isRemoved'], $foundFolder['isRemoved']);
     }
-
 }

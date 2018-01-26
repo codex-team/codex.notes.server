@@ -32,13 +32,14 @@ class Auth
             $authHeader = $req->getHeader('Authorization');
 
             if (empty($authHeader[0])) {
-                throw new AuthException('JWT is missing');
+                throw new AuthException('HTTPAuth header is missing');
             }
+            Log::instance()->notice($authHeader[0]);
 
             $parsedAuthHeader = explode(' ', $authHeader[0]);
 
             if (empty($parsedAuthHeader[0]) || empty($parsedAuthHeader[1])) {
-                throw new AuthException('JWT is missing');
+                throw new AuthException('HTTPAuth header doesn\'t match the Bearer schema');
             }
 
             list($type, $token) = $parsedAuthHeader;
@@ -49,14 +50,15 @@ class Auth
 
             $jwtParts = explode('.', $token);
 
+
             if (empty($jwtParts[1])) {
-                throw new AuthException('JWT is invalid');
+                throw new AuthException('JWT payload is missing');
             }
 
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($jwtParts[1]));
 
             if (empty($payload->user_id)) {
-                throw new AuthException('JWT is invalid');
+                throw new AuthException('JWT is invalid: user_id is missing');
             }
 
             $key = OAuth::generateSignatureKey($payload->user_id);

@@ -39,21 +39,9 @@ class CollaboratorsModel extends Collaborator
                 'folderId' => $folderId,
                 'email' => $email,
                 'dtInvite' => $dtInvite,
-                'isRemoved' => $isRemoved,
-//                'token' => $token
+                'isRemoved' => $isRemoved
             ],
             'operationName' => 'CreateNewUser'
         ];
     }
-
-//    public static function getFindFolderQuery($id, $ownerId)
-//    {
-//        return [
-//            'query' => 'query { folder (id:"'.$id.'", ownerId: "'.$ownerId.'") {
-//                            id,
-//                            title
-//                          }
-//                        }'
-//        ];
-//    }
 }

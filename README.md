@@ -1,60 +1,124 @@
-# Codex.Notes.Server
+# API
 
-## User
-### Create
-`curl -X POST --data 'password=qwdqq' http://codex.notes.server/v1/user/create`
+## Create new user
+```graphql
+mutation CreateUser {
+  user(
+    id:"5a70ac62e1d8ff5cda8322a0",
+    name:"Svyatoslav Fedorovich",
+    email:"slavakpss@yandex.ru"
+  ){
+    name,
+    folders {
+      title
+    }
+  }
+}
+```
+### Parameters description
 
-{"code":200,"success":true,"result":{"id":"713eaef0","password":{"hash":"c061abcfbb5eb3e92b7affd041c4161beb9c870da54702866d3c030e411d49e3","localSalt":"9b727826"}}}
+| Parameter | Type | Description |
+| -- | -- | -- |
+| ID | String | User's unique identifier. 24-character hexadecimal string |
+| name | String | User's nickname |
+| email | String | User's email address |
 
-### Get
+## Create new folder
+```graphql
+mutation CreateFolder{
+  folder(
+    id: "5a70ac62e1d8ff5cda8322a8",
+    title: "Noo",
+    ownerId: "5a70ac62e1d8ff5cda8322a0",
+  ){
+    title,
+    id,
+    owner{
+      id,
+      name
+    }
+  }
+}
+```
+### Parameters description
 
-`$ curl -X POST http://codex.notes.server/v1/user/get/713eaef0`
+| Parameter | Type | Description |
+| -- | -- | -- |
+| ID | String | Folder's unique identifier. 24-character hexadecimal string |
+| title | String | Folder's name |
+| ownerId | String | User's id |
 
-{"code":200,"success":true,"result":{"id":"713eaef0","password":{"hash":"ba20f4954e3326f344465c93b2fb8ecb5b13af9ec7a61e21dd9494eb4cbf1121","localSalt":"0ef53a6f"}}}
+## Create new note
+```graphql
+mutation CreateNote {
+  note(
+    id: "5a70ac62e1d8ff5cda8322a2",
+    authorId: "5a70ac62e1d8ff5cda8322a0", 
+    folderId: "5a70ac62e1d8ff5cda8322a4", //Folder must exist in the DB
+    title: "How to work with API",
+    content: "{}"
+  ) {
+    id,
+    title,
+    content,
+    dtCreate,
+    dtModify,
+    author {
+      id,
+      name,
+      email,
+      dtReg
+    }
+    
+  }
+}
+```
+### Parameters description
 
-## Folder
-### Create
-`$ curl -X POST --data 'user=xhr3y0tm&id=00n1o111&name=example4&timestamp=111111111' http://codex.notes.server/v1/folder/create`
+| Parameter | Type | Description |
+| -- | -- | -- |
+| ID | String | Note's unique identifier |
+| authorId | String | Note's author |
+| folderId | String | Note's folder |
+| title | String | Note's public title |
+| content | String | Note's content in the JSON-format |
 
-folder:00n1o110:xhr3y0tm
-`{}`
+## Get user info
+```graphql
+query Sync {
+  user(
+    id: "5a70ac62e1d8ff5cda8322a0"
+  ){
+    name,
+    folders {
+      id, 
+      title,
+      owner {
+        name,
+        id
+      },
+      notes {
+        id,
+        title,
+        content,
+        dtCreate,
+        dtModify,
+        author {
+          id,
+          name,
+          email
+        },
+        isRemoved
+      }
+    }
+  }
+}
+```
 
-folders:xhr3y0tm
-`> db.getCollection('folders:xhr3y0tm').find({});
-{ "_id" : ObjectId("5a01ea2661fa0f00073bee12"), "did" : "00n1o111", "title" : "example3", "timestamp" : 111111111 }`
+### Parameters description
 
-{"code":200,"success":true,"result":true}
-{"code":500,"success":false,"result":"Collection folder:00n1o103:xhr3y0tm is not created: a collection 'notes.folder:00n1o103:xhr3y0tm' already exists"}
-
-### Delete
-
-`curl -X POST --data 'user=xhr3y0tm&id=00n1o111' http://codex.notes.server/v1/folder/delete`
-
-{"code":200,"success":true,"result":true}
-
-## Errors
-`$ curl -X POST --data 'pass=123' http://codex.notes.server/v1/user/create?pas`
-
-{"code":500,"success":false,"result":"Internal server error"}
-
-`$ curl -X POST http://codex.notes.server/v1/user/`
-
-{"code":404,"success":false,"result":"Route \/v1\/user\/ not found"}
-
-`$ curl -X POST http://codex.notes.server/v1/user/get/713eaef04duw`
-
-{"code":400,"success":false,"result":"User id length is not 8"}
-
-`$ curl -X POST --data 'password=' http://codex.notes.server/v1/user/create`
-
-{"code":400,"success":false,"result":"Password is empty"}
-
-`$ curl -X GET --data 'password=123' http://codex.notes.server/v1/user/create`
-
-{"code":405,"success":false,"result":"Method must be one of: POST"}
-
-{"code":500,"success":false,"result":"Collection folder:00n1o103:xhr3y0tm is not created: a collection 'notes.folder:00n1o103:xhr3y0tm' already exists"}
-
-## Install composer dependencies
-
-$ docker exec notesserver_php_1 composer install
+| Parameter | Type | Description |
+| -- | -- | -- |
+| ID | String | Users's unique identifier |
+| foldersLimit | Int | Folder limit in response (optional) |
+| foldersSkip | Int | Count of folders to skip(optional)  |

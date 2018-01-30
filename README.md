@@ -1,60 +1,134 @@
-# Codex.Notes.Server
+# API
 
-## User
-### Create
-`curl -X POST --data 'password=qwdqq' http://codex.notes.server/v1/user/create`
+## Create new user
+```
+mutation CreateUser {
+user(
+  id:"5a70ac62e1d8ff5cda8322a0",
+  name:"Svyatoslav Fedorovich",
+  email:"slavakpss@yandex.ru"
+){
+  name,
+  folders {
+    title
+  }
+}
+}
+```
+### Parameters description
+```
+id: ID
+User's unique identifier. 24-character hexadecimal string
 
-{"code":200,"success":true,"result":{"id":"713eaef0","password":{"hash":"c061abcfbb5eb3e92b7affd041c4161beb9c870da54702866d3c030e411d49e3","localSalt":"9b727826"}}}
+name: String
+User's nickname
 
-### Get
+email: String
+User's email address
+```
 
-`$ curl -X POST http://codex.notes.server/v1/user/get/713eaef0`
+## Create new folder
+```
+mutation CreateFolder{
+  folder(
+    id: "5a70ac62e1d8ff5cda8322a8",
+    title: "Noo",
+    ownerId: "5a70ac62e1d8ff5cda8322a0",
+  ){
+    title,
+    id,
+    owner{
+      id,
+      name
+    }
+  }
+}
+```
+### Parameters description
+```
+```
 
-{"code":200,"success":true,"result":{"id":"713eaef0","password":{"hash":"ba20f4954e3326f344465c93b2fb8ecb5b13af9ec7a61e21dd9494eb4cbf1121","localSalt":"0ef53a6f"}}}
+## Create new note
+```
+mutation CreateNote {
+  note(
+    id: "5a70ac62e1d8ff5cda8322a2",
+    authorId: "5a70ac62e1d8ff5cda8322a0", 
+    folderId: "5a70ac62e1d8ff5cda8322a4", 
+    title: "How to work with f*cking API",
+    content: "In no way"
+  ) {
+    id,
+    title,
+    content,
+    dtCreate,
+    dtModify,
+    author {
+      id,
+      name,
+      email,
+      dtReg
+    }
+    
+  }
+}
+```
+### Parameters description
+```
+id: ID
+Note's unique identifier
 
-## Folder
-### Create
-`$ curl -X POST --data 'user=xhr3y0tm&id=00n1o111&name=example4&timestamp=111111111' http://codex.notes.server/v1/folder/create`
+title: String
+Note's public title
 
-folder:00n1o110:xhr3y0tm
-`{}`
+content: String
+Note's content in the JSON-format
 
-folders:xhr3y0tm
-`> db.getCollection('folders:xhr3y0tm').find({});
-{ "_id" : ObjectId("5a01ea2661fa0f00073bee12"), "did" : "00n1o111", "title" : "example3", "timestamp" : 111111111 }`
+dtCreate: Int
+Note's creation timestamp
 
-{"code":200,"success":true,"result":true}
-{"code":500,"success":false,"result":"Collection folder:00n1o103:xhr3y0tm is not created: a collection 'notes.folder:00n1o103:xhr3y0tm' already exists"}
+dtModify: Int
+Note's last modification timestamp
 
-### Delete
+author: User
+Note's author
 
-`curl -X POST --data 'user=xhr3y0tm&id=00n1o111' http://codex.notes.server/v1/folder/delete`
+isRemoved: Boolean
+Removed status: true if Note marked as removed
+```
 
-{"code":200,"success":true,"result":true}
+## Create new note
+```
+query Sync {
+  user(
+    id: "5a70ac62e1d8ff5cda8322a0"
+  ){
+    name,
+    folders {
+      id, 
+      title,
+      owner {
+        name,
+        id
+      },
+      notes {
+        id,
+        title,
+        content,
+        dtCreate,
+        dtModify,
+        author {
+          id,
+          name,
+          email
+        },
+        isRemoved
+      }
+    }
+  }
+}
+```
+### Parameters description
+```
+```
 
-## Errors
-`$ curl -X POST --data 'pass=123' http://codex.notes.server/v1/user/create?pas`
-
-{"code":500,"success":false,"result":"Internal server error"}
-
-`$ curl -X POST http://codex.notes.server/v1/user/`
-
-{"code":404,"success":false,"result":"Route \/v1\/user\/ not found"}
-
-`$ curl -X POST http://codex.notes.server/v1/user/get/713eaef04duw`
-
-{"code":400,"success":false,"result":"User id length is not 8"}
-
-`$ curl -X POST --data 'password=' http://codex.notes.server/v1/user/create`
-
-{"code":400,"success":false,"result":"Password is empty"}
-
-`$ curl -X GET --data 'password=123' http://codex.notes.server/v1/user/create`
-
-{"code":405,"success":false,"result":"Method must be one of: POST"}
-
-{"code":500,"success":false,"result":"Collection folder:00n1o103:xhr3y0tm is not created: a collection 'notes.folder:00n1o103:xhr3y0tm' already exists"}
-
-## Install composer dependencies
-
-$ docker exec notesserver_php_1 composer install

@@ -11,7 +11,8 @@ use App\Components\Api\Models\{
 use App\Components\Base\Models\Exceptions\{
     AuthException,
     CollaboratorException,
-    FolderException
+    FolderException,
+    NoteException
 };
 use App\Components\Middleware\Auth;
 use App\Schema\Types;
@@ -121,10 +122,14 @@ class Mutation extends ObjectType
                             /**
                              * Get target Folder
                              *
-                             * We need to get Folder's Owner. If this Folder
-                             * is a Shared, we'll get a real Owner to get right collection
+                             * We need to get Folder's Owner.
+                             * If this Folder is Shared, we'll get a real Owner to get right collection
                              */
                             $folder = new Folder($args['authorId'], $args['folderId']);
+
+                            if (is_null($folder->id)){
+                                throw new NoteException('Incorrect Folder passed');
+                            }
 
                             /**
                              * Save Note

@@ -1,7 +1,7 @@
 # API
 
 ## Create new user
-```
+```graphql
 mutation CreateUser {
   user(
     id:"5a70ac62e1d8ff5cda8322a0",
@@ -24,7 +24,7 @@ mutation CreateUser {
 | email | String | User's email address |
 
 ## Create new folder
-```
+```graphql
 mutation CreateFolder{
   folder(
     id: "5a70ac62e1d8ff5cda8322a8",
@@ -49,14 +49,14 @@ mutation CreateFolder{
 | ownerId | String | User's id |
 
 ## Create new note
-```
+```graphql
 mutation CreateNote {
   note(
     id: "5a70ac62e1d8ff5cda8322a2",
     authorId: "5a70ac62e1d8ff5cda8322a0", 
-    folderId: "5a70ac62e1d8ff5cda8322a4", 
+    folderId: "5a70ac62e1d8ff5cda8322a4", //Folder must exists at the DB
     title: "How to work with API",
-    content: "{ In no way }"
+    content: "{}"
   ) {
     id,
     title,
@@ -80,11 +80,11 @@ mutation CreateNote {
 | ID | String | Note's unique identifier |
 | title | String | Note's public title |
 | content | String | Note's content in the JSON-format |
-| folderId | String | Note's folder. Folder must exists at the DB |
+| folderId | String | Note's folder |
 | authorId | String | Note's author |
 
 ## Get user info
-```
+```graphql
 query Sync {
   user(
     id: "5a70ac62e1d8ff5cda8322a0"

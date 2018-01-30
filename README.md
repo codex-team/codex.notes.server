@@ -3,29 +3,25 @@
 ## Create new user
 ```
 mutation CreateUser {
-user(
-  id:"5a70ac62e1d8ff5cda8322a0",
-  name:"Svyatoslav Fedorovich",
-  email:"slavakpss@yandex.ru"
-){
-  name,
-  folders {
-    title
+  user(
+    id:"5a70ac62e1d8ff5cda8322a0",
+    name:"Svyatoslav Fedorovich",
+    email:"slavakpss@yandex.ru"
+  ){
+    name,
+    folders {
+      title
+    }
   }
-}
 }
 ```
 ### Parameters description
-```
-id: ID
-User's unique identifier. 24-character hexadecimal string
 
-name: String
-User's nickname
-
-email: String
-User's email address
-```
+| Parameter | Type | Description |
+| -- | -- | -- |
+| ID | String | User's unique identifier. 24-character hexadecimal string |
+| name | String | User's nickname |
+| email | String | User's email address |
 
 ## Create new folder
 ```
@@ -45,8 +41,12 @@ mutation CreateFolder{
 }
 ```
 ### Parameters description
-```
-```
+
+| Parameter | Type | Description |
+| -- | -- | -- |
+| ID | String | Folder's unique identifier. 24-character hexadecimal string |
+| title | String | Folder's name |
+| ownerId | String | User's id |
 
 ## Create new note
 ```
@@ -55,8 +55,8 @@ mutation CreateNote {
     id: "5a70ac62e1d8ff5cda8322a2",
     authorId: "5a70ac62e1d8ff5cda8322a0", 
     folderId: "5a70ac62e1d8ff5cda8322a4", 
-    title: "How to work with f*cking API",
-    content: "In no way"
+    title: "How to work with API",
+    content: "{ In no way }"
   ) {
     id,
     title,
@@ -74,30 +74,16 @@ mutation CreateNote {
 }
 ```
 ### Parameters description
-```
-id: ID
-Note's unique identifier
 
-title: String
-Note's public title
+| Parameter | Type | Description |
+| -- | -- | -- |
+| ID | String | Note's unique identifier |
+| title | String | Note's public title |
+| content | String | Note's content in the JSON-format |
+| folderId | String | Note's folder. Folder must exists at the DB |
+| authorId | String | Note's author |
 
-content: String
-Note's content in the JSON-format
-
-dtCreate: Int
-Note's creation timestamp
-
-dtModify: Int
-Note's last modification timestamp
-
-author: User
-Note's author
-
-isRemoved: Boolean
-Removed status: true if Note marked as removed
-```
-
-## Create new note
+## Get user info
 ```
 query Sync {
   user(
@@ -127,8 +113,5 @@ query Sync {
     }
   }
 }
-```
-### Parameters description
-```
 ```
 

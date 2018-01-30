@@ -54,7 +54,7 @@ mutation CreateNote {
   note(
     id: "5a70ac62e1d8ff5cda8322a2",
     authorId: "5a70ac62e1d8ff5cda8322a0", 
-    folderId: "5a70ac62e1d8ff5cda8322a4", //Folder must exists at the DB
+    folderId: "5a70ac62e1d8ff5cda8322a4", //Folder must exist in the DB
     title: "How to work with API",
     content: "{}"
   ) {
@@ -78,10 +78,10 @@ mutation CreateNote {
 | Parameter | Type | Description |
 | -- | -- | -- |
 | ID | String | Note's unique identifier |
+| authorId | String | Note's author |
+| folderId | String | Note's folder |
 | title | String | Note's public title |
 | content | String | Note's content in the JSON-format |
-| folderId | String | Note's folder |
-| authorId | String | Note's author |
 
 ## Get user info
 ```graphql
@@ -115,3 +115,10 @@ query Sync {
 }
 ```
 
+### Parameters description
+
+| Parameter | Type | Description |
+| -- | -- | -- |
+| ID | String | Users's unique identifier |
+| foldersLimit | Int | Folder limit in response (optional) |
+| foldersSkip | Int | Count of folders to skip(optional)  |

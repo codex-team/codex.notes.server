@@ -10,7 +10,7 @@ use App\Tests\Models\UsersModel;
 use MongoDB\BSON\ObjectId;
 
 /**
- * Class ApiUserTest
+ * Class ApiFolderTest
  *
  * @package App\Tests
  *

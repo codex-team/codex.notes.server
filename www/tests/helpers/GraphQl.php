@@ -11,14 +11,12 @@ class GraphQl
 
     public function __construct()
     {
-
     }
 
     public static function request(string $type, string $name, array $variables): array
     {
         $mutationFileName = PROJECTROOT . 'tests/models/graphql/' . $type . '/' . $name . '.txt';
-        if (!file_exists($mutationFileName))
-        {
+        if (!file_exists($mutationFileName)) {
             throw new Exception('Mutation not found');
         }
 

@@ -64,4 +64,21 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
             $dotenv->load();
         }
     }
+
+    public function sendGraphql($type, $name, $data)
+    {
+        $request = GraphQl::request($type, $name, $data);
+        $output = $this->client->post('/graphql', $request);
+
+        // check auth
+        $this->assertFalse($this->client->response->isForbidden(), 'Auth Error (403).');
+
+        // check json output structure
+        $data = json_decode($output, true);
+        $this->assertEquals(json_last_error(), JSON_ERROR_NONE);
+        $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('user', $data['data']);
+
+        return $data['data'];
+    }
 }

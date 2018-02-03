@@ -1,0 +1,5 @@
+GetUser ($id: ID!) {
+  user(id: $id) {
+    id
+  }
+}

@@ -35,7 +35,7 @@ class OAuth
             'code' => $params['code'],
             'client_id' => Config::get('GOOGLE_CLIENT_ID'),
             'client_secret' => Config::get('GOOGLE_CLIENT_SECRET'),
-            'redirect_uri' => $params['state'],
+            'redirect_uri' => Config::get('SERVER_URI') . 'oauth/code',
             'grant_type' => 'authorization_code'
         ];
 
@@ -80,8 +80,8 @@ class OAuth
             'google_id' => $userData['google_id'],
         ], self::generateSignatureKey($user->id));
 
-        if (isset($params['channel'])) {
-            Sockets::push($params['channel'], $jwt);
+        if (isset($params['state'])) {
+            Sockets::push($params['state'], $jwt);
         }
 
         $body = $res->getBody();

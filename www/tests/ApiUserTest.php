@@ -48,8 +48,8 @@ class ApiUserTest extends WebTestCase
 
         $data = $this->sendGraphql('mutation', 'CreateNewUser', [
             'id' => $userId,
-            'name' => 'John Doe',
-            'email' => 'jonny.codex@ifmo.su',
+            'name' => 'JohnDoe',
+            'email' => 'JohnDoe@ifmo.su',
             'dtReg' => 1517651704
         ]);
 
@@ -74,8 +74,8 @@ class ApiUserTest extends WebTestCase
 
         $createdUser = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewUser', [
             'id' => $userId,
-            'name' => 'John Doe',
-            'email' => 'jonny.codex@ifmo.su',
+            'name' => 'JohnDoe',
+            'email' => 'JohnDoe@ifmo.su',
             'dtReg' => 1517651704
         ]);
 
@@ -95,7 +95,7 @@ class ApiUserTest extends WebTestCase
     public function testFindUser()
     {
         // save new user to DB by model
-        $newUser = new UsersModel((string) new ObjectId(), 'testFindUser', 'testFindUser@ifmo.su', 123);
+        $newUser = new UsersModel((string) new ObjectId(), 'JohnDoe', 'JohnDoe@ifmo.su', 123);
 
         $data = $this->sendGraphql(GraphQl::QUERY, 'GetUser', [
             'id' => $newUser->id

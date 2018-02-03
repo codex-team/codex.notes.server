@@ -77,7 +77,6 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         $data = json_decode($output, true);
         $this->assertEquals(json_last_error(), JSON_ERROR_NONE);
         $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('user', $data['data']);
 
         return $data['data'];
     }

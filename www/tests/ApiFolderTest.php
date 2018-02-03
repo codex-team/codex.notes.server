@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use App\Components\Api\Models\Folder;
 use App\Components\Base\Models\Mongo;
+use App\Tests\Helpers\GraphQl;
 use App\Tests\Helpers\WebTestCase;
 use App\Tests\Models\FoldersModel;
 use App\Tests\Models\UsersModel;
@@ -67,7 +68,7 @@ class ApiFolderTest extends WebTestCase
         $folderId = (string) new ObjectId();
 
         // Create new folder
-        $newUser = new UsersModel($userId, 'testFindUser', 'testFindUser@ifmo.su', 123);
+        $newUser = new UsersModel($userId, 'JohnDoe', 'JohnDoe@ifmo.su', 123);
 
         // Create folder for the user
         $newFolder = new FoldersModel($userId, $folderId, ['title' => 'new folder']);
@@ -88,18 +89,23 @@ class ApiFolderTest extends WebTestCase
         $userId = (string) new ObjectId();
         $folderId = (string) new ObjectId();
 
-        // Create new folder
-        $newUser = new UsersModel($userId, 'testFindUser', 'testFindUser@ifmo.su', 123);
-        $folderMutation = FoldersModel::getCreateNewFolderMutation((string) $folderId, (string) $userId, 'new folder', 123, 123, false, false);
-        $output = $this->client->post('/graphql', $folderMutation);
-        $data = json_decode($output, true);
+        // Create new user
+        $newUser = new UsersModel($userId, 'JohnDoe', 'JohnDoe@ifmo.su', 123);
 
-        // check json output structure
-        $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('folder', $data['data']);
-        $this->assertArrayHasKey('owner', $data['data']['folder']);
+        $data = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewFolder', [
+            'id' => $folderId,
+            'ownerId' => $userId,
+            'title' => 'new folder',
+            'dtCreate' => 1517651704,
+            'dtModify' => 1517651704,
+            'isShared' => false,
+            'isRemoved' => false
+        ]);
 
-        $folder = $data['data']['folder'];
+        $this->assertArrayHasKey('folder', $data);
+        $this->assertArrayHasKey('owner', $data['folder']);
+
+        $folder = $data['folder'];
 
         // get Folder from DB by model
         $folderModel = new Folder($userId, $folderId);
@@ -118,19 +124,18 @@ class ApiFolderTest extends WebTestCase
         $userId = (string) new ObjectId();
         $folderId = (string) new ObjectId();
 
-        // Create new folder
-        $newUser = new UsersModel($userId, 'testFindUser', 'testFindUser@ifmo.su', 123);
+        // Create new user and folder
+        $newUser = new UsersModel($userId, 'JohnDoe', 'JohnDoe@ifmo.su', 123);
         $folderModel = new FoldersModel($userId, $folderId, ['title' => 'new folder']);
 
-        $folderQuery = FoldersModel::getFindFolderQuery($folderModel->id, $userId);
-        $output = $this->client->post('/graphql', $folderQuery);
-        $data = json_decode($output, true);
+        $data = $this->sendGraphql(GraphQl::QUERY, 'GetFolder', [
+            'id' => $folderModel->id,
+            'ownerId' => $userId
+        ]);
 
-        $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('folder', $data['data']);
-        $this->assertArrayHasKey('owner', $data['data']['folder']);
+        $this->assertArrayHasKey('owner', $data['folder']);
 
-        $folder = $data['data']['folder'];
+        $folder = $data['folder'];
 
         // check if initial and found models are equal
         $this->compare($folderModel, $folder);
@@ -147,27 +152,30 @@ class ApiFolderTest extends WebTestCase
         $folderId = (string) new ObjectId();
 
         // Create new folder
-        $newUser = new UsersModel($userId, 'testFindUser', 'testFindUser@ifmo.su', 123);
-        $folderMutation = FoldersModel::getCreateNewFolderMutation((string) $folderId, (string) $userId, 'new folder', 123, 123, false, false);
-        $output = $this->client->post('/graphql', $folderMutation);
-        $data = json_decode($output, true);
+        $newUser = new UsersModel($userId, 'JohnDoe', 'JohnDoe@ifmo.su', 123);
 
-        // check json output structure
-        $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('folder', $data['data']);
-        $this->assertArrayHasKey('owner', $data['data']['folder']);
+        $data = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewFolder', [
+            'id' => $folderId,
+            'ownerId' => $userId,
+            'title' => 'new folder',
+            'dtCreate' => 1517651704,
+            'dtModify' => 1517651704,
+            'isShared' => false,
+            'isRemoved' => false
+        ]);
 
-        $createdFolder = $data['data']['folder'];
+        $createdFolder = $data['folder'];
 
-        $folderQuery = FoldersModel::getFindFolderQuery($folderId, $userId);
-        $output = $this->client->post('/graphql', $folderQuery);
-        $data = json_decode($output, true);
+        $this->assertArrayHasKey('owner', $createdFolder);
 
-        $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('folder', $data['data']);
-        $this->assertArrayHasKey('owner', $data['data']['folder']);
+        $data = $this->sendGraphql(GraphQl::QUERY, 'GetFolder', [
+            'id' => $folderId,
+            'ownerId' => $userId
+        ]);
 
-        $foundFolder = $data['data']['folder'];
+        $foundFolder = $data['folder'];
+
+        $this->assertArrayHasKey('owner', $foundFolder);
 
         // check if initial and found models are equal
         $this->assertEquals($createdFolder['id'], $foundFolder['id']);

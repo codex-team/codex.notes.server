@@ -3,11 +3,10 @@
 namespace App\Tests;
 
 use App\Components\Api\Models\Folder;
+use App\Components\Api\Models\User;
 use App\Components\Base\Models\Mongo;
 use App\Tests\Helpers\GraphQl;
 use App\Tests\Helpers\WebTestCase;
-use App\Tests\Models\FoldersModel;
-use App\Tests\Models\UsersModel;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -19,6 +18,9 @@ use MongoDB\BSON\ObjectId;
  */
 class ApiFolderTest extends WebTestCase
 {
+    private $testUser;
+    private $testFolder;
+
     /**
      * Setup testing environment
      */
@@ -26,10 +28,35 @@ class ApiFolderTest extends WebTestCase
     {
         parent::setup();
         $this->dropCollection();
+        $this->initDb();
     }
 
     /**
-     * Drop folders collection from test database
+     * Initialize database with test user and folder
+     */
+    private function initDb()
+    {
+        $this->testUser = new User((string) new ObjectId());
+        $this->testUser->sync([
+            'name' => 'JohnDoe',
+            'email' => 'JohnDoe@ifmo.su',
+            'dtReg' => 1517651704
+        ]);
+
+        $id = (string) new ObjectId();
+        $this->testFolder = new Folder($this->testUser->id, $id);
+        $this->testFolder->sync([
+            'id' => $id,
+            'title' => 'new folder',
+            'dtCreate' => 1517651704,
+            'dtModify' => 1517651704,
+            'isShared' => false,
+            'isRemoved' => false
+        ]);
+    }
+
+    /**
+     * Drop collections from test database
      */
     private function dropCollection()
     {
@@ -58,43 +85,29 @@ class ApiFolderTest extends WebTestCase
     }
 
     /**
-     * Test Folder Model – Create new folder
+     * Test Folder Model – Get test folder
      *
-     * Create new folder with model and find it with model
+     * Find test folder with model
      */
-    public function testCreateNewFolderOnlyModel()
+    public function testGetFolder()
     {
-        $userId = (string) new ObjectId();
-        $folderId = (string) new ObjectId();
+        $folder = new Folder($this->testUser->id, $this->testFolder->id);
 
-        // Create new folder
-        $newUser = new UsersModel($userId, 'JohnDoe', 'JohnDoe@ifmo.su', 123);
-
-        // Create folder for the user
-        $newFolder = new FoldersModel($userId, $folderId, ['title' => 'new folder']);
-
-        // Find the folder via model
-        $checkFolder = new Folder($userId, $folderId);
-
-        $this->assertEquals($checkFolder->id, $folderId);
+        $this->assertEquals($this->testFolder->id, $folder->id);
     }
 
     /**
      * Test API Mutation – Create new folder
      *
-     * Create new folder with GraphQl request and find it with model
+     * Create folder with GraphQl request and find it with model
      */
-    public function testCreateNewFolder()
+    public function testCreateFolder()
     {
-        $userId = (string) new ObjectId();
         $folderId = (string) new ObjectId();
-
-        // Create new user
-        $newUser = new UsersModel($userId, 'JohnDoe', 'JohnDoe@ifmo.su', 123);
 
         $data = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewFolder', [
             'id' => $folderId,
-            'ownerId' => $userId,
+            'ownerId' => $this->testUser->id,
             'title' => 'new folder',
             'dtCreate' => 1517651704,
             'dtModify' => 1517651704,
@@ -108,29 +121,22 @@ class ApiFolderTest extends WebTestCase
         $folder = $data['folder'];
 
         // get Folder from DB by model
-        $folderModel = new Folder($userId, $folderId);
+        $folderModel = new Folder($this->testUser->id, $folderId);
 
         // check if initial and saved models are equal
         $this->compare($folderModel, $folder);
     }
 
     /**
-     * Test API Mutation – Create new folder and find it
+     * Test API Mutation – Find folder
      *
-     * Create new folder with model and find it with GraphQl request
+     * Find existing folder with GraphQl request
      */
     public function testFindFolder()
     {
-        $userId = (string) new ObjectId();
-        $folderId = (string) new ObjectId();
-
-        // Create new user and folder
-        $newUser = new UsersModel($userId, 'JohnDoe', 'JohnDoe@ifmo.su', 123);
-        $folderModel = new FoldersModel($userId, $folderId, ['title' => 'new folder']);
-
         $data = $this->sendGraphql(GraphQl::QUERY, 'GetFolder', [
-            'id' => $folderModel->id,
-            'ownerId' => $userId
+            'id' => $this->testFolder->id,
+            'ownerId' => $this->testUser->id
         ]);
 
         $this->assertArrayHasKey('owner', $data['folder']);
@@ -138,26 +144,22 @@ class ApiFolderTest extends WebTestCase
         $folder = $data['folder'];
 
         // check if initial and found models are equal
-        $this->compare($folderModel, $folder);
+        $this->compare($this->testFolder, $folder);
     }
 
     /**
      * Test API Mutation – Create new folder and find it
      *
-     * Create new folder find it with GraphQl requests
+     * Create new folder and find it with GraphQl requests
      */
-    public function testCreateNewFolderAndFind()
+    public function testCreateAndFindFolder()
     {
-        $userId = (string) new ObjectId();
         $folderId = (string) new ObjectId();
-
-        // Create new folder
-        $newUser = new UsersModel($userId, 'JohnDoe', 'JohnDoe@ifmo.su', 123);
 
         $data = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewFolder', [
             'id' => $folderId,
-            'ownerId' => $userId,
-            'title' => 'new folder',
+            'ownerId' => $this->testUser->id,
+            'title' => 'test folder',
             'dtCreate' => 1517651704,
             'dtModify' => 1517651704,
             'isShared' => false,
@@ -170,7 +172,7 @@ class ApiFolderTest extends WebTestCase
 
         $data = $this->sendGraphql(GraphQl::QUERY, 'GetFolder', [
             'id' => $folderId,
-            'ownerId' => $userId
+            'ownerId' => $this->testUser->id
         ]);
 
         $foundFolder = $data['folder'];

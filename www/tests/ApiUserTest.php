@@ -6,7 +6,6 @@ use App\Components\Api\Models\User;
 use App\Components\Base\Models\Mongo;
 use App\Tests\Helpers\GraphQl;
 use App\Tests\Helpers\WebTestCase;
-use App\Tests\Models\UsersModel;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -18,6 +17,8 @@ use MongoDB\BSON\ObjectId;
  */
 class ApiUserTest extends WebTestCase
 {
+    private $testUser;
+
     /**
      * Setup testing environment
      */
@@ -25,6 +26,20 @@ class ApiUserTest extends WebTestCase
     {
         parent::setup();
         $this->dropCollection();
+        $this->initDb();
+    }
+
+    /**
+     * Initialize database with test user
+     */
+    private function initDb()
+    {
+        $this->testUser = new User((string) new ObjectId());
+        $this->testUser->sync([
+            'name' => 'JohnDoe',
+            'email' => 'JohnDoe@ifmo.su',
+            'dtReg' => 1517651704
+        ]);
     }
 
     /**
@@ -33,8 +48,22 @@ class ApiUserTest extends WebTestCase
     private function dropCollection()
     {
         Mongo::connect()
-            ->{UsersModel::getCollectionName()}
+            ->{User::getCollectionName()}
             ->drop();
+    }
+
+    /**
+     * Test User Model – find existing user
+     *
+     * Check that model can find user in DB by ID
+     */
+    public function testUserModel()
+    {
+        $userId = $this->testUser->id;
+
+        $user = new User($userId);
+
+        $this->assertEquals($user->id, $this->testUser->id);
     }
 
     /**
@@ -44,17 +73,15 @@ class ApiUserTest extends WebTestCase
      */
     public function testCreateNewUser()
     {
-        $userId = (string) new ObjectId();
-
         $data = $this->sendGraphql('mutation', 'CreateNewUser', [
-            'id' => $userId,
+            'id' => $this->testUser->id,
             'name' => 'JohnDoe',
             'email' => 'JohnDoe@ifmo.su',
             'dtReg' => 1517651704
         ]);
 
         $user = $data['user'];
-        $userModel = new User($userId);
+        $userModel = new User($this->testUser->id);
 
         // check if initial and saved models are equal
         $this->assertEquals($userModel->id, $user['id']);
@@ -94,14 +121,11 @@ class ApiUserTest extends WebTestCase
      */
     public function testFindUser()
     {
-        // save new user to DB by model
-        $newUser = new UsersModel((string) new ObjectId(), 'JohnDoe', 'JohnDoe@ifmo.su', 123);
-
         $data = $this->sendGraphql(GraphQl::QUERY, 'GetUser', [
-            'id' => $newUser->id
+            'id' => $this->testUser->id
         ]);
 
-        $this->assertEquals($newUser->id, $data['user']['id']);
+        $this->assertEquals($this->testUser->id, $data['user']['id']);
     }
 
     /**

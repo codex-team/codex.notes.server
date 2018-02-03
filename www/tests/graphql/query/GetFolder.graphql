@@ -1,4 +1,4 @@
-GetFolder ($id: ID!, $ownerId: ID!){
+query GetFolder ($id: ID!, $ownerId: ID!){
   folder (id: $id, ownerId: $ownerId) {
       id,
       owner {

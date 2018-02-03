@@ -15,7 +15,7 @@ class GraphQl
 
     public static function request(string $type, string $name, array $variables): array
     {
-        $mutationFileName = PROJECTROOT . 'tests/models/graphql/' . $type . '/' . $name . '.txt';
+        $mutationFileName = PROJECTROOT . 'tests/graphql/' . $type . '/' . $name . '.graphql';
         if (!file_exists($mutationFileName)) {
             throw new Exception('Mutation not found');
         }
@@ -25,7 +25,7 @@ class GraphQl
         fclose($handle);
 
         $data = [
-            'query' => $type . ' ' . $contents,
+            'query' => $contents,
             'variables' => $variables,
             'operationName' => $name
         ];

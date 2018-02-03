@@ -3,6 +3,7 @@
 namespace App\Components\OAuth;
 
 use App\Components\Api\Models\User;
+use App\Components\Sockets\Sockets;
 use App\System\{
     Config,
     HTTP,
@@ -78,6 +79,10 @@ class OAuth
             'photo' => $userData['photo'],
             'google_id' => $userData['google_id'],
         ], self::generateSignatureKey($user->id));
+
+        if (isset($params['channel'])) {
+            Sockets::push($params['channel'], $jwt);
+        }
 
         $body = $res->getBody();
         $body->write('<div id="jwt">' . $jwt . '</div>');

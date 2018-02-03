@@ -64,4 +64,29 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
             $dotenv->load();
         }
     }
+
+    /**
+     * Send GraphQl request and check response structure
+     *
+     * @param string $type – query or migration
+     * @param string $name – operation name equals to .graphql base filename
+     * @param array  $data – array of variables
+     *
+     * @return array – response data
+     */
+    public function sendGraphql(string $type, string $name, array $data): array
+    {
+        $request = GraphQl::request($type, $name, $data);
+        $output = $this->client->post('/graphql', $request);
+
+        // check auth
+        $this->assertFalse($this->client->response->isForbidden(), 'Auth Error (403).');
+
+        // check json output structure
+        $data = json_decode($output, true);
+        $this->assertEquals(json_last_error(), JSON_ERROR_NONE);
+        $this->assertArrayHasKey('data', $data);
+
+        return $data['data'];
+    }
 }

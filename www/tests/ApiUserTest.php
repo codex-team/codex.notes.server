@@ -4,8 +4,8 @@ namespace App\Tests;
 
 use App\Components\Api\Models\User;
 use App\Components\Base\Models\Mongo;
+use App\Tests\Helpers\GraphQl;
 use App\Tests\Helpers\WebTestCase;
-use App\Tests\Models\UsersModel;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -17,6 +17,8 @@ use MongoDB\BSON\ObjectId;
  */
 class ApiUserTest extends WebTestCase
 {
+    private $testUser;
+
     /**
      * Setup testing environment
      */
@@ -24,6 +26,20 @@ class ApiUserTest extends WebTestCase
     {
         parent::setup();
         $this->dropCollection();
+        $this->initDb();
+    }
+
+    /**
+     * Initialize database with test user
+     */
+    private function initDb()
+    {
+        $this->testUser = new User();
+        $this->testUser->sync([
+            'name' => 'JohnDoe',
+            'email' => 'JohnDoe@ifmo.su',
+            'dtReg' => 1517651704
+        ]);
     }
 
     /**
@@ -32,8 +48,22 @@ class ApiUserTest extends WebTestCase
     private function dropCollection()
     {
         Mongo::connect()
-            ->{UsersModel::getCollectionName()}
+            ->{User::getCollectionName()}
             ->drop();
+    }
+
+    /**
+     * Test User Model – find existing user
+     *
+     * Check that model can find user in DB by ID
+     */
+    public function testUserModel()
+    {
+        $userId = $this->testUser->id;
+
+        $user = new User($userId);
+
+        $this->assertEquals($user->id, $this->testUser->id);
     }
 
     /**
@@ -43,25 +73,15 @@ class ApiUserTest extends WebTestCase
      */
     public function testCreateNewUser()
     {
-        $userId = new ObjectId();
+        $data = $this->sendGraphql('mutation', 'CreateNewUser', [
+            'id' => $this->testUser->id,
+            'name' => 'JohnDoe',
+            'email' => 'JohnDoe@ifmo.su',
+            'dtReg' => 1517651704
+        ]);
 
-        // create new user with GraphQl request
-        $userMutation = UsersModel::getCreateNewUserMutation((string) $userId, 'testCreateNewUser', 'testCreateNewUser@ifmo.su', 123);
-        $output = $this->client->post('/graphql', $userMutation);
-
-        // check if response is not forbidden
-        $this->assertFalse($this->client->response->isForbidden(), 'Auth Error (403).');
-
-        $data = json_decode($output, true);
-
-        // check json ouput structure
-        $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('user', $data['data']);
-
-        $user = $data['data']['user'];
-
-        // get User from DB by model
-        $userModel = new User($userId);
+        $user = $data['user'];
+        $userModel = new User($this->testUser->id);
 
         // check if initial and saved models are equal
         $this->assertEquals($userModel->id, $user['id']);
@@ -77,32 +97,21 @@ class ApiUserTest extends WebTestCase
      */
     public function testCreateNewUserAndFind()
     {
-        $userId = new ObjectId();
+        $userId = (string) new ObjectId();
 
-        // create new user with GraphQl request
-        $userMutation = UsersModel::getCreateNewUserMutation((string) $userId, 'testCreateNewUserAndFind', 'testCreateNewUserAndFind@ifmo.su', 123);
-        $output = $this->client->post('/graphql', $userMutation);
-        $data = json_decode($output, true);
+        $createdUser = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewUser', [
+            'id' => $userId,
+            'name' => 'JohnDoe',
+            'email' => 'JohnDoe@ifmo.su',
+            'dtReg' => 1517651704
+        ]);
 
-        $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('user', $data['data']);
-
-        $createdUser = $data['data']['user'];
-
-        // get user by Id with GraphQl request
-        $userQuery = UsersModel::getFindUserQuery($userId);
-        $output = $this->client->post('/graphql', $userQuery);
-
-        $data = json_decode($output, true);
-
-        // check json ouput structure
-        $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('user', $data['data']);
-
-        $foundUser = $data['data']['user'];
+        $foundUser = $this->sendGraphql('query', 'GetUser', [
+            'id' => $userId
+        ]);
 
         // check if initial and saved models are equal
-        $this->assertEquals($createdUser['id'], $foundUser['id']);
+        $this->assertEquals($createdUser['user']['id'], $foundUser['user']['id']);
     }
 
     /**
@@ -112,22 +121,11 @@ class ApiUserTest extends WebTestCase
      */
     public function testFindUser()
     {
-        // save new user to DB by model
-        $newUser = new UsersModel((string) new ObjectId(), 'testFindUser', 'testFindUser@ifmo.su', 123);
+        $data = $this->sendGraphql(GraphQl::QUERY, 'GetUser', [
+            'id' => $this->testUser->id
+        ]);
 
-        // get user by Id with GraphQl request
-        $userQuery = UsersModel::getFindUserQuery($newUser->id);
-        $output = $this->client->post('/graphql', $userQuery);
-
-        $data = json_decode($output, true);
-
-        // check json ouput structure
-        $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('user', $data['data']);
-
-        $user = $data['data']['user'];
-
-        $this->assertEquals($newUser->id, $user['id']);
+        $this->assertEquals($this->testUser->id, $data['user']['id']);
     }
 
     /**
@@ -137,16 +135,10 @@ class ApiUserTest extends WebTestCase
      */
     public function testUserNotFoundQuery()
     {
-        // try to find unexisting user in DB
-        $userQuery = UsersModel::getFindUserQuery("000000000000000000000000");
-        $output = $this->client->post('/graphql', $userQuery);
+        $data = $this->sendGraphql(GraphQl::QUERY, 'GetUser', [
+            'id' => '000000000000000000000000'
+        ]);
 
-        $data = json_decode($output, true);
-
-        // check json ouput structure
-        $this->assertArrayHasKey('data', $data);
-        $this->assertArrayHasKey('user', $data['data']);
-
-        $this->assertEmpty($data['data']['user']['id']);
+        $this->assertEmpty($data['user']['id']);
     }
 }

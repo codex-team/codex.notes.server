@@ -3,12 +3,7 @@
 namespace App\Schema;
 
 use App\Schema\Types\{
-    Collaborator,
-    Folder,
-    Mutation,
-    Note,
-    Query,
-    User
+    Channel, Collaborator, Folder, Mutation, Note, Query, User
 };
 
 /**
@@ -37,6 +32,7 @@ class Types
     private static $folder;
     private static $note;
     private static $collaborator;
+    private static $channel;
 
     public static function query()
     {
@@ -66,5 +62,10 @@ class Types
     public static function collaborator()
     {
         return self::$collaborator ?: (self::$collaborator = new Collaborator());
+    }
+
+    public static function channel()
+    {
+        return self::$channel ?: (self::$channel = new Channel());
     }
 }

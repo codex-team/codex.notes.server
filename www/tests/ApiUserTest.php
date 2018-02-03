@@ -34,7 +34,7 @@ class ApiUserTest extends WebTestCase
      */
     private function initDb()
     {
-        $this->testUser = new User((string) new ObjectId());
+        $this->testUser = new User();
         $this->testUser->sync([
             'name' => 'JohnDoe',
             'email' => 'JohnDoe@ifmo.su',

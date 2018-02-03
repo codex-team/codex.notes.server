@@ -65,7 +65,16 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function sendGraphql($type, $name, $data)
+    /**
+     * Send GraphQl request and check response structure
+     *
+     * @param string $type – query or migration
+     * @param string $name – operation name equals to .graphql base filename
+     * @param array  $data – array of variables
+     *
+     * @return array – response data
+     */
+    public function sendGraphql(string $type, string $name, array $data): array
     {
         $request = GraphQl::request($type, $name, $data);
         $output = $this->client->post('/graphql', $request);

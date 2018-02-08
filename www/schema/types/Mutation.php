@@ -127,7 +127,7 @@ class Mutation extends ObjectType
                              */
                             $folder = new Folder($args['authorId'], $args['folderId']);
 
-                            if (is_null($folder->id)){
+                            if (is_null($folder->id)) {
                                 throw new NoteException('Incorrect Folder passed');
                             }
 
@@ -153,7 +153,6 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function ($root, $args) {
                             try {
-
                                 if (!Auth::checkUserAccess($args['ownerId'])) {
                                     throw new AuthException('Access denied');
                                 }
@@ -167,7 +166,6 @@ class Mutation extends ObjectType
                                 $collaborator->sendInvitationEmail();
 
                                 return $collaborator;
-
                             } catch (\Exception $e) {
                                 return;
                             }

@@ -6,7 +6,6 @@ use App\Components\Base\Models\Exceptions\CollaboratorException;
 use App\Components\Base\Models\Mailer;
 use App\Components\Base\Models\Mongo;
 use App\System\Config;
-use App\System\Log;
 use App\System\Renderer;
 
 /**

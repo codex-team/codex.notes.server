@@ -1,8 +1,8 @@
-<? if (isset($invited_username)): ?>
+<?php if (isset($invited_username)): ?>
 Greetings, <?= $invited_username ?>!
-<? else: ?>
+<?php else: ?>
 Greetings!
-<? endif; ?>
+<?php endif; ?>
 
 <?= $owner_username ?> invited you to the folder "<?= $folder_title ?>"
 

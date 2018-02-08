@@ -2,8 +2,6 @@
 
 namespace App\components\api\models;
 
-use App\Components\Base\Models\Mongo;
-
 class Base
 {
     public function __construct()

@@ -105,9 +105,9 @@ class User extends Base
     /**
      * Fill User's Folders by models
      *
-     * @param int $limit how much items do you need
-     * @param int $skip how much items needs to be skipped
-     * @param array $sort sort fields
+     * @param int   $limit how much items do you need
+     * @param int   $skip  how much items needs to be skipped
+     * @param array $sort  sort fields
      */
     public function fillFolders(int $limit = null, int $skip = null, array $sort = []): void
     {
@@ -160,7 +160,7 @@ class User extends Base
      */
     protected function fillModel(array $data): void
     {
-        $data['id'] = (string)$data['_id'];
+        $data['id'] = (string) $data['_id'];
 
         parent::fillModel($data);
     }

@@ -205,9 +205,10 @@ class Folder extends Base
     /**
      * Fill Collaborators in this Folder
      *
-     * @param int $limit how much items do you need
-     * @param int $skip how much items needs to be skipped
-     * @param array $sort sort fields
+     * @param int   $limit how much items do you need
+     * @param int   $skip  how much items needs to be skipped
+     * @param array $sort  sort fields
+     *
      * @throws FolderException
      */
     public function fillCollaborators(int $limit = null, int $skip = null, array $sort = []): void

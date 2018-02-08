@@ -70,7 +70,7 @@ class Collaborator extends Base
      *
      * @var string|null
      */
-    private $folder;
+    public $folder;
 
     /**
      * Collection name

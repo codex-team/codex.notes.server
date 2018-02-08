@@ -73,15 +73,17 @@ class ApiUserTest extends WebTestCase
      */
     public function testCreateNewUser()
     {
-        $data = $this->sendGraphql('mutation', 'CreateNewUser', [
-            'id' => $this->testUser->id,
+        $userId = (string) new ObjectID();
+
+        $data = $this->sendGraphql(GraphQL::MUTATION, 'CreateNewUser', [
+            'id' => $userId,
             'name' => 'JohnDoe',
             'email' => 'JohnDoe@ifmo.su',
             'dtReg' => 1517651704
         ]);
 
         $user = $data['user'];
-        $userModel = new User($this->testUser->id);
+        $userModel = new User($userId);
 
         // check if initial and saved models are equal
         $this->assertEquals($userModel->id, $user['id']);
@@ -106,7 +108,7 @@ class ApiUserTest extends WebTestCase
             'dtReg' => 1517651704
         ]);
 
-        $foundUser = $this->sendGraphql('query', 'GetUser', [
+        $foundUser = $this->sendGraphql(GraphQl::QUERY, 'GetUser', [
             'id' => $userId
         ]);
 

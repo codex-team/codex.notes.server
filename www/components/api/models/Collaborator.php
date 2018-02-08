@@ -242,6 +242,6 @@ class Collaborator extends Base
 
         $mailer = Mailer::instance();
 
-        return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, 'team@ifmo.su', $this->email, $message);
+        return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, Config::get('TEAM_EMAIL'), $this->email, $message);
     }
 }

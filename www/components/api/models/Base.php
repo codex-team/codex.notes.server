@@ -25,34 +25,12 @@ class Base
     }
 
     /**
-     * Find model data in the database by id
+     * Check if model exists in database
      *
-     * @param string|null $id
-     * @return Base|null
+     * @return Boolean
      */
-    public static function find(string $id = null)
+    public function exists()
     {
-
-        if (is_null($id)) {
-            return null;
-        }
-
-        $query = [
-            '_id' => $id
-        ];
-
-        $mongoResponse = Mongo::connect()
-            ->{static::getCollectionName()}
-            ->findOne($query);
-
-        if (is_null($mongoResponse)) {
-            return null;
-        }
-
-        $model = new self();
-        $model->fillModel($mongoResponse);
-
-        return $model;
-
+        return !is_null($this->id);
     }
 }

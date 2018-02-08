@@ -221,7 +221,7 @@ class Collaborator extends Base
      */
     public function sendInvitationEmail(): bool
     {
-        $invitedUser = User::find($this->userId);
+        $invitedUser = new User($this->userId);
         $folderOwner = new User($this->folder->ownerId);
 
         if (!$folderOwner) {
@@ -234,7 +234,7 @@ class Collaborator extends Base
             'join_link' => Config::get('SERVER_URI') . 'join/' . urlencode($this->email) . '/' . $this->token
         ];
 
-        if (!is_null($invitedUser)) {
+        if ($invitedUser->exists()) {
             $renderOptions['invited_username'] = $invitedUser->name;
         }
 

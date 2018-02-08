@@ -6,6 +6,7 @@ use App\Components\Api\Models\Collaborator;
 use App\Components\Api\Models\Folder;
 use App\Components\Api\Models\User;
 use App\Components\Base\Models\Mongo;
+use App\System\Config;
 use App\Tests\Helpers\GraphQl;
 use App\Tests\Helpers\WebTestCase;
 use MongoDB\BSON\ObjectId;
@@ -78,7 +79,7 @@ class ApiCollaboratorTest extends WebTestCase
      */
     private function dropDb()
     {
-        Mongo::connect(null)->dropDatabase($_SERVER['MONGO_DBNAME']);
+        Mongo::connect(null)->dropDatabase(Config::get('MONGO_DBNAME'));
     }
 
     /**
@@ -88,6 +89,11 @@ class ApiCollaboratorTest extends WebTestCase
      */
     public function testInviteMutation()
     {
+
+        if (empty(Config::get('MAILER_SERVER'))) {
+            $this->markTestSkipped('MAILER_SERVER is not set. Skipped.');
+        }
+
         $data = $this->sendGraphql(GraphQl::MUTATION, 'CollaboratorInvite', [
             'id' => (string) new ObjectID(),
             'folderId' => $this->testFolder->id,
@@ -113,6 +119,11 @@ class ApiCollaboratorTest extends WebTestCase
      */
     public function testInviteCollaboratorAndFind()
     {
+
+        if (empty(Config::get('MAILER_SERVER'))) {
+            $this->markTestSkipped('MAILER_SERVER is not set. Skipped.');
+        }
+
         $collaboratorId = (string) new ObjectId();
         $email = 'JamesDoe@ifmo.su';
 

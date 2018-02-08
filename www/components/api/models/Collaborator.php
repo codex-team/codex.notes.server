@@ -6,6 +6,7 @@ use App\Components\Base\Models\Exceptions\CollaboratorException;
 use App\Components\Base\Models\Mailer;
 use App\Components\Base\Models\Mongo;
 use App\System\Config;
+use App\System\Log;
 use App\System\Renderer;
 
 /**
@@ -15,6 +16,13 @@ use App\System\Renderer;
  */
 class Collaborator extends Base
 {
+    /**
+     * Collaborator's id passed from client
+     *
+     * @var string
+     */
+    public $id;
+
     /**
      * Collaborator's Invitation Token
      *
@@ -37,7 +45,7 @@ class Collaborator extends Base
     public $dtInvite;
 
     /**
-     * Collaboratior User's id
+     * Collaborator User's id
      * Null until user was not accepted the invitation
      *
      * @var string|null
@@ -45,7 +53,7 @@ class Collaborator extends Base
     public $userId;
 
     /**
-     * Collaboratior's User model
+     * Collaborator's User model
      *
      * @var string|null
      */
@@ -213,24 +221,27 @@ class Collaborator extends Base
      */
     public function sendInvitationEmail(): bool
     {
-        $invitedUser = new User($this->userId);
+        $invitedUser = User::find($this->userId);
         $folderOwner = new User($this->folder->ownerId);
 
-        if (!$invitedUser || !$folderOwner) {
+        if (!$folderOwner) {
             return false;
         }
 
-        $message = Renderer::render(
-            'email.php', [
-                'invited_username' => $invitedUser->name,
-                'owner_username' => $folderOwner->name,
-                'folder_title' => $this->folder->title,
-                'join_link' => Config::get('SERVER_URI') . 'join/' . urlencode($invitedUser->email) . '/' . $this->token
-            ], null
-        );
+        $renderOptions = [
+            'owner_username' => $folderOwner->name,
+            'folder_title' => $this->folder->title,
+            'join_link' => Config::get('SERVER_URI') . 'join/' . urlencode($this->email) . '/' . $this->token
+        ];
+
+        if (!is_null($invitedUser)) {
+            $renderOptions['invited_username'] = $invitedUser->name;
+        }
+
+        $message = Renderer::render('email.php', $renderOptions, null);
 
         $mailer = Mailer::instance();
 
-        return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, $this->email, $invitedUser->email, $message);
+        return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, 'team@ifmo.su', $this->email, $message);
     }
 }

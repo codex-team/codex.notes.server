@@ -26,11 +26,15 @@ class Collaborator extends ObjectType
                     ],
                     'id' => [
                         'type' => Type::id(),
-                        'description' => 'Collaborator User\'s id',
+                        'description' => 'Collaborator\'s id',
                     ],
                     'email' => [
                         'type' => Type::string(),
                         'description' => 'Collaborator\'s email address',
+                    ],
+                    'folder' => [
+                        'type' => Types::folder(),
+                        'description' => 'Shared folder'
                     ],
                     'user' => [
                         'type' => Types::user(),

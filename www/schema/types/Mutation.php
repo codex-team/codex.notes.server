@@ -141,6 +141,39 @@ class Mutation extends ObjectType
                         }
                     ],
 
+                    'invite' => [
+                        'type' => Types::collaborator(),
+                        'description' => 'Add new collaborator and send invitation email',
+                        'args' => [
+                            'id' => Type::nonNull(Type::id()),
+                            'email' => Type::nonNull(Type::string()),
+                            'folderId' => Type::nonNull(Type::id()),
+                            'ownerId' => Type::nonNull(Type::id()),
+                            'dtInvite' => Type::int()
+                        ],
+                        'resolve' => function ($root, $args) {
+                            try {
+
+                                if (!Auth::checkUserAccess($args['ownerId'])) {
+                                    throw new AuthException('Access denied');
+                                }
+
+                                $originalFolder = new Folder($args['ownerId'], $args['folderId']);
+                                $args['token'] = Collaborator::getInvitationToken($args['ownerId'], $args['folderId'], $args['email']);
+
+                                $collaborator = new Collaborator($originalFolder);
+                                $collaborator->sync($args);
+
+                                $collaborator->sendInvitationEmail();
+
+                                return $collaborator;
+
+                            } catch (\Exception $e) {
+                                return;
+                            }
+                        }
+                    ],
+
                     'collaborator' => [
                         'type' => Types::collaborator(),
                         'description' => 'Sync Collaborator',

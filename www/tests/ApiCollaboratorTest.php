@@ -89,7 +89,6 @@ class ApiCollaboratorTest extends WebTestCase
      */
     public function testInviteMutation()
     {
-
         if (empty(Config::get('MAILER_SERVER'))) {
             $this->markTestSkipped('MAILER_SERVER is not set. Skipped.');
         }
@@ -119,7 +118,6 @@ class ApiCollaboratorTest extends WebTestCase
      */
     public function testInviteCollaboratorAndFind()
     {
-
         if (empty(Config::get('MAILER_SERVER'))) {
             $this->markTestSkipped('MAILER_SERVER is not set. Skipped.');
         }

@@ -12,7 +12,7 @@ class Sockets
 
         Log::instance()->debug('channel: ' . $channel . ', message: ' . $message);
 
-        $ch = curl_init('http://nginx/chan/'. $channel );
+        $ch = curl_init( Config::get('SOCKETS_HOST') . 'chan/' . $channel );
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($message));

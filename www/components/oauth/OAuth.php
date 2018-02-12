@@ -7,7 +7,8 @@ use App\Components\Sockets\Sockets;
 use App\System\{
     Config,
     HTTP,
-    Log
+    Log,
+    Renderer
 };
 use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -84,8 +85,7 @@ class OAuth
             Sockets::push($params['state'], $jwt);
         }
 
-        $body = $res->getBody();
-        $body->write('<div id="jwt">' . $jwt . '</div>');
+        $res->write(Renderer::render('loader.php', ['title' => 'CodeX Notes']));
 
         return $res;
     }

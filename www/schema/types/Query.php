@@ -93,19 +93,7 @@ class Query extends ObjectType
 
                             return $note;
                         }
-                    ],
-
-                    'channel' => [
-                        'type' => Types::channel(),
-                        'description' => 'Return personal channel by id',
-                        'args' => [
-                            'id' => Type::id()
-                        ],
-                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
-                            return ['id' => '123'];
-                        }
                     ]
-                ];
             }
         ];
 

@@ -172,26 +172,19 @@ class Mutation extends ObjectType
                         }
                     ],
 
-                    'collaborator' => [
+                    'join' => [
                         'type' => Types::collaborator(),
                         'description' => 'Sync Collaborator',
                         'args' => [
-                            'token' => Type::string(),
-                            'userId' => Type::id(),
+                            'userId' => Type::nonNull(Type::id()),
+                            'token' => Type::nonNull(Type::string()),
                             'ownerId' => Type::nonNull(Type::id()),
-                            'folderId' => Type::nonNull(Type::id()),
-                            'email' => Type::string(),
-                            'dtInvite' => Type::int(),
-                            'isRemoved' => Type::boolean()
+                            'folderId' => Type::nonNull(Type::id())
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
-                                if (!Auth::checkUserAccess($args['ownerId'])) {
+                                if (!Auth::checkUserAccess($args['userId'])) {
                                     throw new AuthException('Access denied');
-                                }
-
-                                if (!$args['token'] && !$args['email']) {
-                                    throw new CollaboratorException('Pass token to verify user or pass email to add a new Collaborator');
                                 }
 
                                 /**
@@ -203,30 +196,22 @@ class Mutation extends ObjectType
                                     throw new CollaboratorException('Folder does not exist');
                                 }
 
-                                if ($args['token']) {
-                                    $collaborator = new Collaborator($originalFolder, $args['token']);
-                                    $collaborator->sync($args);
+                                $collaborator = new Collaborator($originalFolder, $args['token']);
 
-                                    /**
-                                     * Accept an Invitation
-                                     * Save Shared Folder to the Acceptor's Folders collection
-                                     */
-                                    if (!empty($args['userId'])) {
-                                        $collaborator->saveFolder($originalFolder);
-                                    }
-                                } elseif ($args['email']) {
-
-                                    /**
-                                     * If email field is not null then we need to send an invite
-                                     */
-
-                                    $args['token'] = Collaborator::getInvitationToken($args['ownerId'], $args['folderId'], $args['email']);
-
-                                    $collaborator = new Collaborator($originalFolder);
-                                    $collaborator->sync($args);
-
-                                    $collaborator->sendInvitationEmail();
+                                if (!$collaborator->exists()) {
+                                    throw new CollaboratorException('Collaborator does not exists');
                                 }
+
+                                $collaborator->sync($args);
+
+                                /**
+                                 * Accept an Invitation
+                                 * Save Shared Folder to the Acceptor's Folders collection
+                                 */
+                                if (!empty($args['userId'])) {
+                                    $collaborator->saveFolder($originalFolder);
+                                }
+
 
                                 $selectedFields = $info->getFieldSelection();
                                 if (isset($selectedFields['user'])) {

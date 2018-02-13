@@ -230,7 +230,7 @@ class Collaborator extends Base
         $renderOptions = [
             'owner_username' => $folderOwner->name,
             'folder_title' => $this->folder->title,
-            'join_link' => Config::get('SERVER_URI') . 'join/' . urlencode($this->email) . '/' . $this->token
+            'join_link' => $this->getJoinLink()
         ];
 
         if ($invitedUser->exists()) {
@@ -242,5 +242,14 @@ class Collaborator extends Base
         $mailer = Mailer::instance();
 
         return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, Config::get('TEAM_EMAIL'), $this->email, $message);
+    }
+
+    /**
+     * Get join link for collaborator
+     *
+     * @return string
+     */
+    private function getJoinLink() {
+        return Config::get('SERVER_URI') . 'join/' . $this->folder->ownerId . '/' . $this->folder->id . '/' . $this->token;
     }
 }

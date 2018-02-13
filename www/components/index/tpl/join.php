@@ -4,7 +4,7 @@
 
     <p>
         <div class="version">If you already have CodeX Notes application running</div>
-        <a class="download" href="codex://join/<?= $email; ?>/<?= $token; ?>">Join</a>
+        <a class="download" href="codex://join/<?= $ownerId; ?>/<?= $folderId ?>/<?= $token; ?>">Join</a>
     </p>
 
     <p>

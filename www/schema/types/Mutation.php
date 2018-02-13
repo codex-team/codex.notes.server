@@ -77,9 +77,13 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
-                                if (!Auth::checkUserAccess($args['ownerId'])) {
-                                    throw new AuthException('Access denied');
-                                }
+                                /**
+                                 * @todo allow access for all collaborators. Not only author.
+                                 */
+
+//                                if (!Auth::checkUserAccess($args['ownerId'])) {
+//                                    throw new AuthException('Access denied');
+//                                }
 
                                 $folder = new Folder($args['ownerId']);
                                 $folder->sync($args);

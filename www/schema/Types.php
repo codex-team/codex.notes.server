@@ -3,12 +3,7 @@
 namespace App\Schema;
 
 use App\Schema\Types\{
-    Collaborator,
-    Folder,
-    Mutation,
-    Note,
-    Query,
-    User
+    Collaborator, Folder, Mutation, Note, Query, User
 };
 
 /**

@@ -3,10 +3,12 @@
 namespace App\Components\OAuth;
 
 use App\Components\Api\Models\User;
+use App\Components\Sockets\Sockets;
 use App\System\{
     Config,
     HTTP,
-    Log
+    Log,
+    Renderer
 };
 use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -34,7 +36,7 @@ class OAuth
             'code' => $params['code'],
             'client_id' => Config::get('GOOGLE_CLIENT_ID'),
             'client_secret' => Config::get('GOOGLE_CLIENT_SECRET'),
-            'redirect_uri' => $params['state'],
+            'redirect_uri' => Config::get('SERVER_URI') . 'oauth/code',
             'grant_type' => 'authorization_code'
         ];
 
@@ -79,8 +81,16 @@ class OAuth
             'google_id' => $userData['google_id'],
         ], self::generateSignatureKey($user->id));
 
-        $body = $res->getBody();
-        $body->write('<div id="jwt">' . $jwt . '</div>');
+        if (isset($params['state'])) {
+            Sockets::push($params['state'], $jwt);
+        } else {
+            Log::instance()->warning('[OAuth] Can not send User\'s token because Channel\'s name was not passed. ', [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
+        }
+
+        $res->write(Renderer::render('loader.php', ['title' => 'CodeX Notes']));
 
         return $res;
     }

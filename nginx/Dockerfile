@@ -1,20 +1,46 @@
-FROM debian:jessie
+FROM ubuntu:latest
 
 MAINTAINER CodeX Team <github.com/codex-team>
 
+ENV NGINX_VERSION 1.12.2
+
 RUN apt-get update
-RUN apt-get install -y nginx
+RUN apt-get install -y \
+       wget \
+       git \
+       gcc \
+       build-essential \
+       libc6 \
+       libpcre3 \
+       libpcre3-dev \
+       libssl-dev \
+       zlib1g \
+       zlib1g-dev \
+       lsb-base
 
-ADD nginx.conf /etc/nginx/
-ADD codex.conf /etc/nginx/sites-available/
+RUN git clone https://github.com/wandenberg/nginx-push-stream-module.git \
+    && wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
+    && tar xzvf nginx-${NGINX_VERSION}.tar.gz \
+    && cd nginx-${NGINX_VERSION} \
+    && ./configure --add-module=../nginx-push-stream-module \
+    && make \
+    && make install
 
-RUN ln -s /etc/nginx/sites-available/codex.conf /etc/nginx/sites-enabled/codex
-RUN rm /etc/nginx/sites-enabled/default
+RUN mkdir -p /usr/local/nginx/sites-available/
+RUN mkdir -p /usr/local/nginx/sites-enabled/
 
-RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
+ADD nginx.conf /usr/local/nginx/conf/
+ADD codex.conf /usr/local/nginx/sites-available/
+RUN ln -s /usr/local/nginx/sites-available/codex.conf /usr/local/nginx/sites-enabled/codex
+
+#RUN apt-get purge -y \
+#    wget \
+#    git \
+#    gcc \
+#    && apt-get clean
 
 RUN usermod -u 1000 www-data
 
-CMD ["nginx"]
+CMD ["/usr/local/nginx/sbin/nginx", "-c", "/usr/local/nginx/conf/nginx.conf"]
 
 EXPOSE 80

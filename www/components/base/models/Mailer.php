@@ -18,6 +18,7 @@ class Mailer
 {
     const DEFAULT_HOST = 'localhost';
     const DEFAULT_SMTP_PORT = 25;
+    const DEFAULT_SECURITY = null;
 
     /**
      * @var $_instance - Instance holder
@@ -129,12 +130,13 @@ class Mailer
     {
         $server = Config::get('MAILER_SERVER') ?? self::DEFAULT_HOST;
         $port = Config::get('MAILER_PORT') ?? self::DEFAULT_SMTP_PORT;
+        $security = Config::get('MAILER_SECURITY') ?? self::DEFAULT_SECURITY;
 
         $username = Config::get('MAILER_USERNAME') ?? '';
         $password = Config::get('MAILER_PASSWORD') ?? '';
 
         // Create the Transport
-        $transport = new Swift_SmtpTransport($server, $port);
+        $transport = new Swift_SmtpTransport($server, $port, $security);
 
         if (!empty($username) && !empty($password)) {
             $transport->setUsername($username)->setPassword($password);

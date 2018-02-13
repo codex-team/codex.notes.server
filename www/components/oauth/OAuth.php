@@ -83,6 +83,11 @@ class OAuth
 
         if (isset($params['state'])) {
             Sockets::push($params['state'], $jwt);
+        } else {
+            Log::instance()->warning('[OAuth] Can not send User\'s token because Channel\'s name was not passed. ', [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
         }
 
         $res->write(Renderer::render('loader.php', ['title' => 'CodeX Notes']));

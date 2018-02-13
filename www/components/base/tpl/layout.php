@@ -9,7 +9,7 @@
     <meta property="og:title" content="<?= $title ?? 'CodeX Notes' ?>" />
     <meta property="og:site_name" content="CodeX Notes" />
 
-    <link rel="stylesheet" href="/static/css/codex.css?v=<?= filemtime('static/css/codex.css')?>">
+    <link rel="stylesheet" href="/static/css/codex.css?v=<?= filemtime(PROJECTROOT . 'public/static/css/codex.css')?>">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112240462-1"></script>

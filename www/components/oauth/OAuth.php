@@ -42,7 +42,16 @@ class OAuth
 
         $result = HTTP::request('POST', self::GOOGLE_TOKEN_URL, $googleCredentials);
 
-        $token = @json_decode($result);
+        $token = json_decode($result);
+
+        /**
+         * Check for correct payload
+         */
+        if (!empty($token->error)) {
+            Log::instance()->warning('[OAuth] Google OAuth failed: ' . $token->error);
+
+            return $res->withStatus(HTTP::CODE_SERVER_ERROR, 'Incorrect payload.');
+        }
 
         $header = 'Authorization: ' . $token->token_type . ' ' . $token->access_token;
 

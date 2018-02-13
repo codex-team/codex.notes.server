@@ -17,7 +17,5 @@ services:
             - ./logs/nginx/:/var/log/nginx
     db:
         image: mongo:latest
-        volumes:
-            - /.data/db
         ports:
             - 27017:27017

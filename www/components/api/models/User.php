@@ -34,6 +34,20 @@ class User extends Base
     public $email;
 
     /**
+     * User's google id
+     *
+     * @var string|null
+     */
+    public $google_id;
+
+    /**
+     * User's photo url
+     *
+     * @var string|null
+     */
+    public $photo;
+
+    /**
      * Registration timestamp
      *
      * @var int|null

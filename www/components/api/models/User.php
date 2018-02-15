@@ -62,6 +62,13 @@ class User extends Base
     public $dtReg;
 
     /**
+     * Modified date timestamp
+     *
+     * @var int|null
+     */
+    public $dtModify;
+
+    /**
      * User's folders
      *
      * @var array

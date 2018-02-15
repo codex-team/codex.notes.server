@@ -48,6 +48,10 @@ class User extends ObjectType
                         'type' => Type::int(),
                         'description' => 'User\'s register timestamp',
                     ],
+                    'dtModify' => [
+                        'type' => Type::int(),
+                        'description' => 'Folder\'s last modification timestamp',
+                    ],
                     'folders' => [
                         'type' => Type::listOf(Types::folder()),
                         'description' => 'User\'s folders',

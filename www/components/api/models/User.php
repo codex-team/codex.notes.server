@@ -34,6 +34,27 @@ class User extends Base
     public $email;
 
     /**
+     * User's avatar
+     *
+     * @var string|null
+     */
+    public $photo;
+
+    /**
+     * User's google id
+     *
+     * @var string|null
+     */
+    public $googleId;
+
+    /**
+     * User's synchronization
+     *
+     * @var int|null
+     */
+    public $dtSync;
+
+    /**
      * Registration timestamp
      *
      * @var int|null

@@ -50,7 +50,7 @@ class User extends ObjectType
                     ],
                     'dtModify' => [
                         'type' => Type::int(),
-                        'description' => 'Folder\'s last modification timestamp',
+                        'description' => 'User\'s last modification timestamp',
                     ],
                     'folders' => [
                         'type' => Type::listOf(Types::folder()),

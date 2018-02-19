@@ -129,7 +129,7 @@ class Mutation extends ObjectType
                              */
                             $folder = new Folder($args['authorId'], $args['folderId']);
 
-                            if (is_null($folder->id)){
+                            if (is_null($folder->id)) {
                                 throw new NoteException('Incorrect Folder passed');
                             }
 

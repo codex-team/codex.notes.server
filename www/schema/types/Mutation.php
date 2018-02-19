@@ -43,7 +43,9 @@ class Mutation extends ObjectType
                             'id' => Type::nonNull(Type::id()),
                             'name' => Type::nonNull(Type::string()),
                             'email' => Type::nonNull(Type::string()),
-                            'dtReg' => Type::int()
+                            'photo' => Type::string(),
+                            'dtReg' => Type::int(),
+                            'dtModify' => Type::int()
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             if (!Auth::checkUserAccess($args['id'])) {
@@ -110,7 +112,7 @@ class Mutation extends ObjectType
                             'folderId' => Type::nonNull(Type::id()),
                             'title' => Type::nonNull(Type::string()),
                             'content' => Type::nonNull(Type::string()),
-                            'dtReg' => Type::int(),
+                            'dtCreate' => Type::int(),
                             'dtModify' => Type::int(),
                             'isRemoved' => Type::boolean()
                         ],

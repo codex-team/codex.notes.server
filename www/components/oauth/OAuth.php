@@ -62,6 +62,7 @@ class OAuth
             'email' => $profileInfo->email,
             'google_id' => $profileInfo->id,
             'photo' => $profileInfo->picture,
+            'dtModify' => time(),
         ];
 
         /** Save new user to database */

@@ -40,10 +40,6 @@ class User extends ObjectType
                         'type' => Type::string(),
                         'description' => 'User\'s google id',
                     ],
-                    'dtSync' => [
-                        'type' => Type::int(),
-                        'description' => 'User\'s synchronization',
-                    ]
                     'dtReg' => [
                         'type' => Type::int(),
                         'description' => 'User\'s register timestamp',

@@ -110,7 +110,7 @@ class Mutation extends ObjectType
                             'folderId' => Type::nonNull(Type::id()),
                             'title' => Type::nonNull(Type::string()),
                             'content' => Type::nonNull(Type::string()),
-                            'dtCreate' => Type::int(),
+                            'dtReg' => Type::int(),
                             'dtModify' => Type::int(),
                             'isRemoved' => Type::boolean()
                         ],

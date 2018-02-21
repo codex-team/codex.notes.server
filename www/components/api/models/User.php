@@ -48,13 +48,6 @@ class User extends Base
     public $googleId;
 
     /**
-     * User's synchronization
-     *
-     * @var int|null
-     */
-    public $dtSync;
-
-    /**
      * Registration timestamp
      *
      * @var int|null

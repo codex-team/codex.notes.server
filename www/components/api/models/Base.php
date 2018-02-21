@@ -27,7 +27,7 @@ class Base
      *
      * @return Boolean
      */
-    public function exists()
+    public function exists(): bool
     {
         return !is_null($this->id);
     }

@@ -249,7 +249,8 @@ class Collaborator extends Base
      *
      * @return string
      */
-    private function getJoinLink() {
+    private function getJoinLink(): string
+    {
         return Config::get('SERVER_URI') . 'join/' . $this->folder->ownerId . '/' . $this->folder->id . '/' . $this->token;
     }
 }

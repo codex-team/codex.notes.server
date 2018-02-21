@@ -85,14 +85,15 @@ class User extends Base
     /**
      * User constructor
      *
-     * @param string|null $id if passed, returns filled User model
+     * @param string|null $id — if passed, returns filled User model
+     * @param string|null $googleId — try to find user by googleId
      */
-    public function __construct(string $id = null)
+    public function __construct(string $id = '', string $googleId = '')
     {
         $this->collectionName = self::getCollectionName();
 
-        if ($id) {
-            $this->findAndFill($id);
+        if ($id || $googleId) {
+            $this->findAndFill($id, $googleId);
         }
     }
 
@@ -109,8 +110,8 @@ class User extends Base
             $query['_id'] = new ObjectId($data['id']);
         }
 
-        if (isset($data['google_id'])) {
-            $query['google_id'] = $data['google_id'];
+        if (isset($data['googleId'])) {
+            $query['googleId'] = $data['googleId'];
         }
 
         $update = [
@@ -163,15 +164,20 @@ class User extends Base
     }
 
     /**
-     * Find User by id and fill put data into model
+     * Find User by id or googleId and fill put data into model
      *
      * @var string $userId
+     * @var string $googleId
      */
-    private function findAndFill(string $userId): void
+    private function findAndFill(string $userId, string $googleId = ''): void
     {
-        $query = [
-            '_id' => new ObjectId($userId)
-        ];
+        $query = [];
+
+        if ($googleId) {
+            $query['googleId'] = $googleId;
+        } else {
+            $query['_id'] = new ObjectId($userId);
+        }
 
         $mongoResponse = Mongo::connect()
             ->{$this->collectionName}

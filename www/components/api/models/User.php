@@ -3,6 +3,7 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
+use App\System\Log;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -187,7 +188,7 @@ class User extends Base
      */
     protected function fillModel(array $data): void
     {
-        $data['id'] = (string) $data['_id'];
+        $data['id'] = !empty($data['_id']) ? (string) $data['_id'] : '';
 
         parent::fillModel($data);
     }

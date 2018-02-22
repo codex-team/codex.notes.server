@@ -93,7 +93,7 @@ class Query extends ObjectType
 
                             return $note;
                         }
-                    ]
+                    ],
                 ];
             }
         ];

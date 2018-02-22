@@ -16,6 +16,13 @@ use App\System\Renderer;
 class Collaborator extends Base
 {
     /**
+     * Collaborator's id passed from client
+     *
+     * @var string
+     */
+    public $id;
+
+    /**
      * Collaborator's Invitation Token
      *
      * @var string|null
@@ -37,7 +44,7 @@ class Collaborator extends Base
     public $dtInvite;
 
     /**
-     * Collaboratior User's id
+     * Collaborator User's id
      * Null until user was not accepted the invitation
      *
      * @var string|null
@@ -45,7 +52,7 @@ class Collaborator extends Base
     public $userId;
 
     /**
-     * Collaboratior's User model
+     * Collaborator's User model
      *
      * @var string|null
      */
@@ -63,7 +70,7 @@ class Collaborator extends Base
      *
      * @var string|null
      */
-    private $folder;
+    public $folder;
 
     /**
      * Collection name
@@ -213,24 +220,37 @@ class Collaborator extends Base
      */
     public function sendInvitationEmail(): bool
     {
-        $invitedUser = new User($this->userId);
+        $invitedUser = new User(null, null, $this->email);
         $folderOwner = new User($this->folder->ownerId);
 
-        if (!$invitedUser || !$folderOwner) {
+        if (!$folderOwner) {
             return false;
         }
 
-        $message = Renderer::render(
-            'email.php', [
-                'invited_username' => $invitedUser->name,
-                'owner_username' => $folderOwner->name,
-                'folder_title' => $this->folder->title,
-                'join_link' => Config::get('SERVER_URI') . 'join/' . urlencode($invitedUser->email) . '/' . $this->token
-            ], null
-        );
+        $renderOptions = [
+            'owner_username' => $folderOwner->name,
+            'folder_title' => $this->folder->title,
+            'join_link' => $this->getJoinLink()
+        ];
+
+        if ($invitedUser->exists()) {
+            $renderOptions['invited_username'] = $invitedUser->name;
+        }
+
+        $message = Renderer::render('email.php', $renderOptions, null);
 
         $mailer = Mailer::instance();
 
-        return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, $this->email, $invitedUser->email, $message);
+        return $mailer->send("[CodeX Notes] Join folder – " . $this->folder->title, Config::get('TEAM_EMAIL'), $this->email, $message);
+    }
+
+    /**
+     * Get join link for collaborator
+     *
+     * @return string
+     */
+    private function getJoinLink(): string
+    {
+        return Config::get('SERVER_URI') . 'join/' . $this->folder->ownerId . '/' . $this->folder->id . '/' . $this->token;
     }
 }

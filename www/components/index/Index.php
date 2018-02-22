@@ -31,7 +31,8 @@ class Index
     {
         $res->write(Renderer::render('join.php', [
             'title' => 'CodeX Notes',
-            'email' => $args['email'],
+            'ownerId' => $args['ownerId'],
+            'folderId' => $args['folderId'],
             'token' => $args['token']
         ]));
     }

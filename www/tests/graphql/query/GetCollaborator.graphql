@@ -1,0 +1,5 @@
+query GetCollaborator ($ownerId: ID!, $folderId: ID!, $token: String!) {
+  collaborator(ownerId: $ownerId, folderId: $folderId, token: $token) {
+    id
+  }
+}

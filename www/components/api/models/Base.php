@@ -21,4 +21,14 @@ class Base
             }
         }
     }
+
+    /**
+     * Check if model exists in database
+     *
+     * @return Boolean
+     */
+    public function exists(): bool
+    {
+        return !is_null($this->id);
+    }
 }

@@ -134,6 +134,8 @@ class Folder extends Base
          */
         if ($this->id) {
             $this->fillNotes();
+            $this->fillOwner();
+            $this->fillCollaborators();
         }
     }
 
@@ -206,6 +208,8 @@ class Folder extends Base
      * @param int   $limit how much items do you need
      * @param int   $skip  how much items needs to be skipped
      * @param array $sort  sort fields
+     *
+     * @throws FolderException
      */
     public function fillCollaborators(int $limit = null, int $skip = null, array $sort = []): void
     {

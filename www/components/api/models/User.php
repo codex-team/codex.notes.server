@@ -161,8 +161,8 @@ class User extends Base
     /**
      * Find User by id or googleId and fill put data into model
      *
-     * @var string $userId
-     * @var string $googleId
+     * @var string|null $userId
+     * @var string|null $googleId
      * @var string $email
      */
     private function findAndFill($userId, $googleId = '', string $email = ''): void

@@ -3,7 +3,6 @@
 namespace App\Schema\Types;
 
 use App\Components\Api\Models\{
-    Collaborator,
     Folder,
     Note,
     User
@@ -93,21 +92,6 @@ class Query extends ObjectType
                             $note = new Note($args['authorId'], $args['folderId'], $args['id']);
 
                             return $note;
-                        }
-                    ],
-
-                    'collaborator' => [
-                        'type' => Types::collaborator(),
-                        'description' => 'Return Collaborator',
-                        'args' => [
-                            'ownerId' => Type::nonNull(Type::id()),
-                            'folderId' => Type::nonNull(Type::id()),
-                            'token' => Type::nonNull(Type::string())
-                        ],
-                        'resolve' => function ($root, $args) {
-                            $folder = new Folder($args['ownerId'], $args['folderId']);
-
-                            return new Collaborator($folder, $args['token']);
                         }
                     ]
                 ];

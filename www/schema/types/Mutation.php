@@ -16,6 +16,7 @@ use App\Components\Base\Models\Exceptions\{
 };
 use App\Components\Middleware\Auth;
 use App\Schema\Types;
+use App\System\Log;
 use GraphQL\Type\Definition\{
     ObjectType,
     ResolveInfo,

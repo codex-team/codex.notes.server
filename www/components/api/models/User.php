@@ -165,7 +165,7 @@ class User extends Base
      * @var string $googleId
      * @var string $email
      */
-    private function findAndFill(string $userId, string $googleId = '', string $email = ''): void
+    private function findAndFill($userId, string $googleId = '', string $email = ''): void
     {
         $query = [];
 

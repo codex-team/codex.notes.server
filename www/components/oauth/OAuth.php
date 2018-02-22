@@ -69,13 +69,18 @@ class OAuth
         $userData = [
             'name' => $profileInfo->name,
             'email' => $profileInfo->email,
-            'google_id' => $profileInfo->id,
+            'googleId' => $profileInfo->id,
             'photo' => $profileInfo->picture,
+            'dtModify' => time(),
         ];
 
-        /** Save new user to database */
-        $user = new User();
-        $user->sync($userData);
+        /** Find user in database */
+        $user = new User('', $userData['googleId']);
+
+        /** If no user in base with this googleId then create a new one */
+        if (!$user->id) {
+            $user->sync($userData);
+        }
 
         Log::instance()->debug('[OAuth] User model from DB: ' . json_encode($user));
 
@@ -86,8 +91,9 @@ class OAuth
             'user_id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'photo' => $userData['photo'],
-            'google_id' => $userData['google_id'],
+            'photo' => $user->photo,
+            'googleId' => $user->googleId,
+            'dtModify' => $user->dtModify,
         ], self::generateSignatureKey($user->id));
 
         if (isset($params['state'])) {

@@ -3,6 +3,7 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
+use App\System\Log;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -34,18 +35,18 @@ class User extends Base
     public $email;
 
     /**
-     * User's google id
-     *
-     * @var string|null
-     */
-    public $google_id;
-
-    /**
-     * User's photo url
+     * User's photo URL
      *
      * @var string|null
      */
     public $photo;
+
+    /**
+     * User's google id
+     *
+     * @var string|null
+     */
+    public $googleId;
 
     /**
      * Registration timestamp
@@ -53,6 +54,13 @@ class User extends Base
      * @var int|null
      */
     public $dtReg;
+
+    /**
+     * Modified date timestamp
+     *
+     * @var int|null
+     */
+    public $dtModify;
 
     /**
      * User's folders
@@ -71,14 +79,15 @@ class User extends Base
     /**
      * User constructor
      *
-     * @param string|null $id if passed, returns filled User model
+     * @param string|null $id — if passed, returns filled User model
+     * @param string|null $googleId — try to find user by googleId
      */
-    public function __construct(string $id = null)
+    public function __construct(string $id = '', string $googleId = '')
     {
         $this->collectionName = self::getCollectionName();
 
-        if ($id) {
-            $this->findAndFill($id);
+        if ($id || $googleId) {
+            $this->findAndFill($id, $googleId);
         }
     }
 
@@ -95,8 +104,8 @@ class User extends Base
             $query['_id'] = new ObjectId($data['id']);
         }
 
-        if (isset($data['google_id'])) {
-            $query['google_id'] = $data['google_id'];
+        if (isset($data['googleId'])) {
+            $query['googleId'] = $data['googleId'];
         }
 
         $update = [
@@ -149,15 +158,20 @@ class User extends Base
     }
 
     /**
-     * Find User by id and fill put data into model
+     * Find User by id or googleId and fill put data into model
      *
      * @var string $userId
+     * @var string $googleId
      */
-    private function findAndFill(string $userId): void
+    private function findAndFill(string $userId, string $googleId = ''): void
     {
-        $query = [
-            '_id' => new ObjectId($userId)
-        ];
+        $query = [];
+
+        if ($googleId) {
+            $query['googleId'] = $googleId;
+        } else {
+            $query['_id'] = new ObjectId($userId);
+        }
 
         $mongoResponse = Mongo::connect()
             ->{$this->collectionName}
@@ -174,7 +188,7 @@ class User extends Base
      */
     protected function fillModel(array $data): void
     {
-        $data['id'] = (string) $data['_id'];
+        $data['id'] = !empty($data['_id']) ? (string) $data['_id'] : '';
 
         parent::fillModel($data);
     }

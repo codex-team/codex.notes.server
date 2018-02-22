@@ -32,17 +32,21 @@ class User extends ObjectType
                         'type' => Type::string(),
                         'description' => 'User\'s email address',
                     ],
-                    'google_id' => [
-                        'type' => Type::string(),
-                        'description' => 'User\'s google id',
-                    ],
                     'photo' => [
                         'type' => Type::string(),
-                        'description' => 'User\'s photo url',
+                        'description' => 'User\'s avatar',
+                    ],
+                    'googleId' => [
+                        'type' => Type::string(),
+                        'description' => 'User\'s google id',
                     ],
                     'dtReg' => [
                         'type' => Type::int(),
                         'description' => 'User\'s register timestamp',
+                    ],
+                    'dtModify' => [
+                        'type' => Type::int(),
+                        'description' => 'User\'s last modification timestamp',
                     ],
                     'folders' => [
                         'type' => Type::listOf(Types::folder()),

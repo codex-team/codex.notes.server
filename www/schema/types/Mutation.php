@@ -173,6 +173,9 @@ class Mutation extends ObjectType
 
                                 return $collaborator;
                             } catch (\Exception $e) {
+                                Log::instance()->warning('[Mutation Invite] Can not send an Invitation', [
+                                    'error' => $e->getMessage(),
+                                ]);
                                 return;
                             }
                         }
@@ -226,6 +229,9 @@ class Mutation extends ObjectType
 
                                 return $collaborator;
                             } catch (CollaboratorException $e) {
+                                Log::instance()->warning('[Mutation Join] Can not proccess joining', [
+                                    'error' => $e->getMessage(),
+                                ]);
                                 return;
                             }
                         }

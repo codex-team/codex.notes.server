@@ -81,13 +81,14 @@ class User extends Base
      *
      * @param string|null $id — if passed, returns filled User model
      * @param string|null $googleId — try to find user by googleId
+     * @param string|null $email — try to find user by email
      */
-    public function __construct(string $id = '', string $googleId = '')
+    public function __construct($id = '', $googleId = '', $email = '')
     {
         $this->collectionName = self::getCollectionName();
 
-        if ($id || $googleId) {
-            $this->findAndFill($id, $googleId);
+        if ($id || $googleId || $email) {
+            $this->findAndFill($id, $googleId, $email);
         }
     }
 
@@ -162,14 +163,21 @@ class User extends Base
      *
      * @var string $userId
      * @var string $googleId
+     * @var string $email
      */
-    private function findAndFill(string $userId, string $googleId = ''): void
+    private function findAndFill(string $userId, string $googleId = '', string $email = ''): void
     {
         $query = [];
 
-        if ($googleId) {
+        if (!empty($googleId)) {
             $query['googleId'] = $googleId;
-        } else {
+        }
+
+        if (!empty($email)){
+            $query['email'] = $email;
+        }
+
+        if (!empty($userId)){
             $query['_id'] = new ObjectId($userId);
         }
 

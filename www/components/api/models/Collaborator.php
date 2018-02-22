@@ -220,7 +220,7 @@ class Collaborator extends Base
      */
     public function sendInvitationEmail(): bool
     {
-        $invitedUser = new User($this->userId);
+        $invitedUser = new User('', '', $this->email);
         $folderOwner = new User($this->folder->ownerId);
 
         if (!$folderOwner) {

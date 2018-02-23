@@ -7,7 +7,12 @@ use App\System\Config;
  */
 $app->get('/', 'App\Components\Index\Index:page');
 $app->get('/join/{ownerId}/{folderId}/{token}', 'App\Components\Index\Index:join');
+
+/**
+ * Generate JWT auth token
+ */
 $app->get('/oauth/code', 'App\Components\OAuth\OAuth:code');
+$app->get('/oauth/mobile', 'App\Components\OAuth\OAuth:mobile');
 
 /**
  * GraphQL API endpoint

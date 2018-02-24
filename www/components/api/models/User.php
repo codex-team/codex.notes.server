@@ -3,7 +3,6 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
-use App\System\Log;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -79,9 +78,9 @@ class User extends Base
     /**
      * User constructor
      *
-     * @param string|null $id — if passed, returns filled User model
+     * @param string|null $id       — if passed, returns filled User model
      * @param string|null $googleId — try to find user by googleId
-     * @param string|null $email — try to find user by email
+     * @param string|null $email    — try to find user by email
      */
     public function __construct($id = '', $googleId = '', $email = '')
     {
@@ -163,7 +162,10 @@ class User extends Base
      *
      * @var string|null $userId
      * @var string|null $googleId
-     * @var string $email
+     * @var string      $email
+     *
+     * @param mixed $userId
+     * @param mixed $googleId
      */
     private function findAndFill($userId, $googleId = '', string $email = ''): void
     {
@@ -173,11 +175,11 @@ class User extends Base
             $query['googleId'] = $googleId;
         }
 
-        if (!empty($email)){
+        if (!empty($email)) {
             $query['email'] = $email;
         }
 
-        if (!empty($userId)){
+        if (!empty($userId)) {
             $query['_id'] = new ObjectId($userId);
         }
 

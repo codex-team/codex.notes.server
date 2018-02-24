@@ -66,35 +66,7 @@ class OAuth
             return $res->withStatus(HTTP::CODE_SERVER_ERROR, $profileInfo->error->message);
         }
 
-        $userData = [
-            'name' => $profileInfo->name,
-            'email' => $profileInfo->email,
-            'googleId' => $profileInfo->id,
-            'photo' => $profileInfo->picture,
-            'dtModify' => time(),
-        ];
-
-        /** Find user in database */
-        $user = new User('', $userData['googleId']);
-
-        /** If no user in base with this googleId then create a new one */
-        if (!$user->id) {
-            $user->sync($userData);
-        }
-
-        Log::instance()->debug('[OAuth] User model from DB: ' . json_encode($user));
-
-        $jwt = JWT::encode([
-            'iss' => Config::get('JWT_ISS'),
-            'aud' => Config::get('JWT_AUD'),
-            'iat' => time(),
-            'user_id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'photo' => $user->photo,
-            'googleId' => $user->googleId,
-            'dtModify' => $user->dtModify,
-        ], self::generateSignatureKey($user->id));
+        $jwt = self::generateJwtWithUserData($profileInfo);
 
         if (isset($params['state'])) {
             Sockets::push($params['state'], $jwt);
@@ -108,6 +80,130 @@ class OAuth
         $res->write(Renderer::render('loader.php', ['title' => 'CodeX Notes']));
 
         return $res;
+    }
+
+    /**
+     * Google OAuth for mobile Apps
+     * Return a new jwt access token for Cloud
+     *
+     * @param Request  $req
+     * @param Response $res
+     * @param $args
+     *
+     * @return Response
+     */
+    public function mobile(Request $req, Response $res, $args)
+    {
+        try {
+            $params = $req->getQueryParams();
+            $CLIENT_ID = Config::get('GOOGLE_CLIENT_ID');
+
+            /** Check for existing "token" param */
+            if (empty($params['token'])) {
+                Log::instance()
+                   ->warning('[OAuth] Mobile Google OAuth failed. No token was provided');
+
+                return $res->withStatus(HTTP::CODE_SERVER_ERROR,
+                    'No token param was provided');
+            }
+
+            $token = $params['token'];
+
+            $client = new \Google_Client(['client_id' => $CLIENT_ID]);
+
+            /**
+             * object|bool $payload - data from jwt or false
+             *
+             * $payload["azp"] string - the client ID of the Android app component of project
+             * $payload["aud"] string - the client ID of the web component of the project
+             * $payload["sub"] string - An identifier for the user, unique among all Google accounts and never reused.
+             * $payload["email"] string - The user's email address.
+             * $payload["email_verified"] bool - True if the user's e-mail address has been verified; otherwise false.
+             * $payload["exp"] int - The time the ID token expires, represented in Unix time (integer seconds).
+             * $payload["iss"] string - The Issuer Identifier for the Issuer of the response. Always accounts.google.com
+             * $payload["iat"] int - The time the ID token was issued, represented in Unix time (integer seconds).
+             * $payload["name"] string - The user's full name, in a displayable form.
+             * $payload["picture"] string - The URL of the user's profile picture.
+             * $payload["given_name"] string - User's first name
+             * $payload["family_name"] string - User's second name
+             * $payload["locale"] string — "ru"
+             */
+            $payload = $client->verifyIdToken($token);
+
+            if ($payload) {
+                /** set user id as param */
+                $payload['id'] = $payload['sub'];
+
+                /** Convert array to object */
+                $payload = (object) $payload;
+
+                /** Get JWT */
+                $jwt = self::generateJwtWithUserData($payload);
+
+                Log::instance()->debug('[OAuth] Mobile Google OAuth OK');
+
+                /** Print new jwt access token */
+                return $res->write($jwt);
+            } else {
+                throw new \Exception('Bad token was passed');
+            }
+        } catch (\Exception $e) {
+            Log::instance()
+               ->warning('[OAuth] Mobile Google OAuth failed. ' . $e->getMessage());
+
+            /** Return 500 with message */
+            return $res->withStatus(HTTP::CODE_SERVER_ERROR,
+                 $e->getMessage());
+        }
+    }
+
+    /**
+     * Find (or create) user in DB and generate JWT
+     *
+     * @param $profileInfo object - user data: name, email, id, picture
+     *
+     * @throws \Exception
+     *
+     * @return string
+     *
+     */
+    private static function generateJwtWithUserData($profileInfo)
+    {
+        try {
+            $userData = [
+                'name' => $profileInfo->name,
+                'email' => $profileInfo->email,
+                'googleId' => $profileInfo->id,
+                'photo' => $profileInfo->picture,
+                'dtModify' => time(),
+            ];
+
+            /** Find user in database */
+            $user = new User('', $userData['googleId']);
+
+            /** If no user in base with this googleId then create a new one */
+            if (! $user->id) {
+                $user->sync($userData);
+            }
+
+            $jwt = JWT::encode([
+                'iss' => Config::get('JWT_ISS'),
+                'aud' => Config::get('JWT_AUD'),
+                'iat' => time(),
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'photo' => $user->photo,
+                'googleId' => $user->googleId,
+                'dtModify' => $user->dtModify,
+            ], self::generateSignatureKey($user->id));
+
+            return $jwt;
+        } catch (\Exception $e) {
+            Log::instance()->warning('[OAuth] Generating JWT was failed because of ' . $e->getMessage());
+
+            throw new \Exception('Cannot generate JWT');
+        }
     }
 
     /**

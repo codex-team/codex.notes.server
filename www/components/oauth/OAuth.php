@@ -95,7 +95,7 @@ class OAuth
     public function mobile(Request $req, Response $res, $args)
     {
         try {
-            $params    = $req->getQueryParams();
+            $params = $req->getQueryParams();
             $CLIENT_ID = Config::get('GOOGLE_CLIENT_ID');
 
             /** Check for existing "token" param */
@@ -135,7 +135,7 @@ class OAuth
                 $payload['id'] = $payload['sub'];
 
                 /** Convert array to object */
-                $payload = (object)$payload;
+                $payload = (object) $payload;
 
                 /** Get JWT */
                 $jwt = self::generateJwtWithUserData($payload);
@@ -147,7 +147,6 @@ class OAuth
             } else {
                 throw new \Exception('Bad token was passed');
             }
-
         } catch (\Exception $e) {
             Log::instance()
                ->warning('[OAuth] Mobile Google OAuth failed. ' . $e->getMessage());
@@ -163,18 +162,19 @@ class OAuth
      *
      * @param $profileInfo object - user data: name, email, id, picture
      *
+     * @throws \Exception
+     *
      * @return string
      *
-     * @throws \Exception
      */
     private static function generateJwtWithUserData($profileInfo)
     {
         try {
             $userData = [
-                'name'     => $profileInfo->name,
-                'email'    => $profileInfo->email,
+                'name' => $profileInfo->name,
+                'email' => $profileInfo->email,
                 'googleId' => $profileInfo->id,
-                'photo'    => $profileInfo->picture,
+                'photo' => $profileInfo->picture,
                 'dtModify' => time(),
             ];
 
@@ -182,18 +182,18 @@ class OAuth
             $user = new User('', $userData['googleId']);
 
             /** If no user in base with this googleId then create a new one */
-            if ( ! $user->id) {
+            if (! $user->id) {
                 $user->sync($userData);
             }
 
             $jwt = JWT::encode([
-                'iss'      => Config::get('JWT_ISS'),
-                'aud'      => Config::get('JWT_AUD'),
-                'iat'      => time(),
-                'user_id'  => $user->id,
-                'name'     => $user->name,
-                'email'    => $user->email,
-                'photo'    => $user->photo,
+                'iss' => Config::get('JWT_ISS'),
+                'aud' => Config::get('JWT_AUD'),
+                'iat' => time(),
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'photo' => $user->photo,
                 'googleId' => $user->googleId,
                 'dtModify' => $user->dtModify,
             ], self::generateSignatureKey($user->id));

@@ -156,7 +156,12 @@ class Mutation extends ObjectType
                             'email' => Type::nonNull(Type::string()),
                             'folderId' => Type::nonNull(Type::id()),
                             'ownerId' => Type::nonNull(Type::id()),
-                            'dtInvite' => Type::int()
+                            'dtInvite' => Type::int(),
+                            'needSendEmail' => [
+                                'description' => 'Do we need to send email with invitation',
+                                'type' => Type::boolean(),
+                                'defaultValue' => false
+                            ],
                         ],
                         'resolve' => function ($root, $args) {
                             try {
@@ -170,7 +175,9 @@ class Mutation extends ObjectType
                                 $collaborator = new Collaborator($originalFolder);
                                 $collaborator->sync($args);
 
-                                $collaborator->sendInvitationEmail();
+                                if ($args['needSendEmail']) {
+                                    $collaborator->sendInvitationEmail();
+                                }
 
                                 return $collaborator;
                             } catch (\Exception $e) {

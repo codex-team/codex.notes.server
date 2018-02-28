@@ -152,11 +152,26 @@ class Mutation extends ObjectType
                         'type' => Types::collaborator(),
                         'description' => 'Add new collaborator and send invitation email',
                         'args' => [
-                            'id' => Type::nonNull(Type::id()),
-                            'email' => Type::nonNull(Type::string()),
-                            'folderId' => Type::nonNull(Type::id()),
-                            'ownerId' => Type::nonNull(Type::id()),
-                            'dtInvite' => Type::int(),
+                            'id' => [
+                                'description' => 'Collaborator\'s id',
+                                'type' => Type::nonNull(Type::id()),
+                            ],
+                            'email' => [
+                                'description' => 'Collaborator\'s email address',
+                                'type' => Type::nonNull(Type::string()),
+                            ],
+                            'folderId' => [
+                                'description' => 'Shared Folder\'s id',
+                                'type' => Type::nonNull(Type::id()),
+                            ],
+                            'ownerId' => [
+                                'description' => 'Folder Owner\'s id',
+                                'type' => Type::nonNull(Type::id()),
+                            ],
+                            'dtInvite' => [
+                                'description' => 'Date of an invitation sending',
+                                'type' => Type::int(),
+                            ],
                             'needSendEmail' => [
                                 'description' => 'Do we need to send email with invitation',
                                 'type' => Type::boolean(),
@@ -165,11 +180,42 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function ($root, $args) {
                             try {
+                                /** Auth check */
                                 if (!Auth::checkUserAccess($args['ownerId'])) {
                                     throw new AuthException('Access denied');
                                 }
 
+                                /** Get original Folder */
                                 $originalFolder = new Folder($args['ownerId'], $args['folderId']);
+
+                                /**
+                                 * If Folder has no Collaborators then it has not been shared yet
+                                 */
+                                if (!$originalFolder->collaborators) {
+                                    $ownerUserModel = new User($args['ownerId']);
+
+                                    /** Need to identify Collaborator in DB */
+                                    $inviteTokenForOwner = Collaborator::getInvitationToken(
+                                        $ownerUserModel->id, $originalFolder->id, $ownerUserModel->email
+                                    );
+
+                                    $ownerCollaboratorData = [
+                                        'id' => $ownerUserModel->id,        // doesn't matter
+                                        'email' => $ownerUserModel->email,
+                                        'ownerId' => $ownerUserModel->id,
+                                        'folderId' => $originalFolder->id,
+                                        'dtInvite' => time(),
+                                        'userId' => $ownerUserModel->id,
+                                        'token' => $inviteTokenForOwner
+                                    ];
+
+                                    /** We should add Owner as a Collaborator */
+                                    $ownerCollaboratorModel = new Collaborator($originalFolder);
+                                    $ownerCollaboratorModel->sync($ownerCollaboratorData);
+
+                                    /** No need to send invite email to Owner */
+                                }
+
                                 $args['token'] = Collaborator::getInvitationToken($args['ownerId'], $args['folderId'], $args['email']);
 
                                 $collaborator = new Collaborator($originalFolder);

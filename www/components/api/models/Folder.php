@@ -284,4 +284,30 @@ class Folder extends Base
     {
         return sprintf('folders:%s', $ownerId);
     }
+
+    /**
+     * Check if User has access to modify this Folder
+     *
+     * @param string $userId
+     *
+     * @return bool
+     */
+    public function hasUserAccess(string $userId): bool
+    {
+        $collaboratorsCollection
+            = Collaborator::getCollectionName($this->ownerId, $this->id);
+
+        $query = [
+            'userId' => $userId,
+            'isRemoved' => [
+                '$ne' => true
+            ]
+        ];
+
+        $mongoResponse = Mongo::connect()
+            ->{$collaboratorsCollection}
+            ->findOne($query);
+
+        return !!$mongoResponse;
+    }
 }

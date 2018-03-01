@@ -93,7 +93,7 @@ class Auth
             return true;
         }
 
-        if ($userId != $GLOBALS['user']['user_id']) {
+        if ($userId != self::userId()) {
             return false;
         }
 
@@ -110,5 +110,15 @@ class Auth
     private function isSupported($type): bool
     {
         return in_array($type, self::SUPPORTED_TYPES);
+    }
+
+    /**
+     * Get User's id from GLOBALS after auth
+     *
+     * @return string
+     */
+    public static function userId(): string
+    {
+        return !empty($GLOBALS['user']['user_id']) ? $GLOBALS['user']['user_id'] : '';
     }
 }

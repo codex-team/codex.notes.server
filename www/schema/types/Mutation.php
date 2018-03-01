@@ -80,26 +80,20 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
-                                /**
-                                 * @todo allow access for all collaborators. Not only author.
-                                 */
+                                /** Get real Folder */
+                                $folder = new Folder($args['ownerId'], $args['id']);
 
-//                                if (!Auth::checkUserAccess($args['ownerId'])) {
-//                                    throw new AuthException('Access denied');
-//                                }
+                                /** Check access to this Folder */
+                                $isFolderOwner = Auth::checkUserAccess($folder->ownerId);
+                                if (!$isFolderOwner) {
 
-                                $folder = new Folder($args['ownerId']);
+                                    $isCollaborator = $folder->hasUserAccess(Auth::userId());
+                                    if (!$isCollaborator) {
+                                        throw new AuthException('Access denied');
+                                    }
+                                }
+
                                 $folder->sync($args);
-
-                                $selectedFields = $info->getFieldSelection();
-
-                                if (in_array('owner', $selectedFields)) {
-                                    $folder->fillOwner();
-                                }
-
-                                if (in_array('collaborators', $selectedFields)) {
-                                    $folder->fillCollaborators();
-                                }
 
                                 return $folder;
                             } catch (FolderException $e) {

@@ -84,7 +84,7 @@ class Mutation extends ObjectType
                                 $folder = new Folder($args['ownerId'], $args['id']);
 
                                 /** Check access to this Folder */
-                                $isFolderOwner = Auth::checkUserAccess($args['ownerId']);
+                                $isFolderOwner = Auth::checkUserAccess($folder->ownerId);
                                 if (!$isFolderOwner) {
 
                                     $isCollaborator = $folder->hasUserAccess($GLOBALS['user']['user_id']);

@@ -87,7 +87,7 @@ class Mutation extends ObjectType
                                 $isFolderOwner = Auth::checkUserAccess($folder->ownerId);
                                 if (!$isFolderOwner) {
 
-                                    $isCollaborator = $folder->hasUserAccess($GLOBALS['user']['user_id']);
+                                    $isCollaborator = $folder->hasUserAccess(Auth::userId());
                                     if (!$isCollaborator) {
                                         throw new AuthException('Access denied');
                                     }

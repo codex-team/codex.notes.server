@@ -119,6 +119,6 @@ class Auth
      */
     public static function userId(): string
     {
-        return $GLOBALS['user']['user_id'] ?: '';
+        return !empty($GLOBALS['user']['user_id']) ? $GLOBALS['user']['user_id'] : '';
     }
 }

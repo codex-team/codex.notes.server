@@ -166,11 +166,6 @@ class Mutation extends ObjectType
                                 'description' => 'Date of an invitation sending',
                                 'type' => Type::int(),
                             ],
-                            'needSendEmail' => [
-                                'description' => 'Do we need to send email with invitation',
-                                'type' => Type::boolean(),
-                                'defaultValue' => false
-                            ],
                         ],
                         'resolve' => function ($root, $args) {
                             try {
@@ -215,9 +210,7 @@ class Mutation extends ObjectType
                                 $collaborator = new Collaborator($originalFolder);
                                 $collaborator->sync($args);
 
-                                if ($args['needSendEmail']) {
-                                    $collaborator->sendInvitationEmail();
-                                }
+                                $collaborator->sendInvitationEmail();
 
                                 return $collaborator;
                             } catch (\Exception $e) {

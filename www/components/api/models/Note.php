@@ -3,6 +3,7 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
+use App\System\Config;
 
 /**
  * Model Note
@@ -164,11 +165,17 @@ class Note extends Base
     private function findAndFill(string $noteId): void
     {
         $query = [
-            'id' => $noteId,
-            'isRemoved' => [
-                '$ne' => true
-            ]
+            'id' => $noteId
         ];
+
+        /**
+         * Add checking "isRemoved != true" to query
+         */
+        if (!Config::get('RETURN_REMOVED_ITEMS')) {
+            $query['isRemoved'] = [
+                '$ne' => true
+            ];
+        }
 
         $mongoResponse = Mongo::connect()
             ->{$this->collectionName}

@@ -69,14 +69,38 @@ class Mutation extends ObjectType
                         'type' => Types::folder(),
                         'description' => 'Sync Folder',
                         'args' => [
-                            'id' => Type::nonNull(Type::id()),
-                            'ownerId' => Type::nonNull(Type::id()),
-                            'title' => Type::nonNull(Type::string()),
-                            'dtCreate' => Type::int(),
-                            'dtModify' => Type::int(),
-                            'isShared' => Type::boolean(),
-                            'isRemoved' => Type::boolean(),
-                            'isRoot' => Type::boolean()
+                            'id' => [
+                                'description' => 'Folder\'s id',
+                                'type' => Type::nonNull(Type::id()),
+                            ],
+                            'ownerId' => [
+                                'description' => 'Owner\'s id',
+                                'type' => Type::nonNull(Type::id()),
+                            ],
+                            'title' => [
+                                'description' => 'Folder\'s title',
+                                'type' => Type::nonNull(Type::string())
+                            ],
+                            'dtCreate' => [
+                                'description' => 'Folder\'s date created',
+                                'type' => Type::int()
+                            ],
+                            'dtModify' => [
+                                'description' => 'Folder\'s date modified',
+                                'type' => Type::int()
+                            ],
+                            'isShared' => [
+                                'description' => 'Is this Folder a Shared Folder (link to another one Folder)',
+                                'type' => Type::boolean()
+                            ],
+                            'isRemoved' => [
+                                'description' => 'Is this Folder removed',
+                                'type' => Type::boolean()
+                            ],
+                            'isRoot' => [
+                                'description' => 'Is this Folder a User\'s Root Folder',
+                                'type' => Type::boolean()
+                            ]
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
@@ -97,6 +121,10 @@ class Mutation extends ObjectType
 
                                 return $folder;
                             } catch (FolderException $e) {
+                                Log::instance()->warning('[Mutation Folder] Can not sync Folder', [
+                                    'error' => $e->getMessage(),
+                                ]);
+
                                 return;
                             }
                         }

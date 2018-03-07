@@ -118,6 +118,15 @@ class Collaborator extends Base
             'token' => $data['token']
         ];
 
+        /**
+         * Add checking "isRemoved != true" to query
+         */
+        if (!Config::get('RETURN_REMOVED_ITEMS')) {
+            $query['isRemoved'] = [
+                '$ne' => true
+            ];
+        }
+
         $update = [
             '$set' => $data
         ];
@@ -151,11 +160,17 @@ class Collaborator extends Base
     private function findAndFill(string $token): void
     {
         $query = [
-            'token' => $token,
-            'isRemoved' => [
-                '$ne' => true
-            ]
+            'token' => $token
         ];
+
+        /**
+         * Add checking "isRemoved != true" to query
+         */
+        if (!Config::get('RETURN_REMOVED_ITEMS')) {
+            $query['isRemoved'] = [
+                '$ne' => true
+            ];
+        }
 
         $mongoResponse = Mongo::connect()
             ->{$this->collectionName}

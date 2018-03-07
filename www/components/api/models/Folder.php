@@ -4,6 +4,7 @@ namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Exceptions\FolderException;
 use App\Components\Base\Models\Mongo;
+use App\System\Config;
 
 /**
  * Model Folder
@@ -181,11 +182,16 @@ class Folder extends Base
          */
         $notesCollection = Note::getCollectionName($this->ownerId, $this->id);
 
-        $query = [
-            'isRemoved' => [
+        $query = [];
+
+        /**
+         * Add checking "isRemoved != true" to query
+         */
+        if (!Config::get('RETURN_REMOVED_ITEMS')) {
+            $query['isRemoved'] = [
                 '$ne' => true
-            ]
-        ];
+            ];
+        }
 
         $options = [
             'limit' => $limit,
@@ -219,11 +225,16 @@ class Folder extends Base
 
         $collaboratorsCollection = Collaborator::getCollectionName($this->ownerId, $this->id);
 
-        $query = [
-            'isRemoved' => [
+        $query = [];
+
+        /**
+         * Add checking "isRemoved != true" to query
+         */
+        if (!Config::get('RETURN_REMOVED_ITEMS')) {
+            $query['isRemoved'] = [
                 '$ne' => true
-            ]
-        ];
+            ];
+        }
 
         $options = [
             'limit' => $limit,
@@ -260,11 +271,17 @@ class Folder extends Base
     private function findAndFill(string $folderId): void
     {
         $query = [
-            'id' => $folderId,
-            'isRemoved' => [
-                '$ne' => true
-            ]
+            'id' => $folderId
         ];
+
+        /**
+         * Add checking "isRemoved != true" to query
+         */
+        if (!Config::get('RETURN_REMOVED_ITEMS')) {
+            $query['isRemoved'] = [
+                '$ne' => true
+            ];
+        }
 
         $mongoResponse = Mongo::connect()
             ->{$this->collectionName}

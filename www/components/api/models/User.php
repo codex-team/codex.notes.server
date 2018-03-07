@@ -3,6 +3,7 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
+use App\System\Config;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -136,11 +137,16 @@ class User extends Base
     {
         $foldersCollection = Folder::getCollectionName($this->id);
 
-        $query = [
-            'isRemoved' => [
+        $query = [];
+
+        /**
+         * Add checking "isRemoved != true" to query
+         */
+        if (!Config::get('RETURN_REMOVED_ITEMS')) {
+            $query['isRemoved'] = [
                 '$ne' => true
-            ]
-        ];
+            ];
+        }
 
         $options = [
             'limit' => $limit,

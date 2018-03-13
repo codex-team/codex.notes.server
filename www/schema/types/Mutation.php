@@ -281,6 +281,10 @@ class Mutation extends ObjectType
                                     throw new CollaboratorException('Collaborator does not exists');
                                 }
 
+                                if ($collaborator->userId) {
+                                    throw new CollaboratorException('This join link has already been used');
+                                }
+
                                 $collaborator->sync($args);
 
                                 /**

@@ -54,7 +54,7 @@ class Collaborator extends Base
     /**
      * Collaborator's User model
      *
-     * @var string|null
+     * @var User
      */
     public $user;
 

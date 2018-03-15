@@ -15,6 +15,7 @@ use App\Components\Base\Models\Exceptions\{
     NoteException
 };
 use App\Components\Middleware\Auth;
+use App\Components\Sockets\Sockets;
 use App\Schema\Types;
 use App\System\Log;
 use GraphQL\Type\Definition\{
@@ -104,6 +105,7 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
+                                Log::instance()->debug('FOLDER MUTATION');
                                 /** Get real Folder */
                                 $folder = new Folder($args['ownerId'], $args['id']);
 
@@ -118,6 +120,20 @@ class Mutation extends ObjectType
                                 }
 
                                 $folder->sync($args);
+
+
+                                /**
+                                 * Send notification to the collaborators
+                                 * @todo move to the Model Method
+                                 */
+                                Log::instance()->debug(json_encode(count($folder->collaborators)));
+
+                                foreach ($folder->collaborators as $collaborator) {
+                                    $userModel = $collaborator->user;
+                                    $message = 'folder ' . $folder->title . ' has been updated';
+                                    Sockets::push($userModel->getSocketChannelName(), $message);
+                                    Log::instance()->debug('----> Send DATA to user ' . $userModel->name);
+                                }
 
                                 return $folder;
                             } catch (FolderException $e) {

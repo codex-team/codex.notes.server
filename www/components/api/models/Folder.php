@@ -4,7 +4,9 @@ namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Exceptions\FolderException;
 use App\Components\Base\Models\Mongo;
+use App\Components\Sockets\Sockets;
 use App\System\Config;
+use App\System\Log;
 
 /**
  * Model Folder
@@ -111,7 +113,6 @@ class Folder extends Base
     {
         $this->ownerId = $ownerId;
         $this->collectionName = self::getCollectionName($this->ownerId);
-
         if ($id) {
             $this->findAndFill($id);
         }
@@ -242,15 +243,21 @@ class Folder extends Base
             'sort' => $sort
         ];
 
+        /**
+         * Clear previous collaborators list
+         */
+        $this->collaborators = [];
+
+        /**
+         * Get new collaborators list
+         */
         $mongoResponse = Mongo::connect()
             ->{$collaboratorsCollection}
             ->find($query, $options);
 
         foreach ($mongoResponse as $collaboratorRow) {
             $collaborator = new Collaborator($this, null, $collaboratorRow);
-
             $collaborator->fillUser();
-
             $this->collaborators[] = $collaborator;
         }
     }

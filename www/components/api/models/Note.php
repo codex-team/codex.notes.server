@@ -74,7 +74,7 @@ class Note extends Base
      *
      * @var string|null
      */
-    protected $folderId;
+    public $folderId;
 
     /**
      * Collection name
@@ -195,5 +195,10 @@ class Note extends Base
     public static function getCollectionName(string $userId, string $folderId): string
     {
         return sprintf('notes:%s:%s', $userId, $folderId);
+    }
+
+    public function jsonSerialize()
+    {
+        return $this;
     }
 }

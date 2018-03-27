@@ -2,6 +2,7 @@
 
 namespace App\Components\Index;
 
+use App\Components\Api\Models\Folder;
 use App\System\Renderer;
 
 /**
@@ -17,7 +18,17 @@ class Index
      */
     public function page($req, $res)
     {
-        $res->write(Renderer::render('index.php', ['title' => 'CodeX Notes']));
+        $folder = new Folder('5a9f8ef1c574153909750158', 'dAcuWSf90D3MYlpV');
+        $folder->fillCollaborators();
+        $folder->fillNotes();
+
+
+        $out = json_encode($folder);
+
+        echo var_dump($out);
+        die();
+
+        //$res->write(Renderer::render('index.php', ['title' => 'CodeX Notes']));
     }
 
     /**

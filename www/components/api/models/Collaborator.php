@@ -73,6 +73,13 @@ class Collaborator extends Base
     public $folder;
 
     /**
+     * Folder's id
+     *
+     * @var string|null
+     */
+    public $folderId;
+
+    /**
      * Collection name
      *
      * @var string
@@ -91,6 +98,7 @@ class Collaborator extends Base
     public function __construct(Folder $folder = null, string $token = null, array $data = null)
     {
         $this->folder = $folder;
+        $this->folderId = $this->folder->id;
 
         if (!$this->folder->ownerId || !$this->folder->id) {
             throw new CollaboratorException('Folder does not exist');
@@ -267,5 +275,17 @@ class Collaborator extends Base
     private function getJoinLink(): string
     {
         return Config::get('SERVER_URI') . 'join/' . $this->folder->ownerId . '/' . $this->folder->id . '/' . $this->token;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'token' => $this->token,
+            'email' => $this->email,
+            'dtInvite' => $this->dtInvite,
+            'isRemoved' => $this->isRemoved,
+            'user' => $this->user
+        ];
     }
 }

@@ -15,7 +15,7 @@ use App\Components\Base\Models\Exceptions\{
     NoteException
 };
 use App\Components\Middleware\Auth;
-use App\Components\Sockets\Sockets;
+use App\Components\Sockets\Pusher;
 use App\Schema\Types;
 use App\System\Log;
 use GraphQL\Type\Definition\{
@@ -121,19 +121,22 @@ class Mutation extends ObjectType
 
                                 $folder->sync($args);
 
-
-                                /**
-                                 * Send notification to the collaborators
-                                 * @todo move to the Model Method
-                                 */
-                                Log::instance()->debug(json_encode(count($folder->collaborators)));
+                                /** PUSHER */
+                                $type = Pusher::TYPE_FOLDER;
+                                $event = Pusher::EVENT_UPDATE;
+                                $data = get_object_vars($folder);
+//                                $data = new Folder($folder->ownerId, $folder->id);
+//
+//                                unset($data->collaborators);
+//                                unset($data->notes);
+//                                unset($data->owner);
 
                                 foreach ($folder->collaborators as $collaborator) {
                                     $userModel = $collaborator->user;
-                                    $message = 'folder ' . $folder->title . ' has been updated';
-                                    Sockets::push($userModel->getSocketChannelName(), $message);
-                                    Log::instance()->debug('----> Send DATA to user ' . $userModel->name);
+                                    $channel = $userModel->getSocketChannelName();
+                                    Pusher::send($channel, $type, $event, $data);
                                 }
+                                /** END PUSHER */
 
                                 return $folder;
                             } catch (FolderException $e) {
@@ -181,6 +184,18 @@ class Mutation extends ObjectType
                              */
                             $note = new Note($folder->ownerId, $folder->id);
                             $note->sync($args);
+
+                            /** PUSHER */
+                            $type = Pusher::TYPE_NOTE;
+                            $event = Pusher::EVENT_UPDATE;
+                            $data = $note;
+
+                            foreach ($folder->collaborators as $collaborator) {
+                                $userModel = $collaborator->user;
+                                $channel = $userModel->getSocketChannelName();
+                                Pusher::send($channel, $type, $event, $data);
+                            }
+                            /** END PUSHER */
 
                             return $note;
                         }
@@ -256,6 +271,22 @@ class Mutation extends ObjectType
 
                                 $collaborator->sendInvitationEmail();
 
+                                /** PUSHER */
+                                $type = Pusher::TYPE_COLLABORATOR;
+                                $event = Pusher::EVENT_CREATE;
+                                $data = $collaborator;
+
+                                unset($collaborator->folder);
+
+                                foreach ($originalFolder->collaborators as $collaborator) {
+                                    if ($collaborator->user) {
+                                        $userModel = $collaborator->user;
+                                        $channel = $userModel->getSocketChannelName();
+                                        Pusher::send($channel, $type, $event, $data);
+                                    }
+                                }
+                                /** END PUSHER */
+
                                 return $collaborator;
                             } catch (\Exception $e) {
                                 Log::instance()->warning('[Mutation Invite] Can not send an Invitation', [
@@ -311,11 +342,24 @@ class Mutation extends ObjectType
                                     $collaborator->saveFolder($originalFolder);
                                 }
 
-
                                 $selectedFields = $info->getFieldSelection();
                                 if (isset($selectedFields['user'])) {
                                     $collaborator->fillUser();
                                 }
+
+                                /** PUSHER */
+                                $type = Pusher::TYPE_COLLABORATOR;
+                                $event = Pusher::EVENT_UPDATE;
+                                $data = $collaborator;
+
+                                unset($collaborator->folder);
+
+                                foreach ($originalFolder->collaborators as $collaborator) {
+                                    $userModel = $collaborator->user;
+                                    $channel = $userModel->getSocketChannelName();
+                                    Pusher::send($channel, $type, $event, $data);
+                                }
+                                /** END PUSHER */
 
                                 return $collaborator;
                             } catch (CollaboratorException $e) {

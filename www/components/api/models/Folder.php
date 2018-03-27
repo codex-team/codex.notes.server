@@ -200,6 +200,11 @@ class Folder extends Base
             'sort' => $sort
         ];
 
+        /**
+         * Clear previous notes list
+         */
+        $this->notes = [];
+
         $mongoResponse = Mongo::connect()
             ->{$notesCollection}
             ->find($query, $options);
@@ -333,5 +338,11 @@ class Folder extends Base
             ->findOne($query);
 
         return !!$mongoResponse;
+    }
+
+
+    public function jsonSerialize()
+    {
+        return $this;
     }
 }

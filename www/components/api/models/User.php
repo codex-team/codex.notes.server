@@ -235,7 +235,12 @@ class User extends Base
      */
     public function getSocketChannelName(): string
     {
-//        return password_hash($this->id, PASSWORD_BCRYPT);
         return hash_hmac('md5', $this->id, Config::get('SOCKETS_SALT'));
+    }
+
+
+    public function jsonSerialize()
+    {
+        return $this;
     }
 }

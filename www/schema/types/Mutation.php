@@ -276,8 +276,6 @@ class Mutation extends ObjectType
                                 $event = Pusher::EVENT_CREATE;
                                 $data = $collaborator;
 
-                                unset($collaborator->folder);
-
                                 foreach ($originalFolder->collaborators as $collaborator) {
                                     if ($collaborator->user) {
                                         $userModel = $collaborator->user;

@@ -15,6 +15,7 @@ use App\Components\Base\Models\Exceptions\{
     NoteException
 };
 use App\Components\Middleware\Auth;
+use App\Components\Notify\Notify;
 use App\Schema\Types;
 use App\System\Log;
 use GraphQL\Type\Definition\{
@@ -104,6 +105,7 @@ class Mutation extends ObjectType
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
                             try {
+                                Log::instance()->debug('FOLDER MUTATION');
                                 /** Get real Folder */
                                 $folder = new Folder($args['ownerId'], $args['id']);
 
@@ -118,6 +120,14 @@ class Mutation extends ObjectType
                                 }
 
                                 $folder->sync($args);
+
+                                /** Send notifies */
+                                $data = $folder;
+
+                                foreach ($folder->collaborators as $collaborator) {
+                                    $userModel = $collaborator->user;
+                                    $userModel->notify(Notify::FOLDER_UPDATE, $data);
+                                }
 
                                 return $folder;
                             } catch (FolderException $e) {
@@ -165,6 +175,14 @@ class Mutation extends ObjectType
                              */
                             $note = new Note($folder->ownerId, $folder->id);
                             $note->sync($args);
+
+                            /** Send notifies */
+                            $data = $note;
+
+                            foreach ($folder->collaborators as $collaborator) {
+                                $userModel = $collaborator->user;
+                                $userModel->notify(Notify::NOTE_UPDATE, $data);
+                            }
 
                             return $note;
                         }
@@ -240,6 +258,16 @@ class Mutation extends ObjectType
 
                                 $collaborator->sendInvitationEmail();
 
+                                /** Send notifies */
+                                $data = $collaborator;
+
+                                foreach ($originalFolder->collaborators as $collaborator) {
+                                    if ($collaborator->user) {
+                                        $userModel = $collaborator->user;
+                                        $userModel->notify( Notify::COLLABORATOR_INVITE, $data);
+                                    }
+                                }
+
                                 return $collaborator;
                             } catch (\Exception $e) {
                                 Log::instance()->warning('[Mutation Invite] Can not send an Invitation', [
@@ -281,6 +309,10 @@ class Mutation extends ObjectType
                                     throw new CollaboratorException('Collaborator does not exists');
                                 }
 
+                                if ($collaborator->userId) {
+                                    throw new CollaboratorException('This join link has already been used');
+                                }
+
                                 $collaborator->sync($args);
 
                                 /**
@@ -291,10 +323,19 @@ class Mutation extends ObjectType
                                     $collaborator->saveFolder($originalFolder);
                                 }
 
-
                                 $selectedFields = $info->getFieldSelection();
                                 if (isset($selectedFields['user'])) {
                                     $collaborator->fillUser();
+                                }
+
+                                /** Send notifies */
+                                $data = $collaborator;
+
+                                foreach ($originalFolder->collaborators as $collaborator) {
+                                    if ($collaborator->user) {
+                                        $userModel = $collaborator->user;
+                                        $userModel->notify(Notify::COLLABORATOR_JOIN, $data);
+                                    }
                                 }
 
                                 return $collaborator;

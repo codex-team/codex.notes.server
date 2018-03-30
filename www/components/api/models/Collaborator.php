@@ -54,7 +54,7 @@ class Collaborator extends Base
     /**
      * Collaborator's User model
      *
-     * @var string|null
+     * @var User
      */
     public $user;
 
@@ -71,6 +71,13 @@ class Collaborator extends Base
      * @var string|null
      */
     public $folder;
+
+    /**
+     * Folder's id
+     *
+     * @var string|null
+     */
+    public $folderId;
 
     /**
      * Collection name
@@ -91,6 +98,7 @@ class Collaborator extends Base
     public function __construct(Folder $folder = null, string $token = null, array $data = null)
     {
         $this->folder = $folder;
+        $this->folderId = $this->folder->id;
 
         if (!$this->folder->ownerId || !$this->folder->id) {
             throw new CollaboratorException('Folder does not exist');
@@ -267,5 +275,23 @@ class Collaborator extends Base
     private function getJoinLink(): string
     {
         return Config::get('SERVER_URI') . 'join/' . $this->folder->ownerId . '/' . $this->folder->id . '/' . $this->token;
+    }
+
+    /**
+     * Set data to be serialized
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'token' => $this->token,
+            'email' => $this->email,
+            'dtInvite' => $this->dtInvite,
+            'isRemoved' => $this->isRemoved,
+            'user' => $this->user,
+            'folderId' => $this->folder->id
+        ];
     }
 }

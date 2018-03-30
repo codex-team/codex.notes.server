@@ -2,7 +2,7 @@
 
 namespace App\components\api\models;
 
-class Base
+class Base implements \JsonSerializable
 {
     public function __construct()
     {
@@ -30,5 +30,9 @@ class Base
     public function exists(): bool
     {
         return !is_null($this->id);
+    }
+
+    public function jsonSerialize()
+    {
     }
 }

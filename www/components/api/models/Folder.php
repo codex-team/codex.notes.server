@@ -4,7 +4,9 @@ namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Exceptions\FolderException;
 use App\Components\Base\Models\Mongo;
+use App\Components\Sockets\Sockets;
 use App\System\Config;
+use App\System\Log;
 
 /**
  * Model Folder
@@ -75,7 +77,7 @@ class Folder extends Base
     /**
      * List of Collaborators (User model)
      *
-     * @var array
+     * @var Collaborator[]
      */
     public $collaborators = [];
 
@@ -111,7 +113,6 @@ class Folder extends Base
     {
         $this->ownerId = $ownerId;
         $this->collectionName = self::getCollectionName($this->ownerId);
-
         if ($id) {
             $this->findAndFill($id);
         }
@@ -199,6 +200,11 @@ class Folder extends Base
             'sort' => $sort
         ];
 
+        /**
+         * Clear previous notes list
+         */
+        $this->notes = [];
+
         $mongoResponse = Mongo::connect()
             ->{$notesCollection}
             ->find($query, $options);
@@ -242,15 +248,21 @@ class Folder extends Base
             'sort' => $sort
         ];
 
+        /**
+         * Clear previous collaborators list
+         */
+        $this->collaborators = [];
+
+        /**
+         * Get new collaborators list
+         */
         $mongoResponse = Mongo::connect()
             ->{$collaboratorsCollection}
             ->find($query, $options);
 
         foreach ($mongoResponse as $collaboratorRow) {
             $collaborator = new Collaborator($this, null, $collaboratorRow);
-
             $collaborator->fillUser();
-
             $this->collaborators[] = $collaborator;
         }
     }
@@ -326,5 +338,24 @@ class Folder extends Base
             ->findOne($query);
 
         return !!$mongoResponse;
+    }
+
+    /**
+     * Set data to be serialized
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'dtCreate' => $this->dtCreate,
+            'dtModify' => $this->dtModify,
+            'isShared' => $this->isShared,
+            'isRemoved' => $this->isRemoved,
+            'isRoot' => $this->isRoot,
+            'ownerId' => $this->ownerId
+        ];
     }
 }

@@ -164,10 +164,10 @@ class OAuth
      *
      * @throws \Exception
      *
-     * @return string
+     * @return array
      *
      */
-    private static function generateJwtWithUserData($profileInfo)
+    private static function generateJwtWithUserData($profileInfo): array
     {
         try {
             $userData = [
@@ -182,7 +182,7 @@ class OAuth
             $user = new User('', $userData['googleId']);
 
             /** If no user in base with this googleId then create a new one */
-            if (! $user->id) {
+            if (!$user->id) {
                 $user->sync($userData);
             }
 
@@ -191,14 +191,17 @@ class OAuth
                 'aud' => Config::get('JWT_AUD'),
                 'iat' => time(),
                 'user_id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'photo' => $user->photo,
                 'googleId' => $user->googleId,
-                'dtModify' => $user->dtModify,
+                'email' => $user->email
             ], self::generateSignatureKey($user->id));
 
-            return $jwt;
+            return [
+                'jwt' => $jwt,
+                'photo' => $user->photo,
+                'dtModify' => $user->dtModify,
+                'channel' => $user->getSocketChannelName(true),
+                'name' => $user->name
+            ];
         } catch (\Exception $e) {
             Log::instance()->warning('[OAuth] Generating JWT was failed because of ' . $e->getMessage());
 

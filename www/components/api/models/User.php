@@ -3,6 +3,8 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
+use App\Components\Notify\Notify;
+use App\Components\Sockets\Sockets;
 use App\System\Config;
 use MongoDB\BSON\ObjectId;
 
@@ -14,7 +16,7 @@ use MongoDB\BSON\ObjectId;
 class User extends Base
 {
     /**
-     * Users unique identifier
+     * User's unique identifier
      *
      * @var string|null
      */
@@ -225,5 +227,38 @@ class User extends Base
     public static function getCollectionName(): string
     {
         return 'users';
+    }
+
+    /**
+     * Get channel name for pushing updates for this user
+     *
+     * @return string
+     */
+    public function getSocketChannelName(): string
+    {
+        return hash_hmac('md5', $this->id, Config::get('SOCKETS_SALT'));
+    }
+
+    /**
+     * Send data to user's sockets channel
+     *
+     * @param string $event
+     * @param        $data
+     */
+    public function notify(string $event, $data): void
+    {
+        $channel = $this->getSocketChannelName();
+
+        Notify::send($channel, $event, $data);
+    }
+
+    /**
+     * Set data to be serialized
+     *
+     * @return User
+     */
+    public function jsonSerialize(): User
+    {
+        return $this;
     }
 }

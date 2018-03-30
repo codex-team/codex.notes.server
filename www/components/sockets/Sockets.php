@@ -27,8 +27,6 @@ class Sockets
          */
         $encodedData = json_encode($data);
 
-        Log::instance()->debug("\n\n\n>\n>\n> channel: " . $channel . ', message: ' . $encodedData . "\n>\n>\n\n\n");
-
         $ch = curl_init(self::createChannelUrl($channel));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);

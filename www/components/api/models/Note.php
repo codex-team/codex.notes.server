@@ -197,7 +197,12 @@ class Note extends Base
         return sprintf('notes:%s:%s', $userId, $folderId);
     }
 
-    public function jsonSerialize()
+    /**
+     * Set data to be serialized
+     *
+     * @return Note
+     */
+    public function jsonSerialize(): Note
     {
         return $this;
     }

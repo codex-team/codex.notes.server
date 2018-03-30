@@ -277,7 +277,12 @@ class Collaborator extends Base
         return Config::get('SERVER_URI') . 'join/' . $this->folder->ownerId . '/' . $this->folder->id . '/' . $this->token;
     }
 
-    public function jsonSerialize()
+    /**
+     * Set data to be serialized
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,

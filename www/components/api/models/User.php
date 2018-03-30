@@ -238,8 +238,30 @@ class User extends Base
         return hash_hmac('md5', $this->id, Config::get('SOCKETS_SALT'));
     }
 
+    /**
+     * Send data to user's sockets channel
+     *
+     * @param string $event
+     * @param        $data
+     */
+    public function notify(string $event, $data): void
+    {
+        $channel = $this->getSocketChannelName();
 
-    public function jsonSerialize()
+        $message = [
+            'event' => $event,
+            'data' => $data
+        ];
+
+        Sockets::push($channel, $message);
+    }
+
+    /**
+     * Set data to be serialized
+     *
+     * @return User
+     */
+    public function jsonSerialize(): User
     {
         return $this;
     }

@@ -77,7 +77,7 @@ class Folder extends Base
     /**
      * List of Collaborators (User model)
      *
-     * @var array
+     * @var Collaborator[]
      */
     public $collaborators = [];
 
@@ -340,8 +340,12 @@ class Folder extends Base
         return !!$mongoResponse;
     }
 
-
-    public function jsonSerialize()
+    /**
+     * Set data to be serialized
+     *
+     * @return Folder
+     */
+    public function jsonSerialize(): Folder
     {
         return $this;
     }

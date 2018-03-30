@@ -15,7 +15,6 @@ use App\Components\Base\Models\Exceptions\{
     NoteException
 };
 use App\Components\Middleware\Auth;
-use App\Components\Sockets\Pusher;
 use App\Schema\Types;
 use App\System\Log;
 use GraphQL\Type\Definition\{
@@ -121,22 +120,13 @@ class Mutation extends ObjectType
 
                                 $folder->sync($args);
 
-                                /** PUSHER */
-                                $type = Pusher::TYPE_FOLDER;
-                                $event = Pusher::EVENT_UPDATE;
-                                $data = get_object_vars($folder);
-//                                $data = new Folder($folder->ownerId, $folder->id);
-//
-//                                unset($data->collaborators);
-//                                unset($data->notes);
-//                                unset($data->owner);
+                                /** Send notifies */
+                                $data = $folder;
 
                                 foreach ($folder->collaborators as $collaborator) {
                                     $userModel = $collaborator->user;
-                                    $channel = $userModel->getSocketChannelName();
-                                    Pusher::send($channel, $type, $event, $data);
+                                    $userModel->notify('folder updated', $data);
                                 }
-                                /** END PUSHER */
 
                                 return $folder;
                             } catch (FolderException $e) {
@@ -185,17 +175,13 @@ class Mutation extends ObjectType
                             $note = new Note($folder->ownerId, $folder->id);
                             $note->sync($args);
 
-                            /** PUSHER */
-                            $type = Pusher::TYPE_NOTE;
-                            $event = Pusher::EVENT_UPDATE;
+                            /** Send notifies */
                             $data = $note;
 
                             foreach ($folder->collaborators as $collaborator) {
                                 $userModel = $collaborator->user;
-                                $channel = $userModel->getSocketChannelName();
-                                Pusher::send($channel, $type, $event, $data);
+                                $userModel->notify('note updated', $data);
                             }
-                            /** END PUSHER */
 
                             return $note;
                         }
@@ -271,19 +257,15 @@ class Mutation extends ObjectType
 
                                 $collaborator->sendInvitationEmail();
 
-                                /** PUSHER */
-                                $type = Pusher::TYPE_COLLABORATOR;
-                                $event = Pusher::EVENT_CREATE;
+                                /** Send notifies */
                                 $data = $collaborator;
 
                                 foreach ($originalFolder->collaborators as $collaborator) {
                                     if ($collaborator->user) {
                                         $userModel = $collaborator->user;
-                                        $channel = $userModel->getSocketChannelName();
-                                        Pusher::send($channel, $type, $event, $data);
+                                        $userModel->notify('collaborator invited', $data);
                                     }
                                 }
-                                /** END PUSHER */
 
                                 return $collaborator;
                             } catch (\Exception $e) {
@@ -345,19 +327,15 @@ class Mutation extends ObjectType
                                     $collaborator->fillUser();
                                 }
 
-                                /** PUSHER */
-                                $type = Pusher::TYPE_COLLABORATOR;
-                                $event = Pusher::EVENT_UPDATE;
+                                /** Send notifies */
                                 $data = $collaborator;
 
-                                unset($collaborator->folder);
-
                                 foreach ($originalFolder->collaborators as $collaborator) {
-                                    $userModel = $collaborator->user;
-                                    $channel = $userModel->getSocketChannelName();
-                                    Pusher::send($channel, $type, $event, $data);
+                                    if ($collaborator->user) {
+                                        $userModel = $collaborator->user;
+                                        $userModel->notify('collaborator joined', $data);
+                                    }
                                 }
-                                /** END PUSHER */
 
                                 return $collaborator;
                             } catch (CollaboratorException $e) {

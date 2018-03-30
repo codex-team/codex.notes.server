@@ -3,6 +3,7 @@
 namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
+use App\Components\Notify\Notify;
 use App\Components\Sockets\Sockets;
 use App\System\Config;
 use MongoDB\BSON\ObjectId;
@@ -248,12 +249,7 @@ class User extends Base
     {
         $channel = $this->getSocketChannelName();
 
-        $message = [
-            'event' => $event,
-            'data' => $data
-        ];
-
-        Sockets::push($channel, $message);
+        Notify::send($channel, $event, $data);
     }
 
     /**

@@ -15,6 +15,7 @@ use App\Components\Base\Models\Exceptions\{
     NoteException
 };
 use App\Components\Middleware\Auth;
+use App\Components\Notify\Notify;
 use App\Schema\Types;
 use App\System\Log;
 use GraphQL\Type\Definition\{
@@ -128,7 +129,7 @@ class Mutation extends ObjectType
 
                                 foreach ($folder->collaborators as $collaborator) {
                                     $userModel = $collaborator->user;
-                                    $userModel->notify('folder updated', $data);
+                                    $userModel->notify(Notify::FOLDER_UPDATE, $data);
                                 }
 
                                 return $folder;
@@ -183,7 +184,7 @@ class Mutation extends ObjectType
 
                             foreach ($folder->collaborators as $collaborator) {
                                 $userModel = $collaborator->user;
-                                $userModel->notify('note updated', $data);
+                                $userModel->notify(Notify::NOTE_UPDATE, $data);
                             }
 
                             return $note;
@@ -266,7 +267,7 @@ class Mutation extends ObjectType
                                 foreach ($originalFolder->collaborators as $collaborator) {
                                     if ($collaborator->user) {
                                         $userModel = $collaborator->user;
-                                        $userModel->notify('collaborator invited', $data);
+                                        $userModel->notify( Notify::COLLABORATOR_INVITE, $data);
                                     }
                                 }
 
@@ -336,7 +337,7 @@ class Mutation extends ObjectType
                                 foreach ($originalFolder->collaborators as $collaborator) {
                                     if ($collaborator->user) {
                                         $userModel = $collaborator->user;
-                                        $userModel->notify('collaborator joined', $data);
+                                        $userModel->notify(Notify::COLLABORATOR_JOIN, $data);
                                     }
                                 }
 

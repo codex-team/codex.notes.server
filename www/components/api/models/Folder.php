@@ -343,10 +343,19 @@ class Folder extends Base
     /**
      * Set data to be serialized
      *
-     * @return Folder
+     * @return array
      */
-    public function jsonSerialize(): Folder
+    public function jsonSerialize(): array
     {
-        return $this;
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'dtCreate' => $this->dtCreate,
+            'dtModify' => $this->dtModify,
+            'isShared' => $this->isShared,
+            'isRemoved' => $this->isRemoved,
+            'isRoot' => $this->isRoot,
+            'ownerId' => $this->ownerId
+        ];
     }
 }

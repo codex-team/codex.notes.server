@@ -3,7 +3,6 @@
 namespace App\Components\Sockets;
 
 use App\System\Config;
-use App\System\Log;
 
 class Sockets
 {

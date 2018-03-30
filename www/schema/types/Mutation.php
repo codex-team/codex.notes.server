@@ -15,7 +15,7 @@ use App\Components\Base\Models\Exceptions\{
     NoteException
 };
 use App\Components\Middleware\Auth;
-use App\Components\Sockets\Sockets;
+use App\Components\Notify\Notify;
 use App\Schema\Types;
 use App\System\Log;
 use GraphQL\Type\Definition\{
@@ -121,18 +121,12 @@ class Mutation extends ObjectType
 
                                 $folder->sync($args);
 
-
-                                /**
-                                 * Send notification to the collaborators
-                                 * @todo move to the Model Method
-                                 */
-                                Log::instance()->debug(json_encode(count($folder->collaborators)));
+                                /** Send notifies */
+                                $data = $folder;
 
                                 foreach ($folder->collaborators as $collaborator) {
                                     $userModel = $collaborator->user;
-                                    $message = 'folder ' . $folder->title . ' has been updated';
-                                    Sockets::push($userModel->getSocketChannelName(), $message);
-                                    Log::instance()->debug('----> Send DATA to user ' . $userModel->name);
+                                    $userModel->notify(Notify::FOLDER_UPDATE, $data);
                                 }
 
                                 return $folder;
@@ -181,6 +175,14 @@ class Mutation extends ObjectType
                              */
                             $note = new Note($folder->ownerId, $folder->id);
                             $note->sync($args);
+
+                            /** Send notifies */
+                            $data = $note;
+
+                            foreach ($folder->collaborators as $collaborator) {
+                                $userModel = $collaborator->user;
+                                $userModel->notify(Notify::NOTE_UPDATE, $data);
+                            }
 
                             return $note;
                         }
@@ -256,6 +258,16 @@ class Mutation extends ObjectType
 
                                 $collaborator->sendInvitationEmail();
 
+                                /** Send notifies */
+                                $data = $collaborator;
+
+                                foreach ($originalFolder->collaborators as $collaborator) {
+                                    if ($collaborator->user) {
+                                        $userModel = $collaborator->user;
+                                        $userModel->notify( Notify::COLLABORATOR_INVITE, $data);
+                                    }
+                                }
+
                                 return $collaborator;
                             } catch (\Exception $e) {
                                 Log::instance()->warning('[Mutation Invite] Can not send an Invitation', [
@@ -311,10 +323,19 @@ class Mutation extends ObjectType
                                     $collaborator->saveFolder($originalFolder);
                                 }
 
-
                                 $selectedFields = $info->getFieldSelection();
                                 if (isset($selectedFields['user'])) {
                                     $collaborator->fillUser();
+                                }
+
+                                /** Send notifies */
+                                $data = $collaborator;
+
+                                foreach ($originalFolder->collaborators as $collaborator) {
+                                    if ($collaborator->user) {
+                                        $userModel = $collaborator->user;
+                                        $userModel->notify(Notify::COLLABORATOR_JOIN, $data);
+                                    }
                                 }
 
                                 return $collaborator;

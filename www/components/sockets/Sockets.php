@@ -3,7 +3,6 @@
 namespace App\Components\Sockets;
 
 use App\System\Config;
-use App\System\Log;
 
 class Sockets
 {
@@ -26,8 +25,6 @@ class Sockets
          * @var string
          */
         $encodedData = json_encode($data);
-
-        Log::instance()->debug('channel: ' . $channel . ', message: ' . $encodedData);
 
         $ch = curl_init(self::createChannelUrl($channel));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

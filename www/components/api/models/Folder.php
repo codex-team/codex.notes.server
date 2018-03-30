@@ -77,7 +77,7 @@ class Folder extends Base
     /**
      * List of Collaborators (User model)
      *
-     * @var array
+     * @var Collaborator[]
      */
     public $collaborators = [];
 
@@ -199,6 +199,11 @@ class Folder extends Base
             'skip' => $skip,
             'sort' => $sort
         ];
+
+        /**
+         * Clear previous notes list
+         */
+        $this->notes = [];
 
         $mongoResponse = Mongo::connect()
             ->{$notesCollection}
@@ -333,5 +338,24 @@ class Folder extends Base
             ->findOne($query);
 
         return !!$mongoResponse;
+    }
+
+    /**
+     * Set data to be serialized
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'dtCreate' => $this->dtCreate,
+            'dtModify' => $this->dtModify,
+            'isShared' => $this->isShared,
+            'isRemoved' => $this->isRemoved,
+            'isRoot' => $this->isRoot,
+            'ownerId' => $this->ownerId
+        ];
     }
 }

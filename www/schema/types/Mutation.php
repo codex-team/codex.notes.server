@@ -122,10 +122,7 @@ class Mutation extends ObjectType
                                 $folder->sync($args);
 
                                 /** Send notifies */
-                                $data = new Folder($folder->ownerId, $folder->id);
-
-                                unset($data->notes);
-                                unset($data->collaborators);
+                                $data = $folder;
 
                                 foreach ($folder->collaborators as $collaborator) {
                                     $userModel = $collaborator->user;

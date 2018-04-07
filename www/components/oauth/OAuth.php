@@ -142,8 +142,8 @@ class OAuth
 
                 Log::instance()->debug('[OAuth] Mobile Google OAuth OK');
 
-                /** Print new jwt access token */
-                return $res->write($jwtWithUserData['jwt']);
+                /** Print new jwt access token with data */
+                return $res->write(json_encode($jwtWithUserData));
             } else {
                 throw new \Exception('Bad token was passed');
             }

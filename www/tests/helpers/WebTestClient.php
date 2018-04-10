@@ -52,7 +52,7 @@ class WebTestClient
 
     // Abstract way to make a request to SlimPHP, this allows us to mock the
     // slim environment
-    private function request($method, $path, $data = [], $optionalHeaders = [])
+    public function request($method, $path, $data = [], $optionalHeaders = [], $returnString=true)
     {
         //Make method uppercase
         $method = strtoupper($method);
@@ -87,7 +87,11 @@ class WebTestClient
         $this->response = $this->app->process($this->request, $response);
 
         // Return the application output.
-        return (string) $this->response->getBody();
+        if ($returnString) {
+            return (string) $this->response->getBody();
+        } else {
+            return $this->response;
+        }
     }
 
     /**

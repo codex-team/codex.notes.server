@@ -19,6 +19,30 @@ class OAuth
     const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token';
     const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me';
 
+    public function prepareGoogleCredentials($params)
+    {
+        if (!isset($params['code'])) {
+            return false;
+        }
+
+        return [
+            'code' => $params['code'],
+            'client_id' => Config::get('GOOGLE_CLIENT_ID'),
+            'client_secret' => Config::get('GOOGLE_CLIENT_SECRET'),
+            'redirect_uri' => Config::get('SERVER_URI') . 'oauth/code',
+            'grant_type' => 'authorization_code'
+        ];
+    }
+
+    public function prepareAuthorizationHeader($token)
+    {
+        if (!isset($token->token_type) || !isset($token->access_token)) {
+            return false;
+        }
+
+        return 'Authorization: ' . $token->token_type . ' ' . $token->access_token;
+    }
+
     /**
      * Provide Google OAuth authorization flow
      *
@@ -31,14 +55,13 @@ class OAuth
     public function code(Request $req, Response $res, $args)
     {
         $params = $req->getQueryParams();
-
-        $googleCredentials = [
-            'code' => $params['code'],
-            'client_id' => Config::get('GOOGLE_CLIENT_ID'),
-            'client_secret' => Config::get('GOOGLE_CLIENT_SECRET'),
-            'redirect_uri' => Config::get('SERVER_URI') . 'oauth/code',
-            'grant_type' => 'authorization_code'
-        ];
+        $googleCredentials = $this->prepareGoogleCredentials($params);
+        if (!$googleCredentials) {
+            $message = '[OAuth] Google OAuth code param not found in request.';
+            Log::instance()->warning($message);
+            \Hawk\HawkCatcher::catchException($message);
+            return $res->withStatus(HTTP::CODE_SERVER_ERROR, $message);
+        }
 
         $result = HTTP::request('POST', self::GOOGLE_TOKEN_URL, $googleCredentials);
 
@@ -53,7 +76,16 @@ class OAuth
             return $res->withStatus(HTTP::CODE_SERVER_ERROR, 'Incorrect payload.');
         }
 
-        $header = 'Authorization: ' . $token->token_type . ' ' . $token->access_token;
+        $header = $this->prepareAuthorizationHeader($token);
+
+        /**
+         * Check for correct header
+         */
+        if (!$header) {
+            Log::instance()->warning('[OAuth] Google OAuth Token invalid: ' . $result);
+
+            return $res->withStatus(HTTP::CODE_SERVER_ERROR, 'Incorrect token.');
+        }
 
         $profileInfo = HTTP::request('GET', self::GOOGLE_PROFILE_URL, [], [$header]);
         $profileInfo = @json_decode($profileInfo);
@@ -72,8 +104,8 @@ class OAuth
             Sockets::push($params['state'], $jwt);
         } else {
             Log::instance()->warning('[OAuth] Can not send User\'s token because Channel\'s name was not passed. ', [
-                'user_id' => $user->id,
-                'email' => $user->email
+                'user_id' => $profileInfo->id,
+                'email' => $profileInfo->email
             ]);
         }
 

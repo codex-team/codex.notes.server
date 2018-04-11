@@ -17,12 +17,14 @@ class Notify
      * @param string $channel
      * @param string $event
      * @param        $data
+     * @param        $sender
      */
-    static public function send(string $channel, string $event, $data): void
+    static public function send(string $channel, string $event, $data, $sender): void
     {
         $message = [
             'event' => $event,
-            'data' => $data
+            'data' => $data,
+            'sender' => $sender
         ];
 
         Sockets::push($channel, $message);

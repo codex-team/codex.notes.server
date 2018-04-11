@@ -122,12 +122,8 @@ class Mutation extends ObjectType
                                 $folder->sync($args);
 
                                 /** Send notifies */
-                                $data = $folder;
-
-                                foreach ($folder->collaborators as $collaborator) {
-                                    $userModel = $collaborator->user;
-                                    $userModel->notify(Notify::FOLDER_UPDATE, $data);
-                                }
+                                $sender = new User($args['ownerId']);
+                                $folder->notifyCollaborators(Notify::FOLDER_UPDATE, $folder, $sender);
 
                                 return $folder;
                             } catch (FolderException $e) {
@@ -177,12 +173,9 @@ class Mutation extends ObjectType
                             $note->sync($args);
 
                             /** Send notifies */
-                            $data = $note;
-
-                            foreach ($folder->collaborators as $collaborator) {
-                                $userModel = $collaborator->user;
-                                $userModel->notify(Notify::NOTE_UPDATE, $data);
-                            }
+                            $sender = new User($args['authorId']);
+                            $folder->notifyCollaborators(Notify::NOTE_UPDATE, $note, $sender);
+                            $sender->notify(Notify::NOTE_UPDATE, $note, $sender);
 
                             return $note;
                         }
@@ -259,14 +252,8 @@ class Mutation extends ObjectType
                                 $collaborator->sendInvitationEmail();
 
                                 /** Send notifies */
-                                $data = $collaborator;
-
-                                foreach ($originalFolder->collaborators as $collaborator) {
-                                    if ($collaborator->user) {
-                                        $userModel = $collaborator->user;
-                                        $userModel->notify( Notify::COLLABORATOR_INVITE, $data);
-                                    }
-                                }
+                                $sender = new User($args['ownerId']);
+                                $originalFolder->notifyCollaborators(Notify::COLLABORATOR_INVITE, $collaborator, $sender);
 
                                 return $collaborator;
                             } catch (\Exception $e) {
@@ -329,14 +316,8 @@ class Mutation extends ObjectType
                                 }
 
                                 /** Send notifies */
-                                $data = $collaborator;
-
-                                foreach ($originalFolder->collaborators as $collaborator) {
-                                    if ($collaborator->user) {
-                                        $userModel = $collaborator->user;
-                                        $userModel->notify(Notify::COLLABORATOR_JOIN, $data);
-                                    }
-                                }
+                                $sender = new User($args['userId']);
+                                $originalFolder->notifyCollaborators(Notify::COLLABORATOR_JOIN, $collaborator, $sender);
 
                                 return $collaborator;
                             } catch (CollaboratorException $e) {

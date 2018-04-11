@@ -358,4 +358,21 @@ class Folder extends Base
             'ownerId' => $this->ownerId
         ];
     }
+
+    /**
+     * Send notifies for all Collaborators
+     *
+     * @param string $event
+     * @param        $data
+     * @param        $sender
+     */
+    public function notifyCollaborators(string $event, $data, $sender): void
+    {
+        foreach ($this->collaborators as $collaborator) {
+            if ($collaborator->user->id && $collaborator->user->id != $sender->id) {
+                $userModel = $collaborator->user;
+                $userModel->notify($event, $data, $sender);
+            }
+        }
+    }
 }

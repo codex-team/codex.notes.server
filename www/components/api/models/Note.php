@@ -77,6 +77,13 @@ class Note extends Base
     public $folderId;
 
     /**
+     * Note Folder's data
+     *
+     * @var object|null
+     */
+    public $folder;
+
+    /**
      * Collection name
      *
      * @var string
@@ -95,6 +102,7 @@ class Note extends Base
     {
         $this->authorId = $authorId;
         $this->folderId = $folderId;
+
         $this->collectionName = self::getCollectionName($authorId, $folderId);
 
         if ($id) {
@@ -158,6 +166,14 @@ class Note extends Base
     }
 
     /**
+     * Put Folder's model to $this->folder variable
+     */
+    public function fillFolderData(): void
+    {
+        $this->folder = new Folder($this->authorId, $this->folderId);
+    }
+
+    /**
      * Find Note by id and fill put data into model
      *
      * @var string $noteId
@@ -204,6 +220,8 @@ class Note extends Base
      */
     public function jsonSerialize(): Note
     {
+        $this->fillFolderData();
+
         return $this;
     }
 }

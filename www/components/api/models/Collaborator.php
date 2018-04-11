@@ -284,11 +284,6 @@ class Collaborator extends Base
      */
     public function jsonSerialize(): array
     {
-        /**
-         * Get Folder model again
-         */
-        $folder = new Folder($this->folder->ownerId, $this->folder->id);
-
         return [
             'id' => $this->id,
             'token' => $this->token,
@@ -297,7 +292,7 @@ class Collaborator extends Base
             'isRemoved' => $this->isRemoved,
             'user' => $this->user,
             'folderId' => $this->folder->id,
-            'folder' => $folder
+            'folder' => $this->folder
         ];
     }
 }

@@ -138,18 +138,20 @@ class OAuth
                 $payload = (object) $payload;
 
                 /** Get JWT */
-                $jwt = self::generateJwtWithUserData($payload);
+                $jwtWithUserData = self::generateJwtWithUserData($payload);
 
                 Log::instance()->debug('[OAuth] Mobile Google OAuth OK');
 
-                /** Print new jwt access token */
-                return $res->write($jwt);
+                /** Print new jwt access token with data */
+                return $res->write(json_encode($jwtWithUserData));
             } else {
                 throw new \Exception('Bad token was passed');
             }
         } catch (\Exception $e) {
             Log::instance()
                ->warning('[OAuth] Mobile Google OAuth failed. ' . $e->getMessage());
+
+            \Hawk\HawkCatcher::catchException($e);
 
             /** Return 500 with message */
             return $res->withStatus(HTTP::CODE_SERVER_ERROR,
@@ -165,7 +167,6 @@ class OAuth
      * @throws \Exception
      *
      * @return array
-     *
      */
     private static function generateJwtWithUserData($profileInfo): array
     {
@@ -204,6 +205,8 @@ class OAuth
             ];
         } catch (\Exception $e) {
             Log::instance()->warning('[OAuth] Generating JWT was failed because of ' . $e->getMessage());
+
+            \Hawk\HawkCatcher::catchException($e);
 
             throw new \Exception('Cannot generate JWT');
         }

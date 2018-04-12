@@ -21,43 +21,43 @@ Each update will contain json encoded array.
 
 #### Note
 
-- `id`
-- `title`
-- `content`
-- `dtCreate`
-- `dtModify`
-- `isRemoved`
-- `folder`
+- `id` string
+- `title` string
+- `content` string
+- `dtCreate` number
+- `dtModify` number
+- `isRemoved` boolean
+- `folder` Folder
 
 #### Folder
 
-- `id`
-- `title`
-- `dtCreate`
-- `dtModify`
-- `isShared`
-- `isRemoved`
-- `isRoot`
-- `ownerId`
+- `id` string
+- `title` string
+- `dtCreate` number
+- `dtModify` number
+- `isShared` boolean
+- `isRemoved` boolean
+- `isRoot` boolean
+- `ownerId` string
 
 #### Collaborator
 
-- `id`
-- `token`
-- `email`
-- `dtInvite`
-- `isRemoved`
-- `user`
-- `folderId`
+- `id` string
+- `token` string
+- `email` string
+- `dtInvite` number
+- `isRemoved` boolean
+- `user` User
+- `folderId` string
 
 ### Sender
 
 User's model
 
-- `id`
-- `name`
-- `email`
-- `photo` 
-- `googleId`
-- `dtReg`
-- `dtModify`
+- `id` string
+- `name` string
+- `email` string
+- `photo` string
+- `googleId` string
+- `dtReg` number
+- `dtModify` number

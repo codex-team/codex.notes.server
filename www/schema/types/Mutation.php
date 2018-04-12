@@ -124,11 +124,17 @@ class Mutation extends ObjectType
                                     }
                                 }
 
-                                $folder->sync($args);
+                                /**
+                                 * Do not save old data
+                                 */
+                                if ($folder->dtModify < $args['dtModify']) {
+                                    $folder->sync($args);
 
-                                /** Send notifies */
-                                $sender = Auth::getUser();
-                                $folder->notifyCollaborators(Notify::FOLDER_UPDATE, $folder, $sender);
+                                    /** Send notifies */
+                                    $sender = Auth::getUser();
+                                    $folder->notifyCollaborators(Notify::FOLDER_UPDATE,
+                                        $folder, $sender);
+                                }
 
                                 return $folder;
                             } catch (\Exception $e) {
@@ -175,18 +181,19 @@ class Mutation extends ObjectType
                                     throw new NoteException('Incorrect Folder passed');
                                 }
 
-                                /**
-                                 * Save Note
-                                 */
                                 $note = new Note($folder->ownerId, $folder->id);
-                                $note->sync($args);
 
-                                /** Send notifies */
-                                $sender = Auth::getUser();
-                                $folder->notifyCollaborators(Notify::NOTE_UPDATE,
-                                    $note, $sender);
-                                $sender->notify(Notify::NOTE_UPDATE, $note,
-                                    $sender);
+                                /**
+                                 * Do not save old data
+                                 */
+                                if ($note->dtModify < $args['dtModify']) {
+                                    $note->sync($args);
+
+                                    /** Send notifies */
+                                    $sender = Auth::getUser();
+                                    $folder->notifyCollaborators(Notify::NOTE_UPDATE,
+                                        $note, $sender);
+                                }
 
                                 return $note;
                             } catch (\Exception $e) {
@@ -264,7 +271,6 @@ class Mutation extends ObjectType
 
                                 $collaborator = new Collaborator($originalFolder);
                                 $collaborator->sync($args);
-
                                 $collaborator->sendInvitationEmail();
 
                                 /** Send notifies */

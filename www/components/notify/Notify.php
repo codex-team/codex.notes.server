@@ -19,7 +19,7 @@ class Notify
      * @param        $data
      * @param        $sender
      */
-    static public function send(string $channel, string $event, $data, $sender): void
+    public static function send(string $channel, string $event, $data, $sender): void
     {
         $message = [
             'event' => $event,

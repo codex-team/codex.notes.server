@@ -11,7 +11,7 @@ class Sockets
      * Client will receive json encoded data in format: {'message': $message}
      *
      * @param string $channel
-     * @param mixed $message
+     * @param mixed  $message
      */
     public static function push($channel, $message): void
     {

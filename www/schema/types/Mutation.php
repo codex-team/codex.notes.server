@@ -50,19 +50,25 @@ class Mutation extends ObjectType
                             'dtModify' => Type::int()
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
-                            if (!Auth::checkUserAccess($args['id'])) {
-                                throw new AuthException('Access denied');
+                            try {
+                                if (!Auth::checkUserAccess($args['id'])) {
+                                    throw new AuthException('Access denied');
+                                }
+
+                                $user = new User();
+                                $user->sync($args);
+
+                                $selectedFields = $info->getFieldSelection();
+                                if (in_array('folders', $selectedFields)) {
+                                    $user->fillFolders();
+                                }
+
+                                return $user;
+                            } catch (\Exception $e) {
+                                \Hawk\HawkCatcher::catchException($e);
+
+                                return;
                             }
-
-                            $user = new User();
-                            $user->sync($args);
-
-                            $selectedFields = $info->getFieldSelection();
-                            if (in_array('folders', $selectedFields)) {
-                                $user->fillFolders();
-                            }
-
-                            return $user;
                         }
                     ],
 
@@ -112,7 +118,6 @@ class Mutation extends ObjectType
                                 /** Check access to this Folder */
                                 $isFolderOwner = Auth::checkUserAccess($folder->ownerId);
                                 if (!$isFolderOwner) {
-
                                     $isCollaborator = $folder->hasUserAccess(Auth::userId());
                                     if (!$isCollaborator) {
                                         throw new AuthException('Access denied');
@@ -122,14 +127,16 @@ class Mutation extends ObjectType
                                 $folder->sync($args);
 
                                 /** Send notifies */
-                                $sender = new User($args['ownerId']);
+                                $sender = Auth::getUser();
                                 $folder->notifyCollaborators(Notify::FOLDER_UPDATE, $folder, $sender);
 
                                 return $folder;
-                            } catch (FolderException $e) {
+                            } catch (\Exception $e) {
                                 Log::instance()->warning('[Mutation Folder] Can not sync Folder', [
                                     'error' => $e->getMessage(),
                                 ]);
+
+                                \Hawk\HawkCatcher::catchException($e);
 
                                 return;
                             }
@@ -150,34 +157,43 @@ class Mutation extends ObjectType
                             'isRemoved' => Type::boolean()
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {
-                            if (!Auth::checkUserAccess($args['authorId'])) {
-                                throw new AuthException('Access denied');
+                            try {
+                                if (!Auth::checkUserAccess($args['authorId'])) {
+                                    throw new AuthException('Access denied');
+                                }
+
+                                /**
+                                 * Get target Folder
+                                 *
+                                 * We need to get Folder's Owner.
+                                 * If this Folder is Shared, we'll get a real Owner to get right collection
+                                 */
+                                $folder = new Folder($args['authorId'],
+                                    $args['folderId']);
+
+                                if (is_null($folder->id)) {
+                                    throw new NoteException('Incorrect Folder passed');
+                                }
+
+                                /**
+                                 * Save Note
+                                 */
+                                $note = new Note($folder->ownerId, $folder->id);
+                                $note->sync($args);
+
+                                /** Send notifies */
+                                $sender = Auth::getUser();
+                                $folder->notifyCollaborators(Notify::NOTE_UPDATE,
+                                    $note, $sender);
+                                $sender->notify(Notify::NOTE_UPDATE, $note,
+                                    $sender);
+
+                                return $note;
+                            } catch (\Exception $e) {
+                                \Hawk\HawkCatcher::catchException($e);
+
+                                return;
                             }
-
-                            /**
-                             * Get target Folder
-                             *
-                             * We need to get Folder's Owner.
-                             * If this Folder is Shared, we'll get a real Owner to get right collection
-                             */
-                            $folder = new Folder($args['authorId'], $args['folderId']);
-
-                            if (is_null($folder->id)) {
-                                throw new NoteException('Incorrect Folder passed');
-                            }
-
-                            /**
-                             * Save Note
-                             */
-                            $note = new Note($folder->ownerId, $folder->id);
-                            $note->sync($args);
-
-                            /** Send notifies */
-                            $sender = new User($args['authorId']);
-                            $folder->notifyCollaborators(Notify::NOTE_UPDATE, $note, $sender);
-                            $sender->notify(Notify::NOTE_UPDATE, $note, $sender);
-
-                            return $note;
                         }
                     ],
 
@@ -252,14 +268,17 @@ class Mutation extends ObjectType
                                 $collaborator->sendInvitationEmail();
 
                                 /** Send notifies */
-                                $sender = new User($args['ownerId']);
+                                $sender = Auth::getUser();
                                 $originalFolder->notifyCollaborators(Notify::COLLABORATOR_INVITE, $collaborator, $sender);
+                                $sender->notify(Notify::COLLABORATOR_INVITE, $collaborator, $sender);
 
                                 return $collaborator;
                             } catch (\Exception $e) {
                                 Log::instance()->warning('[Mutation Invite] Can not send an Invitation', [
                                     'error' => $e->getMessage(),
                                 ]);
+
+                                \Hawk\HawkCatcher::catchException($e);
 
                                 return;
                             }
@@ -316,7 +335,7 @@ class Mutation extends ObjectType
                                 }
 
                                 /** Send notifies */
-                                $sender = new User($args['userId']);
+                                $sender = Auth::getUser();
                                 $originalFolder->notifyCollaborators(Notify::COLLABORATOR_JOIN, $collaborator, $sender);
 
                                 return $collaborator;
@@ -324,6 +343,8 @@ class Mutation extends ObjectType
                                 Log::instance()->warning('[Mutation Join] Can not proccess joining', [
                                     'error' => $e->getMessage(),
                                 ]);
+
+                                \Hawk\HawkCatcher::catchException($e);
 
                                 return;
                             }

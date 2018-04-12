@@ -134,6 +134,8 @@ class Mutation extends ObjectType
                                     $sender = Auth::getUser();
                                     $folder->notifyCollaborators(Notify::FOLDER_UPDATE,
                                         $folder, $sender);
+                                } else {
+                                    Log::instance()->debug(`[Folder Mutation]: do not run folder->sync cause dtModify {$args['dtModify']} is not greater than saved note's dtModify {$folder->dtModify} in DB`);
                                 }
 
                                 return $folder;
@@ -193,6 +195,8 @@ class Mutation extends ObjectType
                                     $sender = Auth::getUser();
                                     $folder->notifyCollaborators(Notify::NOTE_UPDATE,
                                         $note, $sender);
+                                } else {
+                                    Log::instance()->debug(`[Note Mutation]: do not run note->sync cause dtModify {$args['dtModify']} is not greater than saved note's dtModify {$note->dtModify} in DB`);
                                 }
 
                                 return $note;

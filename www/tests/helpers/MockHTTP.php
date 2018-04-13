@@ -2,7 +2,6 @@
 
 namespace App\Tests\Helpers;
 
-
 use Exception;
 
 class MockHTTP

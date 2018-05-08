@@ -111,6 +111,7 @@ class Folder extends Base
     {
         $this->ownerId = $ownerId;
         $this->collectionName = self::getCollectionName($this->ownerId);
+
         if ($id) {
             $this->findAndFill($id);
         }
@@ -297,6 +298,13 @@ class Folder extends Base
             ->{$this->collectionName}
             ->findOne($query);
 
+        if (!empty($mongoResponse['isShared']) && $mongoResponse['isShared']) {
+            $this->collectionName = self::getCollectionName($mongoResponse['ownerId']);
+            $mongoResponse = Mongo::connect()
+                ->{$this->collectionName}
+                ->findOne($query);
+        }
+
         $this->fillModel($mongoResponse ?: []);
     }
 
@@ -372,5 +380,7 @@ class Folder extends Base
                 $userModel->notify($event, $data, $sender);
             }
         }
+
+        $sender->notify($event, $data, $sender);
     }
 }

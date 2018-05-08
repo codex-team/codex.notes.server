@@ -2,6 +2,7 @@
 
 namespace App\Components\Notify;
 
+use App\Components\Api\Models\User;
 use App\Components\Sockets\Sockets;
 
 class Notify
@@ -17,12 +18,14 @@ class Notify
      * @param string $channel
      * @param string $event
      * @param        $data
+     * @param User   $sender
      */
-    static public function send(string $channel, string $event, $data): void
+    public static function send(string $channel, string $event, $data, User $sender): void
     {
         $message = [
             'event' => $event,
-            'data' => $data
+            'data' => $data,
+            'sender' => $sender
         ];
 
         Sockets::push($channel, $message);

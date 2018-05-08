@@ -291,7 +291,8 @@ class Collaborator extends Base
             'dtInvite' => $this->dtInvite,
             'isRemoved' => $this->isRemoved,
             'user' => $this->user,
-            'folderId' => $this->folder->id
+            'folderId' => $this->folder->id,
+            'folder' => $this->folder
         ];
     }
 }

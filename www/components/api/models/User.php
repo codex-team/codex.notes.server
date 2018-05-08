@@ -244,12 +244,13 @@ class User extends Base
      *
      * @param string $event
      * @param        $data
+     * @param User   $sender
      */
-    public function notify(string $event, $data): void
+    public function notify(string $event, $data, User $sender): void
     {
         $channel = $this->getSocketChannelName();
 
-        Notify::send($channel, $event, $data);
+        Notify::send($channel, $event, $data, $sender);
     }
 
     /**

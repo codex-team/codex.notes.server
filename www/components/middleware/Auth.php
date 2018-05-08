@@ -2,6 +2,7 @@
 
 namespace App\Components\Middleware;
 
+use App\Components\Api\Models\User;
 use App\Components\Base\Models\Exceptions\AuthException;
 use App\Components\OAuth\OAuth;
 use App\System\{
@@ -120,5 +121,15 @@ class Auth
     public static function userId(): string
     {
         return !empty($GLOBALS['user']['user_id']) ? $GLOBALS['user']['user_id'] : '';
+    }
+
+    /**
+     * Get User's model
+     *
+     * @return User
+     */
+    public static function getUser(): User
+    {
+        return new User(self::userId());
     }
 }

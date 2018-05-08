@@ -4,9 +4,7 @@ namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Exceptions\FolderException;
 use App\Components\Base\Models\Mongo;
-use App\Components\Sockets\Sockets;
 use App\System\Config;
-use App\System\Log;
 
 /**
  * Model Folder
@@ -357,5 +355,22 @@ class Folder extends Base
             'isRoot' => $this->isRoot,
             'ownerId' => $this->ownerId
         ];
+    }
+
+    /**
+     * Send notifies for all Collaborators
+     *
+     * @param string $event
+     * @param        $data
+     * @param        $sender
+     */
+    public function notifyCollaborators(string $event, $data, $sender): void
+    {
+        foreach ($this->collaborators as $collaborator) {
+            if ($collaborator->user->id && $collaborator->user->id != $sender->id) {
+                $userModel = $collaborator->user;
+                $userModel->notify($event, $data, $sender);
+            }
+        }
     }
 }

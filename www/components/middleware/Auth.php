@@ -31,6 +31,7 @@ class Auth
     {
         try {
             $authHeader = $req->getHeader('Authorization');
+            $deviceIdHeader = $req->getHeader('Authorization');
 
             if (empty($authHeader[0])) {
                 throw new AuthException('HTTPAuth header is missing');
@@ -66,6 +67,7 @@ class Auth
 
             $decoded = JWT::decode($token, $key, ['HS256']);
             $GLOBALS['user'] = (array) $decoded;
+            $GLOBALS['user']['device-id'] = $deviceIdHeader;
         } catch (AuthException $e) {
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, $e->getMessage());
         } catch (\UnexpectedValueException $e) {

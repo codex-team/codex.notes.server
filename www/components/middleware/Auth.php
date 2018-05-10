@@ -61,6 +61,7 @@ class Auth
             $GLOBALS['user'] = (array) $decoded;
 
             $deviceIdHeader = $req->getHeader('Device-Id');
+            $GLOBALS['user']['device-id'] = null;
             if (!empty($deviceIdHeader) && !empty($deviceIdHeader[0])) {
                 $GLOBALS['user']['device-id'] = $deviceIdHeader[0];
             }

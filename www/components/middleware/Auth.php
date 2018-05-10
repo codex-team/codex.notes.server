@@ -31,7 +31,7 @@ class Auth
     {
         try {
             $authHeader = $req->getHeader('Authorization');
-            $deviceIdHeader = $req->getHeader('Authorization');
+            $deviceIdHeader = $req->getHeader('Device-Id');
 
             if (empty($authHeader[0])) {
                 throw new AuthException('HTTPAuth header is missing');

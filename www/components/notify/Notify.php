@@ -7,6 +7,7 @@ use App\Components\Sockets\Sockets;
 
 class Notify
 {
+    const FOLDER_RENAME = 'folder renamed';
     const FOLDER_UPDATE = 'folder updated';
     const NOTE_UPDATE = 'note updated';
     const COLLABORATOR_INVITE = 'collaborator invited';

@@ -128,11 +128,17 @@ class Mutation extends ObjectType
                                  * Do not save old data
                                  */
                                 if ($folder->dtModify < $args['dtModify']) {
+                                    $eventName = Notify::FOLDER_UPDATE;
+
+                                    if ($folder->title != $args['title']) {
+                                        $eventName = Notify::FOLDER_RENAME;
+                                    }
+
                                     $folder->sync($args);
 
                                     /** Send notifies */
                                     $sender = Auth::getUser();
-                                    $folder->notifyCollaborators(Notify::FOLDER_UPDATE,
+                                    $folder->notifyCollaborators($eventName,
                                         $folder, $sender);
                                 } else {
                                     Log::instance()->debug(`[Folder Mutation]: do not run folder->sync cause dtModify {$args['dtModify']} is not greater than saved note's dtModify {$folder->dtModify} in DB`);

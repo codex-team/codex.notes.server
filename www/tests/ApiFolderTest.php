@@ -116,7 +116,7 @@ class ApiFolderTest extends WebTestCase
         ]);
 
         $this->assertArrayHasKey('folder', $data);
-//        $this->assertArrayHasKey('owner', $data['folder']);
+        $this->assertArrayHasKey('owner', $data['folder']);
 
         $folder = $data['folder'];
 
@@ -168,7 +168,7 @@ class ApiFolderTest extends WebTestCase
 
         $createdFolder = $data['folder'];
 
-//        $this->assertArrayHasKey('owner', $createdFolder);
+        $this->assertArrayHasKey('owner', $createdFolder);
 
         $data = $this->sendGraphql(GraphQl::QUERY, 'GetFolder', [
             'id' => $folderId,

@@ -136,10 +136,15 @@ class Mutation extends ObjectType
 
                                     $folder->sync($args);
 
-                                    /** Send notifies */
-                                    $sender = Auth::getUser();
-                                    $folder->notifyCollaborators($eventName,
-                                        $folder, $sender);
+                                    /**
+                                     * Send notifies only in folder was renamed case
+                                     */
+                                    if ($eventName == Notify::FOLDER_RENAME) {
+                                        /** Send notifies */
+                                        $sender = Auth::getUser();
+                                        $folder->notifyCollaborators($eventName,
+                                            $folder, $sender);
+                                    }
                                 } else {
                                     Log::instance()->debug(`[Folder Mutation]: do not run folder->sync cause dtModify {$args['dtModify']} is not greater than saved note's dtModify {$folder->dtModify} in DB`);
                                 }

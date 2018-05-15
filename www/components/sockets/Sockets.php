@@ -16,7 +16,8 @@ class Sockets
     public static function push(string $channel, $message): void
     {
         $data = [
-            'message' => $message
+            'message' => $message,
+            'device-id' => $GLOBALS['user']['device-id']
         ];
 
         /**

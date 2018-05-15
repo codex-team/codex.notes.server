@@ -3,6 +3,7 @@
 namespace App\Components\Sockets;
 
 use App\System\Config;
+use App\System\Log;
 
 class Sockets
 {
@@ -15,9 +16,17 @@ class Sockets
      */
     public static function push(string $channel, $message): void
     {
+        $deviceId = null;
+
+        try {
+            $deviceId = $GLOBALS['user']['device-id'];
+        } catch (\Exception $e) {
+            Log::instance()->alert('Cannot $deviceId from global var $user');
+        }
+
         $data = [
             'message' => $message,
-            'device-id' => $GLOBALS['user']['device-id']
+            'device-id' => $deviceId
         ];
 
         /**

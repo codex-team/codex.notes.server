@@ -381,6 +381,7 @@ class Folder extends Base
             }
         }
 
+        /** Push notification to sender's channel */
         $sender->notify($event, $data, $sender);
     }
 }

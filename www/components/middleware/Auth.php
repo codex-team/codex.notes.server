@@ -31,33 +31,26 @@ class Auth
     {
         try {
             $authHeader = $req->getHeader('Authorization');
-
             if (empty($authHeader[0])) {
                 throw new AuthException('HTTPAuth header is missing');
             }
-            Log::instance()->notice($authHeader[0]);
 
             $parsedAuthHeader = explode(' ', $authHeader[0]);
-
             if (empty($parsedAuthHeader[0]) || empty($parsedAuthHeader[1])) {
                 throw new AuthException('HTTPAuth header doesn\'t match the Bearer schema');
             }
 
             list($type, $token) = $parsedAuthHeader;
-
             if (!$this->isSupported($type)) {
                 throw new AuthException('Unsupported HTTPAuth type');
             }
 
             $jwtParts = explode('.', $token);
-
-
             if (empty($jwtParts[1])) {
                 throw new AuthException('JWT payload is missing');
             }
 
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($jwtParts[1]));
-
             if (empty($payload->user_id)) {
                 throw new AuthException('JWT is invalid: user_id is missing');
             }
@@ -66,6 +59,12 @@ class Auth
 
             $decoded = JWT::decode($token, $key, ['HS256']);
             $GLOBALS['user'] = (array) $decoded;
+
+            $deviceIdHeader = $req->getHeader('Device-Id');
+            $GLOBALS['user']['device-id'] = null;
+            if (!empty($deviceIdHeader) && !empty($deviceIdHeader[0])) {
+                $GLOBALS['user']['device-id'] = $deviceIdHeader[0];
+            }
         } catch (AuthException $e) {
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, $e->getMessage());
         } catch (\UnexpectedValueException $e) {

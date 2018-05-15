@@ -111,6 +111,7 @@ class Folder extends Base
     {
         $this->ownerId = $ownerId;
         $this->collectionName = self::getCollectionName($this->ownerId);
+
         if ($id) {
             $this->findAndFill($id);
         }

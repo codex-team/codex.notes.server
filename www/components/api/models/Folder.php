@@ -386,7 +386,6 @@ class Folder extends Base
             $sender->notify($event, $data, $sender);
         } catch (\Exception $e) {
             var_dump($e->getMessage());
-            var_dump($e);
         }
     }
 }

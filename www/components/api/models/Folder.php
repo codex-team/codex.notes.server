@@ -380,5 +380,8 @@ class Folder extends Base
                 $userModel->notify($event, $data, $sender);
             }
         }
+
+        /** Push notification to sender's channel */
+        $sender->notify($event, $data, $sender);
     }
 }

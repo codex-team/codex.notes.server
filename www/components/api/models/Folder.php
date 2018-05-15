@@ -381,11 +381,7 @@ class Folder extends Base
             }
         }
 
-        try {
-            /** Push notification to sender's channel */
-            $sender->notify($event, $data, $sender);
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());
-        }
+        /** Push notification to sender's channel */
+        $sender->notify($event, $data, $sender);
     }
 }

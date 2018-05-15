@@ -115,8 +115,6 @@ class ApiFolderTest extends WebTestCase
             'isRemoved' => false
         ]);
 
-        var_dump($data);
-
         $this->assertArrayHasKey('folder', $data);
         $this->assertArrayHasKey('owner', $data['folder']);
 

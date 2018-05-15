@@ -183,7 +183,7 @@ class Mutation extends ObjectType
                                     throw new NoteException('Incorrect Folder passed');
                                 }
 
-                                $note = new Note($folder->ownerId, $folder->id);
+                                $note = new Note($folder->ownerId, $folder->id, $args['id']);
 
                                 /**
                                  * Do not save old data

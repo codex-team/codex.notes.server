@@ -128,6 +128,12 @@ class Mutation extends ObjectType
                                  * Do not save old data
                                  */
                                 if ($folder->dtModify < $args['dtModify']) {
+                                    /** Set event name */
+                                    $eventName = Notify::FOLDER_UPDATE;
+                                    if ($folder->title != $args['title']) {
+                                        $eventName = Notify::FOLDER_RENAME;
+                                    }
+
                                     $folder->sync($args);
 
                                     /** Send notifies */

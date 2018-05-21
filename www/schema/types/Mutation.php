@@ -17,6 +17,7 @@ use App\Components\Base\Models\Exceptions\{
 use App\Components\Middleware\Auth;
 use App\Components\Notify\Notify;
 use App\Schema\Types;
+use App\System\Config;
 use App\System\Log;
 use GraphQL\Type\Definition\{
     ObjectType,
@@ -126,7 +127,7 @@ class Mutation extends ObjectType
                                 /**
                                  * Do not save old data
                                  */
-                                if ($folder->dtModify < $args['dtModify']) {
+                                if ($folder->dtModify < $args['dtModify'] || Config::get('IGNORE_DTMODIFY_IN_MUTATIONS')) {
                                     $folder->sync($args);
 
                                     /** Send notifies */
@@ -187,7 +188,7 @@ class Mutation extends ObjectType
                                 /**
                                  * Do not save old data
                                  */
-                                if ($note->dtModify < $args['dtModify']) {
+                                if ($note->dtModify < $args['dtModify'] || Config::get('IGNORE_DTMODIFY_IN_MUTATIONS')) {
                                     $note->sync($args);
 
                                     /** Send notifies */

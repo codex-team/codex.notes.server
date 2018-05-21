@@ -78,8 +78,7 @@ class ApiUserTest extends WebTestCase
         $data = $this->sendGraphql(GraphQL::MUTATION, 'CreateNewUser', [
             'id' => $userId,
             'name' => 'JohnDoe',
-            'email' => 'JohnDoe@ifmo.su',
-            'dtReg' => 1517651704
+            'email' => 'JohnDoe@ifmo.su'
         ]);
 
         $user = $data['user'];
@@ -89,7 +88,6 @@ class ApiUserTest extends WebTestCase
         $this->assertEquals($userModel->id, $user['id']);
         $this->assertEquals($userModel->name, $user['name']);
         $this->assertEquals($userModel->email, $user['email']);
-        $this->assertEquals($userModel->dtReg, $user['dtReg']);
     }
 
     /**
@@ -104,8 +102,7 @@ class ApiUserTest extends WebTestCase
         $createdUser = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewUser', [
             'id' => $userId,
             'name' => 'JohnDoe',
-            'email' => 'JohnDoe@ifmo.su',
-            'dtReg' => 1517651704
+            'email' => 'JohnDoe@ifmo.su'
         ]);
 
         $foundUser = $this->sendGraphql(GraphQl::QUERY, 'GetUser', [

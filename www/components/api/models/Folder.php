@@ -130,14 +130,14 @@ class Folder extends Base
     {
         parent::fillModel($data);
 
-        /**
-         * And fill Notes list
-         */
-        if ($this->id) {
-            $this->fillNotes();
-            $this->fillOwner();
-            $this->fillCollaborators();
-        }
+//        /**
+//         * And fill Notes list
+//         */
+//        if ($this->id) {
+//            $this->fillNotes();
+//            $this->fillOwner();
+//            $this->fillCollaborators();
+//        }
     }
 
     /**

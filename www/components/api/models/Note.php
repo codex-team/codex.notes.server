@@ -123,10 +123,10 @@ class Note extends Base
     {
         parent::fillModel($data);
 
-        /**
-         * And fill Author
-         */
-        $this->fillAuthor();
+//        /**
+//         * And fill Author
+//         */
+//        $this->fillAuthor();
     }
 
     /**

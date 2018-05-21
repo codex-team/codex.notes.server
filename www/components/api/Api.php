@@ -17,6 +17,8 @@ use GraphQL\Server\{
     StandardServer
 };
 use GraphQL\Type\Schema;
+use GraphQL\Validator\DocumentValidator;
+use GraphQL\Validator\Rules\QueryDepth;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -106,6 +108,12 @@ class Api
          * Save request to the logs
          */
         $this->logger->debug($request->getBody());
+
+        /**
+         * Set request max depth level
+         */
+        $rule = new QueryDepth($maxDepth = Config::get('MAX_QUERY_DEPTH'));
+        DocumentValidator::addRule($rule);
 
         /** @var ExecutionResult|ExecutionResult[] $result */
         $result = $this->server->executePsrRequest($request);

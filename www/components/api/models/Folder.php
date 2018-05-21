@@ -111,6 +111,7 @@ class Folder extends Base
     {
         $this->ownerId = $ownerId;
         $this->collectionName = self::getCollectionName($this->ownerId);
+
         if ($id) {
             $this->findAndFill($id);
         }
@@ -362,11 +363,23 @@ class Folder extends Base
      *
      * @param string $event
      * @param        $data
-     * @param        $sender
+     * @param User   $sender
      */
-    public function notifyCollaborators(string $event, $data, $sender): void
+    public function notifyCollaborators(string $event, $data, User $sender): void
     {
+        /**
+         * Push notification to Sender's channel
+         */
+        $sender->notify($event, $data, $sender);
+
+        /**
+         * Push notification to all collaborators, except Sender
+         */
         foreach ($this->collaborators as $collaborator) {
+            /**
+             * Check if Collaborator has accepted invitation
+             * Also check if it is not a Sender
+             */
             if ($collaborator->user->id && $collaborator->user->id != $sender->id) {
                 $userModel = $collaborator->user;
                 $userModel->notify($event, $data, $sender);

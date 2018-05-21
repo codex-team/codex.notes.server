@@ -184,6 +184,10 @@ class OAuth
 
             /** If no user in base with this googleId then create a new one */
             if (!$user->id) {
+                /**
+                 * Set User's datetime of registration
+                 */
+                $userData['dtReg'] = time();
                 $user->sync($userData);
             }
 

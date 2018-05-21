@@ -46,7 +46,6 @@ class Mutation extends ObjectType
                             'name' => Type::nonNull(Type::string()),
                             'email' => Type::nonNull(Type::string()),
                             'photo' => Type::string(),
-                            'dtReg' => Type::int(),
                             'dtModify' => Type::int()
                         ],
                         'resolve' => function ($root, $args, $context, ResolveInfo $info) {

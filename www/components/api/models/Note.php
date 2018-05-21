@@ -67,7 +67,7 @@ class Note extends Base
      *
      * @var string|null
      */
-    protected $authorId;
+    public $authorId;
 
     /**
      * Note Folder's id

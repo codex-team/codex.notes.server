@@ -2,6 +2,7 @@
 
 namespace App\Schema\Types;
 
+use App\Components\Api\Models as Models;
 use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,
@@ -18,27 +19,35 @@ class Folder extends ObjectType
     public function __construct()
     {
         $config = [
+            'name' => 'FolderType',
+            'description' => 'Folder\'s data',
             'fields' => function () {
                 return [
                     'id' => [
                         'type' => Type::id(),
-                        'description' => 'Folder\'s unique identifier',
+                        'description' => 'Unique identifier',
                     ],
                     'title' => [
                         'type' => Type::string(),
-                        'description' => 'Folder\'s public title',
+                        'description' => 'Title',
                     ],
                     'owner' => [
                         'type' => Types::user(),
-                        'description' => 'Person who create a folder',
+                        'description' => 'User who created a folder',
+                        'resolve' => function ($folder) {
+                            /** Get filled User model */
+                            $userModel = new Models\User($folder->ownerId);
+
+                            return $userModel;
+                        }
                     ],
                     'dtCreate' => [
                         'type' => Type::int(),
-                        'description' => 'Folder\'s creation timestamp',
+                        'description' => 'Creation timestamp',
                     ],
                     'dtModify' => [
                         'type' => Type::int(),
-                        'description' => 'Folder\'s last modification timestamp',
+                        'description' => 'Timestamp of last modification',
                     ],
                     'isShared' => [
                         'type' => Type::boolean(),
@@ -55,8 +64,6 @@ class Folder extends ObjectType
                     'notes' => [
                         'type' => Type::listOf(Types::note()),
                         'description' => 'Notes list',
-
-                        /** @todo make it work */
                         'args' => [
                             'limit' => [
                                 'type' => Type::int(),
@@ -67,10 +74,46 @@ class Folder extends ObjectType
                                 'defaultValue' => 0
                             ]
                         ],
+                        'resolve' => function ($folder, $args) {
+                            $folderModel = new Models\Folder($folder->ownerId);
+                            $folderModel->id = $folder->id;
+
+                            $limit = $args['limit'];
+                            $skip = $args['skip'];
+
+                            if ($limit !== null) {
+                                $folderModel->fillNotes($limit, $skip);
+                            }
+
+                            return $folderModel->notes;
+                        }
                     ],
                     'collaborators' => [
                         'type' => Type::listOf(Types::collaborator()),
-                        'description' => 'List of collaborators'
+                        'description' => 'List of collaborators',
+                        'args' => [
+                            'limit' => [
+                                'type' => Type::int(),
+                                'defaultValue' => 0
+                            ],
+                            'skip' => [
+                                'type' => Type::int(),
+                                'defaultValue' => 0
+                            ]
+                        ],
+                        'resolve' => function ($folder, $args) {
+                            $folderModel = new Models\Folder($folder->ownerId);
+                            $folderModel->id = $folder->id;
+
+                            $limit = $args['limit'];
+                            $skip = $args['skip'];
+
+                            if ($limit !== null) {
+                                $folderModel->fillCollaborators($limit, $skip);
+                            }
+
+                            return $folderModel->collaborators;
+                        }
                     ]
                 ];
             }

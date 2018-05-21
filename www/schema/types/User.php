@@ -2,6 +2,7 @@
 
 namespace App\Schema\Types;
 
+use App\Components\Api\Models as Models;
 use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,
@@ -18,51 +19,71 @@ class User extends ObjectType
     public function __construct()
     {
         $config = [
+            'name' => 'UserType',
+            'description' => 'User\'s data',
             'fields' => function () {
                 return [
                     'id' => [
                         'type' => Type::id(),
-                        'description' => 'User\'s unique identifier',
+                        'description' => 'Unique identifier',
                     ],
                     'name' => [
                         'type' => Type::string(),
-                        'description' => 'User\'s nickname',
+                        'description' => 'Full name',
                     ],
                     'email' => [
                         'type' => Type::string(),
-                        'description' => 'User\'s email address',
+                        'description' => 'Email address',
                     ],
                     'photo' => [
                         'type' => Type::string(),
-                        'description' => 'User\'s avatar',
+                        'description' => 'Photo URL',
                     ],
                     'googleId' => [
                         'type' => Type::string(),
-                        'description' => 'User\'s google id',
+                        'description' => 'Google ID',
                     ],
                     'dtReg' => [
                         'type' => Type::int(),
-                        'description' => 'User\'s register timestamp',
+                        'description' => 'Timestamp of registration',
                     ],
                     'dtModify' => [
                         'type' => Type::int(),
-                        'description' => 'User\'s last modification timestamp',
+                        'description' => 'Last modification timestamp',
                     ],
                     'folders' => [
                         'type' => Type::listOf(Types::folder()),
-                        'description' => 'User\'s folders',
-
-                        /** @todo make it work */
+                        'description' => 'Folders list',
                         'args' => [
                             'limit' => [
                                 'type' => Type::int(),
+                                'description' => 'Folders limit',
                                 'defaultValue' => 0
                             ],
                             'skip' => [
                                 'type' => Type::int(),
+                                'description' => 'Skip that number of Folders',
                                 'defaultValue' => 0
                             ]
                         ],
+                        'resolve' => function ($user, $args) {
+                            /**
+                             * Create an empty User model
+                             */
+                            $userModel = new Models\User();
+
+                            /** Set User's id */
+                            $userModel->id = $user->id;
+
+                            $limit = $args['limit'];
+                            $skip = $args['skip'];
+
+                            if ($userModel->id && $limit !== null) {
+                                $userModel->fillFolders($limit, $skip);
+                            }
+
+                            return $userModel->folders;
+                        }
                     ],
                 ];
             }

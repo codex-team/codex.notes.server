@@ -298,11 +298,19 @@ class Folder extends Base
             ->{$this->collectionName}
             ->findOne($query);
 
+        /**
+         * If Folder is Shared then get title, dtCreate, dtModify and isRemoved from real Folder
+         */
         if (!empty($mongoResponse['isShared']) && $mongoResponse['isShared']) {
             $this->collectionName = self::getCollectionName($mongoResponse['ownerId']);
-            $mongoResponse = Mongo::connect()
+            $mongoResponseRealFolder = Mongo::connect()
                 ->{$this->collectionName}
                 ->findOne($query);
+
+            $mongoResponse['title'] = $mongoResponseRealFolder['title'];
+            $mongoResponse['dtCreate'] = $mongoResponseRealFolder['dtCreate'];
+            $mongoResponse['dtModify'] = $mongoResponseRealFolder['dtModify'];
+            $mongoResponse['isRemoved'] = $mongoResponseRealFolder['isRemoved'];
         }
 
         $this->fillModel($mongoResponse ?: []);

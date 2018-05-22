@@ -161,13 +161,8 @@ class User extends Base
             ->find($query, $options);
 
         foreach ($mongoResponse as $folder) {
-            if (!empty($folder['isShared']) && $folder['isShared']) {
-                /** Get real Folder if this element is a link */
-                $folderModel = new Folder($folder['ownerId'], $folder['id']);
-            } else {
-                /** Create Folder model from this data */
-                $folderModel = new Folder($this->id, null, $folder);
-            }
+            /** Create Folder model from this data */
+            $folderModel = new Folder($this->id, $folder['id']);
 
             $this->folders[] = $folderModel;
         }

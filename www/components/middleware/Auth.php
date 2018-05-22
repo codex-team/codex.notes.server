@@ -174,9 +174,9 @@ class Auth
     /**
      * Get User's model
      *
-     * @return User
+     * @return User|null
      */
-    public static function getUser(): User
+    public static function getUser()
     {
         return $GLOBALS['user'];
     }

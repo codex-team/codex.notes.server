@@ -370,14 +370,16 @@ class Folder extends Base
      *
      * @param string $event
      * @param        $data
-     * @param User   $sender
+     * @param        $sender
      */
-    public function notifyCollaborators(string $event, $data, User $sender): void
+    public function notifyCollaborators(string $event, $data, $sender): void
     {
         /**
          * Push notification to Sender's channel
          */
-        $sender->notify($event, $data, $sender);
+        if ($sender) {
+            $sender->notify($event, $data, $sender);
+        }
 
         /**
          * Push notification to all collaborators, except Sender

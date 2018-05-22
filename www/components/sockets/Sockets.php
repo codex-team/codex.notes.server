@@ -36,12 +36,12 @@ class Sockets
          */
         $encodedData = json_encode($data);
 
-//        $ch = curl_init(self::createChannelUrl($channel));
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//        curl_setopt($ch, CURLOPT_POST, true);
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
-//        curl_exec($ch);
-//        curl_close($ch);
+        $ch = curl_init(self::createChannelUrl($channel));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
+        curl_exec($ch);
+        curl_close($ch);
     }
 
     /**

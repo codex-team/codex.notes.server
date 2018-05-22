@@ -68,7 +68,7 @@ class Collaborator extends Base
     /**
      * Folder model
      *
-     * @var string|null
+     * @var Folder|null
      */
     public $folder;
 

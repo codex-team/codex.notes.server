@@ -58,7 +58,7 @@ class Note extends Base
     /**
      * Note's author
      *
-     * @var object|null
+     * @var User|null
      */
     public $author;
 
@@ -79,7 +79,7 @@ class Note extends Base
     /**
      * Note Folder's data
      *
-     * @var object|null
+     * @var Folder|null
      */
     public $folder;
 

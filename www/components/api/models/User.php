@@ -67,7 +67,7 @@ class User extends Base
     /**
      * User's folders
      *
-     * @var array
+     * @var Folder[]
      */
     public $folders = [];
 

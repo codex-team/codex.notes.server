@@ -64,8 +64,16 @@ class Api
         $config = ServerConfig::create()
             ->setSchema($this->schema)
             ->setErrorFormatter(function ($e) {
+                /**
+                 * Log error
+                 */
                 $message = sprintf("%s in %s:%s\n%s", $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
                 $this->logger->error($message);
+
+                /**
+                 * Catch errors with Hawk
+                 */
+                \Hawk\HawkCatcher::catchException($e);
 
                 return FormattedError::createFromException($e);
             });

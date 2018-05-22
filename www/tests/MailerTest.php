@@ -41,7 +41,13 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testEmailSend()
     {
         $mailer = Mailer::instance();
-        $result = $mailer->send("subject", "3285b08cb2-87bb61@inbox.mailtrap.io", "3285b08cb2-87bb61@inbox.mailtrap.io", "hello");
+        $result = $mailer->send("Code testing",
+            Config::get('MAILER_USERNAME'),
+            Config::get('MAILER_USERNAME'), "$ composer test");
         $this->assertTrue($result);
+
+        if (Config::get('MAILER_SERVER')) {
+            $this->markTestSkipped('MAILER_SERVER is not set. Skipped.');
+        }
     }
 }

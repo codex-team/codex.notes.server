@@ -11,7 +11,6 @@ use App\Components\Api\Models\{
 use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,
-    ResolveInfo,
     Type
 };
 
@@ -63,6 +62,10 @@ class Query extends ObjectType
                             /** Get filled Folder model */
                             $folderModel = new Folder($args['ownerId'], $args['id']);
 
+                            if (!$folderModel->hasUserAccess($GLOBALS['user']->id)) {
+                                throw new \Exception('Access denied');
+                            }
+
                             return $folderModel;
                         }
                     ],
@@ -88,6 +91,15 @@ class Query extends ObjectType
                             /** Get filled Note model */
                             $noteModel = new Note($args['authorId'], $args['folderId'], $args['id']);
 
+                            /**
+                             * Get Note's Folder and check access
+                             */
+                            $noteModel->fillFolderData();
+                            if (!$noteModel->folder->hasUserAccess($GLOBALS['user']->id)) {
+                                throw new \Exception('Access denied');
+                            }
+                            unset($noteModel->folder);
+
                             return $noteModel;
                         }
                     ],
@@ -111,6 +123,10 @@ class Query extends ObjectType
                         ],
                         'resolve' => function ($root, $args) {
                             $folderModel = new Folder($args['ownerId'], $args['folderId']);
+
+                            if (!$folderModel->hasUserAccess($GLOBALS['user']->id)) {
+                                throw new \Exception('Access denied');
+                            }
 
                             return new Collaborator($folderModel, $args['token']);
                         }

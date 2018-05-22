@@ -329,8 +329,17 @@ class Folder extends Base
      */
     public function hasUserAccess(string $userId): bool
     {
-        $collaboratorsCollection
-            = Collaborator::getCollectionName($this->ownerId, $this->id);
+        /**
+         * If this User is a Folder's owner
+         */
+        if ($this->ownerId == $userId) {
+            return true;
+        }
+
+        /**
+         * If this User exists in list of Collaborators
+         */
+        $collaboratorsCollection = Collaborator::getCollectionName($this->ownerId, $this->id);
 
         $query = [
             'userId' => $userId,

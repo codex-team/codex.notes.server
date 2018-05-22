@@ -78,6 +78,10 @@ class Folder extends ObjectType
                             $folderModel = new Models\Folder($folder->ownerId);
                             $folderModel->id = $folder->id;
 
+                            if (!$folderModel->hasUserAccess($GLOBALS['user']->id)) {
+                                throw new \Exception('Access denied');
+                            }
+
                             $limit = $args['limit'];
                             $skip = $args['skip'];
 
@@ -104,6 +108,10 @@ class Folder extends ObjectType
                         'resolve' => function ($folder, $args) {
                             $folderModel = new Models\Folder($folder->ownerId);
                             $folderModel->id = $folder->id;
+
+                            if (!$folderModel->hasUserAccess($GLOBALS['user']->id)) {
+                                throw new \Exception('Access denied');
+                            }
 
                             $limit = $args['limit'];
                             $skip = $args['skip'];

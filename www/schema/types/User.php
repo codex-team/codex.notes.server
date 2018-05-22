@@ -3,6 +3,7 @@
 namespace App\Schema\Types;
 
 use App\Components\Api\Models as Models;
+use App\Components\Middleware\Auth;
 use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,
@@ -67,6 +68,10 @@ class User extends ObjectType
                             ]
                         ],
                         'resolve' => function ($user, $args) {
+                            if (!Auth::checkUserAccess($user->id)) {
+                                throw new \Exception('Access denied');
+                            }
+
                             /**
                              * Create an empty User model
                              */

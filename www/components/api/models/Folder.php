@@ -298,6 +298,13 @@ class Folder extends Base
             ->{$this->collectionName}
             ->findOne($query);
 
+        if (!empty($mongoResponse['isShared']) && $mongoResponse['isShared']) {
+            $this->collectionName = self::getCollectionName($mongoResponse['ownerId']);
+            $mongoResponse = Mongo::connect()
+                ->{$this->collectionName}
+                ->findOne($query);
+        }
+
         $this->fillModel($mongoResponse ?: []);
     }
 

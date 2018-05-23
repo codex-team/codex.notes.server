@@ -22,6 +22,12 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         // Ensure no cache Router
         $this->app = $this->getSlimInstance();
         $this->client = new WebTestClient($this->app);
+
+        /**
+         * Data's for different Users
+         */
+        $GLOBALS['DATA'] = $GLOBALS['DATA'] ?? new Data(true);
+        $GLOBALS['DATA_2'] = $GLOBALS['DATA_2'] ?? new Data();
     }
 
     /**
@@ -77,16 +83,26 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
     public function sendGraphql(string $type, string $name, array $data): array
     {
         $request = GraphQl::request($type, $name, $data);
-        $output = $this->client->post('/graphql', $request);
 
-        // check auth
-        $this->assertFalse($this->client->response->isForbidden(), 'Auth Error (403).');
+        $optionalHeaders = [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $GLOBALS['DATA']->getJWT()
+        ];
+        $output = $this->client->post('/graphql', $request, $optionalHeaders);
 
-        // check json output structure
+        /**
+         * Check Auth
+         */
+        $this->assertTrue($this->client->response->isOk());
+
+        /**
+         * Check json output structure
+         */
         $data = json_decode($output, true);
         $this->assertEquals(json_last_error(), JSON_ERROR_NONE);
-        $this->assertArrayHasKey('data', $data);
+//        $this->assertArrayHasKey('data', $data);
 
-        return $data['data'];
+//        var_dump($data);
+
+        return $data;
     }
 }

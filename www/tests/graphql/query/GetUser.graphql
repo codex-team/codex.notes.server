@@ -1,5 +1,11 @@
 query GetUser ($id: ID!) {
   user(id: $id) {
     id
+    email
+    name
+    photo
+    googleId
+    dtReg
+    dtModify
   }
 }

@@ -72,8 +72,8 @@ class OAuth
             Sockets::push($params['state'], $jwt);
         } else {
             Log::instance()->warning('[OAuth] Can not send User\'s token because Channel\'s name was not passed. ', [
-                'user_id' => $user->id,
-                'email' => $user->email
+                'user_id' => $profileInfo->id,
+                'email' => $profileInfo->email
             ]);
         }
 
@@ -162,21 +162,27 @@ class OAuth
     /**
      * Find (or create) user in DB and generate JWT
      *
-     * @param $profileInfo object - user data: name, email, id, picture
+     * @param object $profileInfo - user data: name, email, id, picture
      *
      * @throws \Exception
      *
-     * @return array
+     * @return array $jwtWithData {
+     *      @var string id
+     *      @var string photo
+     *      @var int dtModify
+     *      @var string name
+     *      @var string jwt
+     *      @var string channel
+     * }
      */
-    private static function generateJwtWithUserData($profileInfo): array
+    public static function generateJwtWithUserData($profileInfo): array
     {
         try {
             $userData = [
                 'name' => $profileInfo->name,
                 'email' => $profileInfo->email,
                 'googleId' => $profileInfo->id,
-                'photo' => $profileInfo->picture,
-                'dtModify' => time(),
+                'photo' => $profileInfo->picture
             ];
 
             /** Find user in database */
@@ -188,6 +194,7 @@ class OAuth
                  * Set User's datetime of registration
                  */
                 $userData['dtReg'] = time();
+                $userData['dtModify'] = time();
                 $user->sync($userData);
             }
 
@@ -201,11 +208,12 @@ class OAuth
             ], self::generateSignatureKey($user->id));
 
             return [
-                'jwt' => $jwt,
+                'id' => $user->id,
                 'photo' => $user->photo,
                 'dtModify' => $user->dtModify,
-                'channel' => $user->getSocketChannelName(true),
-                'name' => $user->name
+                'name' => $user->name,
+                'jwt' => $jwt,
+                'channel' => $user->getSocketChannelName(true)
             ];
         } catch (\Exception $e) {
             Log::instance()->warning('[OAuth] Generating JWT was failed because of ' . $e->getMessage());

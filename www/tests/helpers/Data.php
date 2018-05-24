@@ -92,9 +92,11 @@ class Data
 
         /**
          * OAuth::generateJwtWithUserData requires googleId in id field
+         * And picture instead of photo
          * This way Google responses on User's auth
          */
         $userData['id'] = $userData['googleId'];
+        $userData['picture'] = $userData['photo'];
 
         /**
          * Auth user and save data
@@ -108,6 +110,7 @@ class Data
          * Write real User's id
          */
         $userData['id'] = $jwtWithUserData['id'];
+        unset($userData['picture']);
         $this->jwt = $jwtWithUserData['jwt'];
         $this->channel = $jwtWithUserData['channel'];
 

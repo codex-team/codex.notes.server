@@ -2,6 +2,8 @@
 
 namespace App\Tests\Helpers;
 
+use App\System\Config;
+
 /**
  * Class WebTestCase
  *
@@ -48,6 +50,10 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
          * Set routes
          */
         include PROJECTROOT . 'public/routes.php';
+
+        if (!empty(Config::get('HAWK_TOKEN'))) {
+            \Hawk\HawkCatcher::instance(Config::get('HAWK_TOKEN'));
+        }
 
         return $app;
     }

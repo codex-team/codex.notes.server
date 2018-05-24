@@ -120,7 +120,7 @@ class Api
         /**
          * Set request max depth level
          */
-        $rule = new QueryDepth($maxDepth = Config::get('MAX_QUERY_DEPTH'));
+        $rule = new QueryDepth(Config::get('MAX_QUERY_DEPTH'));
         DocumentValidator::addRule($rule);
 
         /** @var ExecutionResult|ExecutionResult[] $result */

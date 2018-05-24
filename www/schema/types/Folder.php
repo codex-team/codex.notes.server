@@ -85,9 +85,7 @@ class Folder extends ObjectType
                             $limit = $args['limit'];
                             $skip = $args['skip'];
 
-                            if ($limit !== null) {
-                                $folderModel->fillNotes($limit, $skip);
-                            }
+                            $folderModel->fillNotes($limit, $skip);
 
                             return $folderModel->notes;
                         }
@@ -116,9 +114,7 @@ class Folder extends ObjectType
                             $limit = $args['limit'];
                             $skip = $args['skip'];
 
-                            if ($limit !== null) {
-                                $folderModel->fillCollaborators($limit, $skip);
-                            }
+                            $folderModel->fillCollaborators($limit, $skip);
 
                             return $folderModel->collaborators;
                         }

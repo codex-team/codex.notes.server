@@ -299,7 +299,7 @@ class Folder extends Base
             ->findOne($query);
 
         /**
-         * If Folder is Shared then get title, dtCreate, dtModify and isRemoved from real Folder
+         * If Folder is Shared then get title, dtCreate, dtModify and isRemoved from origin Folder
          */
         if (!empty($mongoResponse['isShared']) && $mongoResponse['isShared']) {
             $this->collectionName = self::getCollectionName($mongoResponse['ownerId']);
@@ -346,10 +346,6 @@ class Folder extends Base
             return true;
         }
 
-        if (!$this->id) {
-            throw new FolderException('Folder not found');
-        }
-
         /**
          * If this User exists in list of Collaborators
          */
@@ -393,16 +389,16 @@ class Folder extends Base
      *
      * @param string $event
      * @param        $data
-     * @param        $sender
+     * @param User   $sender
      */
-    public function notifyCollaborators(string $event, $data, $sender): void
+    public function notifyCollaborators(string $event, $data, User $sender): void
     {
         /**
          * Push notification to Sender's channel
          */
-        if ($sender) {
+//        if ($sender) {
             $sender->notify($event, $data, $sender);
-        }
+//        }
 
         /**
          * Push notification to all collaborators, except Sender

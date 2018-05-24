@@ -72,6 +72,7 @@ class User extends ObjectType
                                 throw new \Exception('Access denied');
                             }
 
+
                             /**
                              * Create an empty User model
                              */
@@ -83,8 +84,9 @@ class User extends ObjectType
                             $limit = $args['limit'];
                             $skip = $args['skip'];
 
-                            if ($userModel->id && $limit !== null) {
+                            if ($userModel->id) {
                                 $userModel->fillFolders($limit, $skip);
+
                             }
 
                             return $userModel->folders;

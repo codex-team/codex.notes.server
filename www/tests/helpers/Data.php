@@ -66,8 +66,8 @@ class Data
 
     public function updateData($data): void
     {
-        foreach ($data as $field) {
-            $this->user[$field] = $data[$field];
+        foreach ($data as $field => $value) {
+            $this->user[$field] = $value;
         }
     }
 

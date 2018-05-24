@@ -67,11 +67,11 @@ class Folder extends ObjectType
                         'args' => [
                             'limit' => [
                                 'type' => Type::int(),
-                                'defaultValue' => 0
+                                'defaultValue' => null
                             ],
                             'skip' => [
                                 'type' => Type::int(),
-                                'defaultValue' => 0
+                                'defaultValue' => null
                             ]
                         ],
                         'resolve' => function ($folder, $args) {
@@ -98,11 +98,11 @@ class Folder extends ObjectType
                         'args' => [
                             'limit' => [
                                 'type' => Type::int(),
-                                'defaultValue' => 0
+                                'defaultValue' => null
                             ],
                             'skip' => [
                                 'type' => Type::int(),
-                                'defaultValue' => 0
+                                'defaultValue' => null
                             ]
                         ],
                         'resolve' => function ($folder, $args) {

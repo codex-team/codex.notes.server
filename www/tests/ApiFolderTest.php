@@ -30,15 +30,7 @@ class ApiFolderTest extends WebTestCase
 
         $this->testUser = $GLOBALS['DATA']->getUserData();
 
-        $this->testFolder = [
-            'id' => (string) new ObjectId(),
-            'ownerId' => $this->testUser['id'],
-            'title' => 'new folder',
-            'dtCreate' => 1517651704,
-            'dtModify' => 1517651704,
-            'isShared' => false,
-            'isRemoved' => false
-        ];
+        $this->testFolder = $GLOBALS['DATA']->getFolderData();
     }
 
     /**
@@ -58,6 +50,31 @@ class ApiFolderTest extends WebTestCase
             'isRemoved' => $this->testFolder['isRemoved']
         ]);
 
+        $this->assertArrayNotHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('folder', $data);
+        $this->assertArrayHasKey('owner', $data['folder']);
+
+        $this->assertEquals($this->testFolder['id'], $data['folder']['id']);
+        $this->assertEquals($this->testFolder['title'], $data['folder']['title']);
+        $this->assertEquals($this->testUser['id'], $data['folder']['owner']['id']);
+
+        $this->testFolder = $data['folder'];
+    }
+
+    /**
+     * Test API Query – Get Folder
+     */
+    public function testGetFolder()
+    {
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => $this->testFolder['id'],
+            'ownerId' => $this->testUser['id']
+        ]);
+
+        $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
         $data = $data['data'];
 
@@ -90,6 +107,7 @@ class ApiFolderTest extends WebTestCase
             'isRemoved' => $this->testFolder['isRemoved']
         ]);
 
+        $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
         $data = $data['data'];
 
@@ -102,96 +120,4 @@ class ApiFolderTest extends WebTestCase
 
         $this->testFolder = $data['folder'];
     }
-
-//    /**
-//     * Compare model and array structure
-//     *
-//     * @param $folderModel
-//     * @param $folder
-//     */
-//    private function compare($folderModel, $folder)
-//    {
-//        // check if initial and saved models are equal
-//        $this->assertEquals($folderModel->id, $folder['id']);
-//        $this->assertEquals($folderModel->title, $folder['title']);
-//        $this->assertEquals($folderModel->ownerId, $folder['owner']['id']);
-//        $this->assertEquals($folderModel->dtCreate, $folder['dtCreate']);
-//        $this->assertEquals($folderModel->dtModify, $folder['dtModify']);
-//        $this->assertEquals($folderModel->isShared, $folder['isShared']);
-//        $this->assertEquals($folderModel->isRemoved, $folder['isRemoved']);
-//    }
-//
-//    /**
-//     * Test Folder Model – Get test folder
-//     *
-//     * Find test folder with model
-//     */
-//    public function testGetFolder()
-//    {
-//        $folder = new Folder($this->testUser->id, $this->testFolder->id);
-//
-//        $this->assertEquals($this->testFolder->id, $folder->id);
-//    }
-//
-//    /**
-//     * Test API Mutation – Find folder
-//     *
-//     * Find existing folder with GraphQl request
-//     */
-//    public function testFindFolder()
-//    {
-//        $data = $this->sendGraphql(GraphQl::QUERY, 'GetFolder', [
-//            'id' => $this->testFolder->id,
-//            'ownerId' => $this->testUser->id
-//        ]);
-//
-//        $this->assertArrayHasKey('owner', $data['folder']);
-//
-//        $folder = $data['folder'];
-//
-//        // check if initial and found models are equal
-//        $this->compare($this->testFolder, $folder);
-//    }
-//
-//    /**
-//     * Test API Mutation – Create new folder and find it
-//     *
-//     * Create new folder and find it with GraphQl requests
-//     */
-//    public function testCreateAndFindFolder()
-//    {
-//        $folderId = (string) new ObjectId();
-//
-//        $data = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewFolder', [
-//            'id' => $folderId,
-//            'ownerId' => $this->testUser->id,
-//            'title' => 'test folder',
-//            'dtCreate' => 1517651704,
-//            'dtModify' => 1517651704,
-//            'isShared' => false,
-//            'isRemoved' => false
-//        ]);
-//
-//        $createdFolder = $data['folder'];
-//
-//        $this->assertArrayHasKey('owner', $createdFolder);
-//
-//        $data = $this->sendGraphql(GraphQl::QUERY, 'GetFolder', [
-//            'id' => $folderId,
-//            'ownerId' => $this->testUser->id
-//        ]);
-//
-//        $foundFolder = $data['folder'];
-//
-//        $this->assertArrayHasKey('owner', $foundFolder);
-//
-//        // check if initial and found models are equal
-//        $this->assertEquals($createdFolder['id'], $foundFolder['id']);
-//        $this->assertEquals($createdFolder['title'], $foundFolder['title']);
-//        $this->assertEquals($createdFolder['owner']['id'], $foundFolder['owner']['id']);
-//        $this->assertEquals($createdFolder['dtCreate'], $foundFolder['dtCreate']);
-//        $this->assertEquals($createdFolder['dtModify'], $foundFolder['dtModify']);
-//        $this->assertEquals($createdFolder['isShared'], $foundFolder['isShared']);
-//        $this->assertEquals($createdFolder['isRemoved'], $foundFolder['isRemoved']);
-//    }
 }

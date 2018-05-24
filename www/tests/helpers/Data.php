@@ -4,6 +4,7 @@ namespace App\tests\helpers;
 
 use App\Components\Base\Models\Mongo;
 use App\Components\OAuth\OAuth;
+use MongoDB\BSON\ObjectId;
 
 class Data
 {
@@ -21,7 +22,7 @@ class Data
      * @var array
      */
     private $user;
-//    public $folder;
+    private $folder;
 //    public $note;
 //    public $collaborator;
 
@@ -62,6 +63,20 @@ class Data
         }
 
         return $this->user;
+    }
+
+    /**
+     * Get Folder
+     *
+     * @return array
+     */
+    public function getFolderData(): array
+    {
+        if (empty($this->folder)) {
+            $this->prepareFolder();
+        }
+
+        return $this->folder;
     }
 
     public function updateData($data): void
@@ -115,6 +130,19 @@ class Data
         $this->channel = $jwtWithUserData['channel'];
 
         $this->user = $userData;
+    }
+
+    private function prepareFolder()
+    {
+        $this->folder = [
+            'id' => (string) new ObjectId(),
+            'ownerId' => $this->user['id'],
+            'title' => 'new folder',
+            'dtCreate' => 1517651704,
+            'dtModify' => 1517651704,
+            'isShared' => false,
+            'isRemoved' => false
+        ];
     }
 
     private function authUser($userData): array

@@ -59,12 +59,12 @@ class User extends ObjectType
                             'limit' => [
                                 'type' => Type::int(),
                                 'description' => 'Folders limit',
-                                'defaultValue' => 0
+                                'defaultValue' => null
                             ],
                             'skip' => [
                                 'type' => Type::int(),
                                 'description' => 'Skip that number of Folders',
-                                'defaultValue' => 0
+                                'defaultValue' => null
                             ]
                         ],
                         'resolve' => function ($user, $args) {

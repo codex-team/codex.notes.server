@@ -1,4 +1,4 @@
-query GetFolder ($id: ID!, $ownerId: ID!){
+query Folder($id: ID!, $ownerId: ID!){
   folder (id: $id, ownerId: $ownerId) {
       id
       title
@@ -8,6 +8,7 @@ query GetFolder ($id: ID!, $ownerId: ID!){
       isRemoved
       isRoot
       owner {
+          id
           name
       }
       notes {

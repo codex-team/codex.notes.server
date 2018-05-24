@@ -19,11 +19,6 @@ use MongoDB\BSON\ObjectId;
 class ApiUserTest extends WebTestCase
 {
     /**
-     * @var array
-     */
-    private $testUser;
-
-    /**
      * Setup testing environment
      */
     public function setup()
@@ -58,6 +53,7 @@ class ApiUserTest extends WebTestCase
             'id' => $testUser['id']
         ]);
 
+        $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
         $data = $data['data'];
 
@@ -75,6 +71,7 @@ class ApiUserTest extends WebTestCase
             'id' => '000000000000000000000000'
         ]);
 
+        $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
         $data = $data['data'];
 
@@ -99,6 +96,7 @@ class ApiUserTest extends WebTestCase
             'email' => $newData['email']
         ]);
 
+        $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
         $data = $data['data'];
 
@@ -130,6 +128,7 @@ class ApiUserTest extends WebTestCase
         ]);
 
         $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
         $data = $data['data'];
 
         $this->assertEquals(null, $data['user']);

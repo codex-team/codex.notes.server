@@ -1,13 +1,21 @@
 query GetFolder ($id: ID!, $ownerId: ID!){
   folder (id: $id, ownerId: $ownerId) {
-      id,
-      owner {
-        id
-      },
-      title,
-      dtCreate,
-      dtModify,
-      isShared,
+      id
+      title
+      dtCreate
+      dtModify
+      isShared
       isRemoved
+      isRoot
+      owner {
+          name
+      }
+      notes {
+          id
+          title
+      }
+      collaborators {
+          email
+      }
     }
 }

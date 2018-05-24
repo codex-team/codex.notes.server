@@ -117,7 +117,6 @@ class Data
         $this->user = $userData;
     }
 
-
     private function authUser($userData): array
     {
         $jwtWithUserData = OAuth::generateJwtWithUserData($userData);

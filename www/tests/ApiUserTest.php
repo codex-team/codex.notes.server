@@ -54,7 +54,7 @@ class ApiUserTest extends WebTestCase
     {
         $testUser = $GLOBALS['DATA']->getUserData();
 
-        $data = $this->sendGraphql(GraphQl::QUERY, 'GetUser', [
+        $data = $this->sendGraphql(GraphQl::QUERY, 'User', [
             'id' => $testUser['id']
         ]);
 
@@ -71,7 +71,7 @@ class ApiUserTest extends WebTestCase
      */
     public function testUserNotFoundQuery()
     {
-        $data = $this->sendGraphql(GraphQl::QUERY, 'GetUser', [
+        $data = $this->sendGraphql(GraphQl::QUERY, 'User', [
             'id' => '000000000000000000000000'
         ]);
 
@@ -93,7 +93,7 @@ class ApiUserTest extends WebTestCase
             'email' => 'miron@ifmo.su'
         ];
 
-        $data = $this->sendGraphql(GraphQL::MUTATION, 'UpdateUserData', [
+        $data = $this->sendGraphql(GraphQL::MUTATION, 'User', [
             'id' => $testUser['id'],
             'name' => $newData['name'],
             'email' => $newData['email']
@@ -123,7 +123,7 @@ class ApiUserTest extends WebTestCase
             'email' => 'miron2@ifmo.su'
         ];
 
-        $data = $this->sendGraphql(GraphQL::MUTATION, 'UpdateUserData', [
+        $data = $this->sendGraphql(GraphQL::MUTATION, 'User', [
             'id' => $testUser2['id'],
             'name' => $newData['name'],
             'email' => $newData['email']

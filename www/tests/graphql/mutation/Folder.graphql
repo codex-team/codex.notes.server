@@ -1,13 +1,14 @@
 mutation CreateNewFolder($id: ID!, $ownerId: ID!, $title: String!, $dtCreate: Int!, $dtModify:Int!, $isShared: Boolean!, $isRemoved: Boolean!) {
   folder(id: $id, ownerId: $ownerId, title: $title, dtCreate: $dtCreate, dtModify: $dtModify, isShared: $isShared, isRemoved: $isRemoved) {
-    id,
+    id
+    title
+    dtCreate
+    dtModify
+    isShared
+    isRemoved
+    isRoot
     owner {
       id
-    },
-    title,
-    dtCreate,
-    dtModify,
-    isShared,
-    isRemoved
+    }
   }
 }

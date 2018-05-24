@@ -51,7 +51,7 @@ class ApiUserTest extends WebTestCase
 
         $data = $this->sendGraphql(GraphQl::QUERY, 'User', [
             'id' => $testUser['id']
-        ]);
+        ], $GLOBALS['DATA']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -69,7 +69,7 @@ class ApiUserTest extends WebTestCase
     {
         $data = $this->sendGraphql(GraphQl::QUERY, 'User', [
             'id' => '000000000000000000000000'
-        ]);
+        ], $GLOBALS['DATA']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -94,7 +94,7 @@ class ApiUserTest extends WebTestCase
             'id' => $testUser['id'],
             'name' => $newData['name'],
             'email' => $newData['email']
-        ]);
+        ], $GLOBALS['DATA']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -125,7 +125,7 @@ class ApiUserTest extends WebTestCase
             'id' => $testUser2['id'],
             'name' => $newData['name'],
             'email' => $newData['email']
-        ]);
+        ], $GLOBALS['DATA']->getJWT());
 
         $this->assertArrayHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);

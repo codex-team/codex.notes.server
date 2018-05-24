@@ -334,6 +334,8 @@ class Folder extends Base
      * @param string $userId
      *
      * @return bool
+     *
+     * @throws FolderException
      */
     public function hasUserAccess(string $userId): bool
     {
@@ -342,6 +344,10 @@ class Folder extends Base
          */
         if ($this->ownerId == $userId) {
             return true;
+        }
+
+        if (!$this->id) {
+            throw new FolderException('Folder not found');
         }
 
         /**

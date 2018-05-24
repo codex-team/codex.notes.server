@@ -83,16 +83,20 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
      * @param string $type – query or migration
      * @param string $name – operation name equals to .graphql base filename
      * @param array  $data – array of variables
+     * @param string $jwt - user's jwt
      *
      * @return array – response data
      */
-    public function sendGraphql(string $type, string $name, array $data): array
+    public function sendGraphql(string $type, string $name, array $data, $jwt): array
     {
         $request = GraphQl::request($type, $name, $data);
 
-        $optionalHeaders = [
-            'HTTP_AUTHORIZATION' => 'Bearer ' . $GLOBALS['DATA']->getJWT()
-        ];
+        if ($jwt) {
+            $optionalHeaders = [
+                'HTTP_AUTHORIZATION' => 'Bearer ' . $jwt
+            ];
+        }
+
         $output = $this->client->post('/graphql', $request, $optionalHeaders);
 
         /**

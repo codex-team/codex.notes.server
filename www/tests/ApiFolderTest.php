@@ -2,12 +2,8 @@
 
 namespace App\Tests;
 
-use App\Components\Api\Models\Folder;
-use App\Components\Api\Models\User;
-use App\Components\Base\Models\Mongo;
 use App\Tests\Helpers\GraphQl;
 use App\Tests\Helpers\WebTestCase;
-use MongoDB\BSON\ObjectId;
 
 /**
  * Class ApiFolderTest
@@ -29,7 +25,6 @@ class ApiFolderTest extends WebTestCase
         parent::setup();
 
         $this->testUser = $GLOBALS['DATA']->getUserData();
-
         $this->testFolder = $GLOBALS['DATA']->getFolderData();
     }
 
@@ -48,7 +43,7 @@ class ApiFolderTest extends WebTestCase
             'dtModify' => $this->testFolder['dtModify'],
             'isShared' => $this->testFolder['isShared'],
             'isRemoved' => $this->testFolder['isRemoved']
-        ]);
+        ], $GLOBALS['DATA']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -72,7 +67,7 @@ class ApiFolderTest extends WebTestCase
         $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
             'id' => $this->testFolder['id'],
             'ownerId' => $this->testUser['id']
-        ]);
+        ], $GLOBALS['DATA']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -86,6 +81,30 @@ class ApiFolderTest extends WebTestCase
         $this->assertEquals($this->testUser['id'], $data['folder']['owner']['id']);
 
         $this->testFolder = $data['folder'];
+    }
+
+    /**
+     * Test API Query – Get not own Folder
+     */
+    public function testGetNotOwnFolder()
+    {
+        /**
+         * Use second User's JWT who has no access to this folder
+         */
+        $jwtUser2 = $GLOBALS['DATA_2']->getJWT();
+
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => $this->testFolder['id'],
+            'ownerId' => $this->testUser['id']
+        ], $jwtUser2);
+
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('folder', $data);
+
+        $this->assertEquals(null, $data['folder']);
     }
 
     /**
@@ -105,7 +124,7 @@ class ApiFolderTest extends WebTestCase
             'dtModify' => $this->testFolder['dtModify'] + 1,
             'isShared' => $this->testFolder['isShared'],
             'isRemoved' => $this->testFolder['isRemoved']
-        ]);
+        ], $GLOBALS['DATA']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);

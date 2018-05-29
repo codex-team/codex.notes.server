@@ -358,9 +358,7 @@ class Mutation extends ObjectType
                              * Accept an Invitation
                              * Save Shared Folder to the Acceptor's Folders collection
                              */
-                            if (!empty($args['userId'])) {
-                                $collaborator->saveFolder($originalFolder);
-                            }
+                            $collaborator->saveFolder($originalFolder);
 
                             /** Send notifies */
                             $sender = Auth::getUser();

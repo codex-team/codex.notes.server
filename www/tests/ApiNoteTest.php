@@ -88,6 +88,25 @@ class ApiNoteTest extends WebTestCase
     }
 
     /**
+     * Test API Query – Get unexisted Note
+     */
+    public function testGetUnexistedNote()
+    {
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Note', [
+            'id'       => '000000000000000000000000',
+            'authorId' => $this->testUser['id'],
+            'folderId' => $this->testFolder['id']
+        ], $GLOBALS['DATA']->getJWT());
+
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('note', $data);
+        $this->assertEmpty($data['note']['id']);
+        $this->assertEmpty($data['note']['title']);
+    }
+
+    /**
      * Test API Query – Get not own Note
      */
     public function testGetNotOwnNote()

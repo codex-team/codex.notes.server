@@ -84,6 +84,66 @@ class ApiFolderTest extends WebTestCase
     }
 
     /**
+     * Test API Query – Get unexisted Folder
+     */
+    public function testGetUnexsitedFolderWithBadFolderId()
+    {
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => '000000000000000000000000',
+            'ownerId' => $this->testUser['id']
+        ], $GLOBALS['DATA']->getJWT());
+
+
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('folder', $data);
+        $this->assertEmpty($data['folder']['id']);
+        $this->assertEmpty($data['folder']['title']);
+    }
+
+    /**
+     * Test API Query – Get unexisted Folder
+     */
+    public function testGetUnexsitedFolderWithBadUserId()
+    {
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => $this->testFolder['id'],
+            'ownerId' => '000000000000000000000000'
+        ], $GLOBALS['DATA']->getJWT());
+
+
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('folder', $data);
+        $this->assertEmpty($data['folder']['id']);
+        $this->assertEmpty($data['folder']['title']);
+    }
+
+    /**
+     * Test API Query – Get unexisted Folder
+     */
+    public function testGetUnexsitedFolderWithBadUserIdAndFolderId()
+    {
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => '000000000000000000000000',
+            'ownerId' => '000000000000000000000000'
+        ], $GLOBALS['DATA']->getJWT());
+
+
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('folder', $data);
+        $this->assertEmpty($data['folder']['id']);
+        $this->assertEmpty($data['folder']['title']);
+    }
+
+    /**
      * Test API Query – Get not own Folder
      */
     public function testGetNotOwnFolder()

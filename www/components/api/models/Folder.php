@@ -2,6 +2,7 @@
 
 namespace App\Components\Api\Models;
 
+use App\Components\Base\Models\Exceptions\CollaboratorException;
 use App\Components\Base\Models\Exceptions\FolderException;
 use App\Components\Base\Models\Mongo;
 use App\System\Config;
@@ -129,15 +130,6 @@ class Folder extends Base
     protected function fillModel(array $data): void
     {
         parent::fillModel($data);
-
-//        /**
-//         * And fill Notes list
-//         */
-//        if ($this->id) {
-//            $this->fillNotes();
-//            $this->fillOwner();
-//            $this->fillCollaborators();
-//        }
     }
 
     /**
@@ -174,9 +166,15 @@ class Folder extends Base
      * @param int   $limit how much items do you need
      * @param int   $skip  how much items needs to be skipped
      * @param array $sort  sort fields
+     *
+     * @throws FolderException
      */
     public function fillNotes(int $limit = null, int $skip = null, array $sort = []): void
     {
+        if (!$this->ownerId || !$this->id) {
+            throw new FolderException('Folder does not exist');
+        }
+
         /**
          * Where Notes stored
          */
@@ -221,6 +219,7 @@ class Folder extends Base
      * @param array $sort  sort fields
      *
      * @throws FolderException
+     * @throws CollaboratorException
      */
     public function fillCollaborators(int $limit = null, int $skip = null, array $sort = []): void
     {
@@ -334,11 +333,13 @@ class Folder extends Base
      * @param string $userId
      *
      * @return bool
-     *
-     * @throws FolderException
      */
     public function hasUserAccess(string $userId): bool
     {
+        if (!$this->ownerId || !$this->id) {
+            return false;
+        }
+
         /**
          * If this User is a Folder's owner
          */

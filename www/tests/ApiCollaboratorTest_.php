@@ -30,8 +30,8 @@ class ApiCollaboratorTest extends WebTestCase
     public function setup()
     {
         parent::setup();
-        $this->dropDb();
-        $this->initDb();
+//        $this->dropDb();
+//        $this->initDb();
     }
 
     /**
@@ -73,14 +73,14 @@ class ApiCollaboratorTest extends WebTestCase
         $this->testCollaborator = new Collaborator($this->testFolder);
         $this->testCollaborator->sync($collaboratorsData);
     }
-
-    /**
-     * Drop test collections from test database
-     */
-    private function dropDb()
-    {
-        Mongo::connect(null)->dropDatabase(Config::get('MONGO_DBNAME'));
-    }
+//
+//    /**
+//     * Drop test collections from test database
+//     */
+//    private function dropDb()
+//    {
+//        Mongo::connect(null)->dropDatabase(Config::get('MONGO_DBNAME'));
+//    }
 
     /**
      * Test API Mutation – Invite Collaborator
@@ -143,39 +143,39 @@ class ApiCollaboratorTest extends WebTestCase
         $this->assertEquals($createdCollaborator['invite']['id'], $foundCollaborator['collaborator']['id']);
     }
 
-    /**
-     * Test API Query – Find Collaborator
-     *
-     * Find Collaborator with GraphQl
-     */
-    public function testFindCollaborator()
-    {
-        $invitationToken = Collaborator::getInvitationToken($this->testUser->id,
-                                                            $this->testFolder->id,
-                                                            $this->testCollaborator->email);
-
-        $data = $this->sendGraphql(GraphQl::QUERY, 'GetCollaborator', [
-            'ownerId' => $this->testUser->id,
-            'folderId' => $this->testFolder->id,
-            'token' => $invitationToken
-        ]);
-
-        $this->assertEquals($this->testCollaborator->id, $data['collaborator']['id']);
-    }
-
-    /**
-     * Test API Query – Find unexisting Collaborator
-     *
-     * Find unexisting Collaborator with GraphQl
-     */
-    public function testCollaboratorNotFoundQuery()
-    {
-        $data = $this->sendGraphql(GraphQl::QUERY, 'GetCollaborator', [
-            'ownerId' => '0000',
-            'folderId' => '0000',
-            'token' => '0000'
-        ]);
-
-        $this->assertEmpty($data['collaborator']['id']);
-    }
+//    /**
+//     * Test API Query – Find Collaborator
+//     *
+//     * Find Collaborator with GraphQl
+//     */
+//    public function testFindCollaborator()
+//    {
+//        $invitationToken = Collaborator::getInvitationToken($this->testUser->id,
+//                                                            $this->testFolder->id,
+//                                                            $this->testCollaborator->email);
+//
+//        $data = $this->sendGraphql(GraphQl::QUERY, 'GetCollaborator', [
+//            'ownerId' => $this->testUser->id,
+//            'folderId' => $this->testFolder->id,
+//            'token' => $invitationToken
+//        ]);
+//
+//        $this->assertEquals($this->testCollaborator->id, $data['collaborator']['id']);
+//    }
+//
+//    /**
+//     * Test API Query – Find unexisting Collaborator
+//     *
+//     * Find unexisting Collaborator with GraphQl
+//     */
+//    public function testCollaboratorNotFoundQuery()
+//    {
+//        $data = $this->sendGraphql(GraphQl::QUERY, 'GetCollaborator', [
+//            'ownerId' => '0000',
+//            'folderId' => '0000',
+//            'token' => '0000'
+//        ]);
+//
+//        $this->assertEmpty($data['collaborator']['id']);
+//    }
 }

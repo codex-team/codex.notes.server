@@ -4,7 +4,6 @@ namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
 use App\Components\Notify\Notify;
-use App\Components\Sockets\Sockets;
 use App\System\Config;
 use MongoDB\BSON\ObjectId;
 

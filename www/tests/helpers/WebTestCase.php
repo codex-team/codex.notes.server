@@ -87,7 +87,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return array – response data
      */
-    public function sendGraphql(string $type, string $name, array $data, $jwt): array
+    public function sendGraphql(string $type, string $name, array $data, string $jwt): array
     {
         $request = GraphQl::request($type, $name, $data);
 

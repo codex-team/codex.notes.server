@@ -1,0 +1,15 @@
+mutation Note($id: ID!, $authorId: ID!, $folderId: ID!, $title: String!, $content: String!, $dtCreate: Int, $dtModify: Int, $isRemoved: Boolean) {
+  note(id: $id, authorId: $authorId, folderId: $folderId, title: $title, content: $content, dtCreate: $dtCreate, dtModify: $dtModify, isRemoved: $isRemoved) {
+    id
+    title
+    content
+    dtCreate
+    dtModify
+    isRemoved
+    author {
+      id
+      email
+      name
+    }
+  }
+}

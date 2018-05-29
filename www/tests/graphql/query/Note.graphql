@@ -1,0 +1,15 @@
+query Note($id: ID!, $authorId: ID!, $folderId: ID!) {
+  note(id: $id, authorId: $authorId, folderId: $folderId) {
+    id
+    title
+    content
+    dtCreate
+    dtModify
+    isRemoved
+    author {
+      id
+      email
+      name
+    }
+  }
+}

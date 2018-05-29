@@ -79,6 +79,20 @@ class Data
         return $this->folder;
     }
 
+    /**
+     * Get Note
+     *
+     * @return array
+     */
+    public function getNoteData(): array
+    {
+        if (empty($this->note)) {
+            $this->prepareNote();
+        }
+
+        return $this->note;
+    }
+
     public function updateData($data): void
     {
         foreach ($data as $field => $value) {
@@ -141,6 +155,20 @@ class Data
             'dtCreate' => 1517651704,
             'dtModify' => 1517651704,
             'isShared' => false,
+            'isRemoved' => false
+        ];
+    }
+
+    private function prepareNote()
+    {
+        $this->note = [
+            'id' => (string) new ObjectId(),
+            'authorId' => $this->user['id'],
+            'folderId' => $this->folder['id'],
+            'title' => 'my secret note',
+            'content' => '[{\"type\":\"paragraph\",\"data\":{\"text\":\"<p>Hello world!</p>\",\"format\":\"html\",\"introText\":\"<<same>>\"}}]',
+            'dtCreate' => 1517651704,
+            'dtModify' => 1517651704,
             'isRemoved' => false
         ];
     }

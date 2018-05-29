@@ -109,8 +109,6 @@ class ApiFolderTest extends WebTestCase
 
     /**
      * Test API Mutation – Update Folder's title
-     *
-     * Create folder with GraphQl request and find it with model
      */
     public function testUpdateFolder()
     {

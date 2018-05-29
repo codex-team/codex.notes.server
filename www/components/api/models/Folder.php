@@ -395,13 +395,6 @@ class Folder extends Base
     public function notifyCollaborators(string $event, $data, User $sender): void
     {
         /**
-         * Push notification to Sender's channel
-         */
-//        if ($sender) {
-            $sender->notify($event, $data, $sender);
-//        }
-
-        /**
          * Push notification to all collaborators, except Sender
          */
         foreach ($this->collaborators as $collaborator) {
@@ -414,5 +407,10 @@ class Folder extends Base
                 $userModel->notify($event, $data, $sender);
             }
         }
+
+        /**
+         * Push notification to Sender's channel
+         */
+        $sender->notify($event, $data, $sender);
     }
 }

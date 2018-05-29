@@ -251,6 +251,7 @@ class Mutation extends ObjectType
                             'dtInvite' => [
                                 'description' => 'Date of an invitation sending',
                                 'type' => Type::int(),
+                                'defaultValue' => time()
                             ],
                         ],
                         'resolve' => function ($root, $args) {
@@ -294,7 +295,10 @@ class Mutation extends ObjectType
 
                             $collaborator = new Collaborator($originalFolder);
                             $collaborator->sync($args);
-                            $collaborator->sendInvitationEmail();
+
+                            if (!Config::get('DO_NOT_SEND_EMAIL')) {
+                                $collaborator->sendInvitationEmail();
+                            }
 
                             /** Send notifies */
                             $sender = Auth::getUser();

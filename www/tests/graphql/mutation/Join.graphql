@@ -1,0 +1,11 @@
+mutation Join($userId: ID!, $token: String!, $folderId: ID!, $ownerId: ID!) {
+     join(userId: $userId, token: $token, ownerId: $ownerId, folderId: $folderId) {
+        id,
+        token,
+        email,
+        folder {
+            id
+        },
+        dtInvite
+    }
+}

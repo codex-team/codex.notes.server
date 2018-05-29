@@ -1,0 +1,11 @@
+mutation Invite($id: ID!, $email: String!, $folderId: ID!, $ownerId: ID!) {
+     invite(id: $id, email: $email, ownerId: $ownerId, folderId: $folderId) {
+        id,
+        token,
+        email,
+        folder {
+            id
+        },
+        dtInvite
+    }
+}

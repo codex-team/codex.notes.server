@@ -166,7 +166,7 @@ class Data
             'authorId' => $this->user['id'],
             'folderId' => $this->folder['id'],
             'title' => 'my secret note',
-            'content' => '[{\"type\":\"paragraph\",\"data\":{\"text\":\"<p>Hello world!</p>\",\"format\":\"html\",\"introText\":\"<<same>>\"}}]',
+            'content' => '[{"type":"paragraph","data":{"text":"<p>Hello world!</p>","format":"html","introText":"<<same>>"}}]',
             'dtCreate' => 1517651704,
             'dtModify' => 1517651704,
             'isRemoved' => false

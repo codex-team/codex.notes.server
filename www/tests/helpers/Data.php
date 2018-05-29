@@ -38,9 +38,10 @@ class Data
     /**
      * Get JWT for this User
      *
+     * @throws \Exception
+     *
      * @return string
      *
-     * @throws \Exception
      */
     public function getJWT(): string
     {

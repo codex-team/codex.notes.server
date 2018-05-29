@@ -83,7 +83,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
      * @param string $type – query or migration
      * @param string $name – operation name equals to .graphql base filename
      * @param array  $data – array of variables
-     * @param string $jwt - user's jwt
+     * @param string $jwt  - user's jwt
      *
      * @return array – response data
      */

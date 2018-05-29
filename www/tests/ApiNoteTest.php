@@ -93,7 +93,7 @@ class ApiNoteTest extends WebTestCase
     public function testGetUnexistedNote()
     {
         $data = $this->sendGraphql(GraphQl::QUERY, 'Note', [
-            'id'       => '000000000000000000000000',
+            'id' => '000000000000000000000000',
             'authorId' => $this->testUser['id'],
             'folderId' => $this->testFolder['id']
         ], $GLOBALS['DATA']->getJWT());

@@ -3,11 +3,8 @@
 namespace App\Tests;
 
 use App\Components\Api\Models\User;
-use App\Components\Base\Models\Mongo;
-use App\Components\OAuth\OAuth;
 use App\Tests\Helpers\GraphQl;
 use App\Tests\Helpers\WebTestCase;
-use MongoDB\BSON\ObjectId;
 
 /**
  * Class ApiUserTest

@@ -86,7 +86,6 @@ class User extends ObjectType
 
                             if ($userModel->id) {
                                 $userModel->fillFolders($limit, $skip);
-
                             }
 
                             return $userModel->folders;

@@ -167,6 +167,7 @@ class OAuth
      * @throws \Exception
      *
      * @return array $jwtWithData {
+     *
      *      @var string id
      *      @var string photo
      *      @var int dtModify

@@ -113,7 +113,6 @@ class Mutation extends ObjectType
                             ],
                         ],
                         'resolve' => function ($root, $args) {
-                            Log::instance()->debug('FOLDER MUTATION');
                             /**
                              * Get real Folder
                              */

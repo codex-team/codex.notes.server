@@ -25,9 +25,9 @@ class ApiNoteTest extends WebTestCase
     {
         parent::setup();
 
-        $this->testUser = $GLOBALS['DATA']->getUserData();
-        $this->testFolder = $GLOBALS['DATA']->getFolderData();
-        $this->testNote = $GLOBALS['DATA']->getNoteData();
+        $this->testUser = $GLOBALS['VIRTUAL_CLIENT_1']->getUserData();
+        $this->testFolder = $GLOBALS['VIRTUAL_CLIENT_1']->getFolderData();
+        $this->testNote = $GLOBALS['VIRTUAL_CLIENT_1']->getNoteData();
     }
 
     /**
@@ -46,7 +46,7 @@ class ApiNoteTest extends WebTestCase
             'dtCreate' => $this->testNote['dtCreate'],
             'dtModify' => $this->testNote['dtModify'],
             'isRemoved' => $this->testNote['isRemoved']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -71,7 +71,7 @@ class ApiNoteTest extends WebTestCase
             'id' => $this->testNote['id'],
             'authorId' => $this->testUser['id'],
             'folderId' => $this->testFolder['id']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -96,7 +96,7 @@ class ApiNoteTest extends WebTestCase
             'id' => '000000000000000000000000',
             'authorId' => $this->testUser['id'],
             'folderId' => $this->testFolder['id']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayHasKey('data', $data);
         $data = $data['data'];
@@ -114,7 +114,7 @@ class ApiNoteTest extends WebTestCase
         /**
          * Use second User's JWT who has no access to this note
          */
-        $jwtUser2 = $GLOBALS['DATA_2']->getJWT();
+        $jwtUser2 = $GLOBALS['VIRTUAL_CLIENT_2']->getJWT();
 
         $data = $this->sendGraphql(GraphQl::QUERY, 'Note', [
             'id' => $this->testNote['id'],
@@ -148,7 +148,7 @@ class ApiNoteTest extends WebTestCase
             'dtCreate' => $this->testNote['dtCreate'],
             'dtModify' => $this->testNote['dtModify'] + 1,
             'isRemoved' => $this->testNote['isRemoved']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);

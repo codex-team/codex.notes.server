@@ -30,7 +30,7 @@ class ApiUserTest extends WebTestCase
      */
     public function testUserModel()
     {
-        $testUser = $GLOBALS['DATA']->getUserData();
+        $testUser = $GLOBALS['VIRTUAL_CLIENT_1']->getUserData();
 
         $user = new User($testUser['id']);
 
@@ -44,11 +44,11 @@ class ApiUserTest extends WebTestCase
      */
     public function testQueryUser()
     {
-        $testUser = $GLOBALS['DATA']->getUserData();
+        $testUser = $GLOBALS['VIRTUAL_CLIENT_1']->getUserData();
 
         $data = $this->sendGraphql(GraphQl::QUERY, 'User', [
             'id' => $testUser['id']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -66,7 +66,7 @@ class ApiUserTest extends WebTestCase
     {
         $data = $this->sendGraphql(GraphQl::QUERY, 'User', [
             'id' => '000000000000000000000000'
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -80,7 +80,7 @@ class ApiUserTest extends WebTestCase
      */
     public function testUpdateUserData()
     {
-        $testUser = $GLOBALS['DATA']->getUserData();
+        $testUser = $GLOBALS['VIRTUAL_CLIENT_1']->getUserData();
 
         $newData = [
             'name' => 'Miron',
@@ -91,7 +91,7 @@ class ApiUserTest extends WebTestCase
             'id' => $testUser['id'],
             'name' => $newData['name'],
             'email' => $newData['email']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -101,7 +101,7 @@ class ApiUserTest extends WebTestCase
         $this->assertEquals($newData['name'], $data['user']['name']);
         $this->assertEquals($newData['email'], $data['user']['email']);
 
-        $GLOBALS['DATA']->updateData($newData);
+        $GLOBALS['VIRTUAL_CLIENT_1']->updateData($newData);
     }
 
     /**
@@ -111,7 +111,7 @@ class ApiUserTest extends WebTestCase
      */
     public function testUpdateAnotherUserData()
     {
-        $testUser2 = $GLOBALS['DATA_2']->getUserData();
+        $testUser2 = $GLOBALS['VIRTUAL_CLIENT_2']->getUserData();
 
         $newData = [
             'name' => 'Miron 2',
@@ -122,7 +122,7 @@ class ApiUserTest extends WebTestCase
             'id' => $testUser2['id'],
             'name' => $newData['name'],
             'email' => $newData['email']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);

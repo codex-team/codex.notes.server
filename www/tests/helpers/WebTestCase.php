@@ -28,8 +28,8 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         /**
          * Data's for different Users
          */
-        $GLOBALS['DATA'] = $GLOBALS['DATA'] ?? new Data(true);
-        $GLOBALS['DATA_2'] = $GLOBALS['DATA_2'] ?? new Data();
+        $GLOBALS['VIRTUAL_CLIENT_1'] = $GLOBALS['VIRTUAL_CLIENT_1'] ?? new Data(true);
+        $GLOBALS['VIRTUAL_CLIENT_2'] = $GLOBALS['VIRTUAL_CLIENT_2'] ?? new Data();
     }
 
     /**

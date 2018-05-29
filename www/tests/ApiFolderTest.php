@@ -24,8 +24,8 @@ class ApiFolderTest extends WebTestCase
     {
         parent::setup();
 
-        $this->testUser = $GLOBALS['DATA']->getUserData();
-        $this->testFolder = $GLOBALS['DATA']->getFolderData();
+        $this->testUser = $GLOBALS['VIRTUAL_CLIENT_1']->getUserData();
+        $this->testFolder = $GLOBALS['VIRTUAL_CLIENT_1']->getFolderData();
     }
 
     /**
@@ -43,7 +43,7 @@ class ApiFolderTest extends WebTestCase
             'dtModify' => $this->testFolder['dtModify'],
             'isShared' => $this->testFolder['isShared'],
             'isRemoved' => $this->testFolder['isRemoved']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -67,7 +67,7 @@ class ApiFolderTest extends WebTestCase
         $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
             'id' => $this->testFolder['id'],
             'ownerId' => $this->testUser['id']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);
@@ -91,7 +91,7 @@ class ApiFolderTest extends WebTestCase
         $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
             'id' => '000000000000000000000000',
             'ownerId' => $this->testUser['id']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
 
         $this->assertArrayHasKey('errors', $data);
@@ -111,7 +111,7 @@ class ApiFolderTest extends WebTestCase
         $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
             'id' => $this->testFolder['id'],
             'ownerId' => '000000000000000000000000'
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
 
         $this->assertArrayHasKey('errors', $data);
@@ -131,7 +131,7 @@ class ApiFolderTest extends WebTestCase
         $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
             'id' => '000000000000000000000000',
             'ownerId' => '000000000000000000000000'
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
 
         $this->assertArrayHasKey('errors', $data);
@@ -151,7 +151,7 @@ class ApiFolderTest extends WebTestCase
         /**
          * Use second User's JWT who has no access to this folder
          */
-        $jwtUser2 = $GLOBALS['DATA_2']->getJWT();
+        $jwtUser2 = $GLOBALS['VIRTUAL_CLIENT_2']->getJWT();
 
         $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
             'id' => $this->testFolder['id'],
@@ -182,7 +182,7 @@ class ApiFolderTest extends WebTestCase
             'dtModify' => $this->testFolder['dtModify'] + 1,
             'isShared' => $this->testFolder['isShared'],
             'isRemoved' => $this->testFolder['isRemoved']
-        ], $GLOBALS['DATA']->getJWT());
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
         $this->assertArrayNotHasKey('errors', $data);
         $this->assertArrayHasKey('data', $data);

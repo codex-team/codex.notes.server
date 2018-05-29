@@ -302,14 +302,14 @@ class Folder extends Base
          */
         if (!empty($mongoResponse['isShared']) && $mongoResponse['isShared']) {
             $this->collectionName = self::getCollectionName($mongoResponse['ownerId']);
-            $mongoResponseRealFolder = Mongo::connect()
+            $mongoResponseOriginFolder = Mongo::connect()
                 ->{$this->collectionName}
                 ->findOne($query);
 
-            $mongoResponse['title'] = $mongoResponseRealFolder['title'];
-            $mongoResponse['dtCreate'] = $mongoResponseRealFolder['dtCreate'];
-            $mongoResponse['dtModify'] = $mongoResponseRealFolder['dtModify'];
-            $mongoResponse['isRemoved'] = $mongoResponseRealFolder['isRemoved'];
+            $mongoResponse['title'] = $mongoResponseOriginFolder['title'];
+            $mongoResponse['dtCreate'] = $mongoResponseOriginFolder['dtCreate'];
+            $mongoResponse['dtModify'] = $mongoResponseOriginFolder['dtModify'];
+            $mongoResponse['isRemoved'] = $mongoResponseOriginFolder['isRemoved'];
         }
 
         $this->fillModel($mongoResponse ?: []);

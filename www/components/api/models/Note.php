@@ -122,11 +122,6 @@ class Note extends Base
     protected function fillModel(array $data): void
     {
         parent::fillModel($data);
-
-//        /**
-//         * And fill Author
-//         */
-//        $this->fillAuthor();
     }
 
     /**

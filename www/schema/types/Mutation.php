@@ -158,35 +158,35 @@ class Mutation extends ObjectType
                         'args' => [
                             'id' => [
                                 'type' => Type::nonNull(Type::id()),
-                                'description' => ''
+                                'description' => 'Identifier'
                             ],
                             'authorId' => [
                                 'type' => Type::nonNull(Type::id()),
-                                'description' => ''
+                                'description' => 'Author Id used to define Folder'
                             ],
                             'folderId' => [
                                 'type' => Type::nonNull(Type::id()),
-                                'description' => ''
+                                'description' => 'Folder\'s identifier'
                             ],
                             'title' => [
                                 'type' => Type::nonNull(Type::string()),
-                                'description' => ''
+                                'description' => 'Note Title'
                             ],
                             'content' => [
                                 'type' => Type::nonNull(Type::string()),
-                                'description' => ''
+                                'description' => 'Content in the JSON-format'
                             ],
                             'dtCreate' => [
                                 'type' => Type::int(),
-                                'description' => ''
+                                'description' => 'Creation timestamp'
                             ],
                             'dtModify' => [
                                 'type' => Type::int(),
-                                'description' => ''
+                                'description' => 'Last modification timestamp'
                             ],
                             'isRemoved' => [
                                 'type' => Type::boolean(),
-                                'description' => ''
+                                'description' => 'Removed status: true if Note marked as removed'
                             ],
                         ],
                         'resolve' => function ($root, $args) {
@@ -200,8 +200,7 @@ class Mutation extends ObjectType
                              * We need to get Folder's Owner.
                              * If this Folder is Shared, we'll get a real Owner to get right collection
                              */
-                            $folder = new Folder($args['authorId'],
-                                $args['folderId']);
+                            $folder = new Folder($args['authorId'], $args['folderId']);
 
                             if (is_null($folder->id)) {
                                 throw new NoteException('Incorrect Folder passed');
@@ -231,8 +230,11 @@ class Mutation extends ObjectType
                         'type' => Types::collaborator(),
                         'description' => 'Add new collaborator and send invitation email',
                         'args' => [
+                            /**
+                             * @todo can we get rid of this variable
+                             */
                             'id' => [
-                                'description' => 'Collaborator\'s id',
+                                'description' => 'Collaborator\'s id. Created on local machine',
                                 'type' => Type::nonNull(Type::id()),
                             ],
                             'email' => [
@@ -309,23 +311,23 @@ class Mutation extends ObjectType
 
                     'join' => [
                         'type' => Types::collaborator(),
-                        'description' => 'Sync Collaborator',
+                        'description' => 'Accept invitation to join shared Folder',
                         'args' => [
                             'userId' => [
                                 'type' => Type::nonNull(Type::id()),
-                                'description' => ''
+                                'description' => 'Collaborator User\'s identifier'
                             ],
                             'token' => [
                                 'type' => Type::nonNull(Type::string()),
-                                'description' => ''
+                                'description' => 'Invitation token'
                             ],
                             'ownerId' => [
                                 'type' => Type::nonNull(Type::id()),
-                                'description' => ''
+                                'description' => 'Folder\'s owner identifier'
                             ],
                             'folderId' => [
                                 'type' => Type::nonNull(Type::id()),
-                                'description' => ''
+                                'description' => 'Folder\'s identifier'
                             ],
                         ],
                         'resolve' => function ($root, $args) {

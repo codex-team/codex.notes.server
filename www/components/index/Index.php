@@ -2,6 +2,7 @@
 
 namespace App\Components\Index;
 
+use App\Components\Base\Models\Exceptions\RenderException;
 use App\System\Renderer;
 
 /**
@@ -14,6 +15,8 @@ class Index
      *
      * @param mixed $req
      * @param mixed $res
+     *
+     * @throws RenderException
      */
     public function page($req, $res)
     {
@@ -26,6 +29,8 @@ class Index
      * @param mixed $req
      * @param mixed $res
      * @param mixed $args
+     *
+     * @throws RenderException
      */
     public function join($req, $res, $args)
     {

@@ -4,9 +4,6 @@ namespace App\Tests;
 
 use App\Components\Api\Models\Collaborator;
 use App\Components\Api\Models\Folder;
-use App\Components\Api\Models\User;
-use App\Components\Base\Models\Mongo;
-use App\System\Config;
 use App\Tests\Helpers\GraphQl;
 use App\Tests\Helpers\WebTestCase;
 use MongoDB\BSON\ObjectId;
@@ -21,7 +18,6 @@ use MongoDB\BSON\ObjectId;
 class ApiCollaboratorTest extends WebTestCase
 {
     private $testUser;
-    private $testCollaborator;
     private $testFolder;
 
     /**
@@ -30,152 +26,130 @@ class ApiCollaboratorTest extends WebTestCase
     public function setup()
     {
         parent::setup();
-        $this->dropDb();
-        $this->initDb();
+
+        $this->testUser = $GLOBALS['VIRTUAL_CLIENT_1']->getUserData();
+        $this->testFolder = $GLOBALS['VIRTUAL_CLIENT_1']->getFolderData();
     }
 
     /**
-     * Initialize database with test data
-     */
-    private function initDb()
-    {
-        $this->testUser = new User();
-        $this->testUser->sync([
-            'name' => 'JohnDoe',
-            'email' => 'JohnDoe@ifmo.su',
-            'dtReg' => 1517651704
-        ]);
-
-        $id = (string) new ObjectId();
-        $this->testFolder = new Folder($this->testUser->id);
-        $this->testFolder->sync([
-            'id' => $id,
-            'title' => 'new folder',
-            'dtCreate' => 1517651704,
-            'dtModify' => 1517651704,
-            'isShared' => false,
-            'isRemoved' => false
-        ]);
-
-        $id = (string) new ObjectId();
-        $collaboratorsData = [
-            'id' => $id,
-            'email' => 'JaneDoe@ifmo.su',
-            'folderId' => $this->testFolder->id,
-            'ownerId' => $this->testUser->id,
-            'dtInvite' => 1517651704
-        ];
-
-        $collaboratorsData['token'] = Collaborator::getInvitationToken($collaboratorsData['ownerId'],
-                                                                       $collaboratorsData['folderId'],
-                                                                       $collaboratorsData['email']);
-
-        $this->testCollaborator = new Collaborator($this->testFolder);
-        $this->testCollaborator->sync($collaboratorsData);
-    }
-
-    /**
-     * Drop test collections from test database
-     */
-    private function dropDb()
-    {
-        Mongo::connect(null)->dropDatabase(Config::get('MONGO_DBNAME'));
-    }
-
-    /**
-     * Test API Mutation – Invite Collaborator
+     * Collaborator invite and join
      *
-     * Invite Collaborator with GraphQl request and find him with model
+     * @throws \App\Components\Base\Models\Exceptions\CollaboratorException
+     * @throws \App\Components\Base\Models\Exceptions\FolderException
      */
-    public function testInviteMutation()
+    public function testInviteCollaborator()
     {
-        if (empty(Config::get('MAILER_SERVER'))) {
-            $this->markTestSkipped('MAILER_SERVER is not set. Skipped.');
+        /**
+         * Prepare folder to be shared
+         */
+        $testFolderData = $this->testFolder;
+        $testFolderData['id'] = (string) new ObjectId();
+
+        /**
+         * Get Folder model
+         */
+        $folder = new Folder($this->testUser['id']);
+        $folder->sync($testFolderData);
+
+        /**
+         * Get second user data
+         */
+        $secondUser = $GLOBALS['VIRTUAL_CLIENT_2']->getUserData();
+
+        /**
+         * Send GraphQL Invite query
+         */
+        $data = $this->sendGraphql(GraphQl::MUTATION, 'Invite', [
+            'id' => (string) new ObjectId(),
+            'ownerId' => $this->testUser['id'],
+            'folderId' => $folder->id,
+            'email' => $secondUser['email']
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
+
+        /**
+         * Check for error and data fields
+         */
+        $this->assertArrayNotHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('invite', $data);
+        $this->assertArrayHasKey('token', $data['invite']);
+
+        $token = $data['invite']['token'];
+        $this->assertNotNull($token);
+
+        $this->assertEquals($secondUser['email'], $data['invite']['email']);
+
+        $this->assertArrayHasKey('folder', $data['invite']);
+        $this->assertEquals($folder->id, $data['invite']['folder']['id']);
+
+
+        /**
+         * Test Joining Folder
+         */
+        $data = $this->sendGraphql(GraphQl::MUTATION, 'Join', [
+            'userId' => $secondUser['id'],
+            'ownerId' => $this->testUser['id'],
+            'folderId' => $folder->id,
+            'token' => $token
+        ], $GLOBALS['VIRTUAL_CLIENT_2']->getJWT());
+
+        /**
+         * Check for error and data fields
+         */
+        $this->assertArrayNotHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('join', $data);
+        $this->assertNotNull($data['join']);
+
+        $this->assertArrayHasKey('email', $data['join']);
+        $this->assertEquals($secondUser['email'], $data['join']['email']);
+
+        /**
+         * Check Shared Folder data
+         */
+
+        /**
+         * Get origin Folder model
+         */
+        $originFolderWithCollaborators = new Folder($this->testUser['id'], $folder->id);
+        $this->assertEquals($originFolderWithCollaborators->isShared, false);
+
+        /**
+         * Get User's shared Folder
+         */
+        $folderWithCollaborators = new Folder($secondUser['id'], $folder->id);
+        $this->assertEquals($folderWithCollaborators->isShared, true);
+
+        /**
+         * Check for same fields of shared and original fields
+         */
+        $sameFields = ['id', 'title', 'dtModify', 'dtCreate', 'isRemoved'];
+        foreach ($sameFields as $field) {
+            $this->assertEquals($originFolderWithCollaborators->$field, $folderWithCollaborators->$field);
         }
 
-        $data = $this->sendGraphql(GraphQl::MUTATION, 'CollaboratorInvite', [
-            'id' => (string) new ObjectID(),
-            'folderId' => $this->testFolder->id,
-            'ownerId' => $this->testUser->id,
-            'email' => 'JamesDoe@ifmo.su',
-            'dtInvite' => 1517651704
-        ]);
+        /**
+         * Fill collaborators
+         */
+        $folderWithCollaborators->fillCollaborators();
+        $this->assertNotNull($folderWithCollaborators->collaborators);
 
-        $invite = $data['invite'];
-        $model = new Collaborator($this->testFolder, $invite['token']);
-
-        // check if initial and saved models are equal
-        $this->assertEquals($model->id, $invite['id']);
-        $this->assertEquals($model->email, $invite['email']);
-        $this->assertEquals($model->token, $invite['token']);
-        $this->assertEquals($model->folder->id, $invite['folder']['id']);
-    }
-
-    /**
-     * Test API Mutation – Invite Collaborator and find him
-     *
-     * Create new collaborator and find him with GraphQl requests
-     */
-    public function testInviteCollaboratorAndFind()
-    {
-        if (empty(Config::get('MAILER_SERVER'))) {
-            $this->markTestSkipped('MAILER_SERVER is not set. Skipped.');
+        /**
+         * Check collaborators list
+         */
+        $collaboratorsIdsArray = [];
+        foreach ($folderWithCollaborators->collaborators as $collaborator) {
+            $collaboratorsIdsArray[] = $collaborator->userId;
         }
 
-        $collaboratorId = (string) new ObjectId();
-        $email = 'JamesDoe@ifmo.su';
-
-        $createdCollaborator = $this->sendGraphql(GraphQl::MUTATION, 'CollaboratorInvite', [
-            'id' => $collaboratorId,
-            'folderId' => $this->testFolder->id,
-            'ownerId' => $this->testUser->id,
-            'email' => $email,
-            'dtInvite' => 1517651704
-        ]);
-
-        $foundCollaborator = $this->sendGraphql('query', 'GetCollaborator', [
-            'ownerId' => $this->testUser->id,
-            'folderId' => $this->testFolder->id,
-            'token' => Collaborator::getInvitationToken($this->testUser->id, $this->testFolder->id, $email)
-        ]);
-
-        // check if initial and saved models are equal
-        $this->assertEquals($createdCollaborator['invite']['id'], $foundCollaborator['collaborator']['id']);
-    }
-
-    /**
-     * Test API Query – Find Collaborator
-     *
-     * Find Collaborator with GraphQl
-     */
-    public function testFindCollaborator()
-    {
-        $invitationToken = Collaborator::getInvitationToken($this->testUser->id,
-                                                            $this->testFolder->id,
-                                                            $this->testCollaborator->email);
-
-        $data = $this->sendGraphql(GraphQl::QUERY, 'GetCollaborator', [
-            'ownerId' => $this->testUser->id,
-            'folderId' => $this->testFolder->id,
-            'token' => $invitationToken
-        ]);
-
-        $this->assertEquals($this->testCollaborator->id, $data['collaborator']['id']);
-    }
-
-    /**
-     * Test API Query – Find unexisting Collaborator
-     *
-     * Find unexisting Collaborator with GraphQl
-     */
-    public function testCollaboratorNotFoundQuery()
-    {
-        $data = $this->sendGraphql(GraphQl::QUERY, 'GetCollaborator', [
-            'ownerId' => '0000',
-            'folderId' => '0000',
-            'token' => '0000'
-        ]);
-
-        $this->assertEmpty($data['collaborator']['id']);
+        /**
+         * Check if Users in a list of Collaborators
+         */
+        $this->assertEquals(true, $this->testUser['id'] == $collaboratorsIdsArray[0]);
+        $this->assertEquals(true, $secondUser['id'] == $collaboratorsIdsArray[1]);
     }
 }

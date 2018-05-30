@@ -58,7 +58,7 @@ class Note extends Base
     /**
      * Note's author
      *
-     * @var object|null
+     * @var User|null
      */
     public $author;
 
@@ -67,7 +67,7 @@ class Note extends Base
      *
      * @var string|null
      */
-    protected $authorId;
+    public $authorId;
 
     /**
      * Note Folder's id
@@ -79,7 +79,7 @@ class Note extends Base
     /**
      * Note Folder's data
      *
-     * @var object|null
+     * @var Folder|null
      */
     public $folder;
 
@@ -122,11 +122,6 @@ class Note extends Base
     protected function fillModel(array $data): void
     {
         parent::fillModel($data);
-
-        /**
-         * And fill Author
-         */
-        $this->fillAuthor();
     }
 
     /**

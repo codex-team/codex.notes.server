@@ -2,6 +2,7 @@
 
 namespace App\Components\Api\Models;
 
+use App\Components\Base\Models\Exceptions\CollaboratorException;
 use App\Components\Base\Models\Exceptions\FolderException;
 use App\Components\Base\Models\Mongo;
 use App\System\Config;
@@ -129,15 +130,6 @@ class Folder extends Base
     protected function fillModel(array $data): void
     {
         parent::fillModel($data);
-
-        /**
-         * And fill Notes list
-         */
-        if ($this->id) {
-            $this->fillNotes();
-            $this->fillOwner();
-            $this->fillCollaborators();
-        }
     }
 
     /**
@@ -174,9 +166,15 @@ class Folder extends Base
      * @param int   $limit how much items do you need
      * @param int   $skip  how much items needs to be skipped
      * @param array $sort  sort fields
+     *
+     * @throws FolderException
      */
     public function fillNotes(int $limit = null, int $skip = null, array $sort = []): void
     {
+        if (!$this->ownerId || !$this->id) {
+            throw new FolderException('Folder does not exist');
+        }
+
         /**
          * Where Notes stored
          */
@@ -221,6 +219,7 @@ class Folder extends Base
      * @param array $sort  sort fields
      *
      * @throws FolderException
+     * @throws CollaboratorException
      */
     public function fillCollaborators(int $limit = null, int $skip = null, array $sort = []): void
     {
@@ -298,11 +297,19 @@ class Folder extends Base
             ->{$this->collectionName}
             ->findOne($query);
 
+        /**
+         * If Folder is Shared then get title, dtCreate, dtModify and isRemoved from origin Folder
+         */
         if (!empty($mongoResponse['isShared']) && $mongoResponse['isShared']) {
             $this->collectionName = self::getCollectionName($mongoResponse['ownerId']);
-            $mongoResponse = Mongo::connect()
+            $mongoResponseOriginFolder = Mongo::connect()
                 ->{$this->collectionName}
                 ->findOne($query);
+
+            $mongoResponse['title'] = $mongoResponseOriginFolder['title'];
+            $mongoResponse['dtCreate'] = $mongoResponseOriginFolder['dtCreate'];
+            $mongoResponse['dtModify'] = $mongoResponseOriginFolder['dtModify'];
+            $mongoResponse['isRemoved'] = $mongoResponseOriginFolder['isRemoved'];
         }
 
         $this->fillModel($mongoResponse ?: []);
@@ -329,8 +336,21 @@ class Folder extends Base
      */
     public function hasUserAccess(string $userId): bool
     {
-        $collaboratorsCollection
-            = Collaborator::getCollectionName($this->ownerId, $this->id);
+        if (!$this->ownerId || !$this->id) {
+            return false;
+        }
+
+        /**
+         * If this User is a Folder's owner
+         */
+        if ($this->ownerId == $userId) {
+            return true;
+        }
+
+        /**
+         * If this User exists in list of Collaborators
+         */
+        $collaboratorsCollection = Collaborator::getCollectionName($this->ownerId, $this->id);
 
         $query = [
             'userId' => $userId,
@@ -370,18 +390,27 @@ class Folder extends Base
      *
      * @param string $event
      * @param        $data
-     * @param        $sender
+     * @param User   $sender
      */
-    public function notifyCollaborators(string $event, $data, $sender): void
+    public function notifyCollaborators(string $event, $data, User $sender): void
     {
+        /**
+         * Push notification to all collaborators, except Sender
+         */
         foreach ($this->collaborators as $collaborator) {
+            /**
+             * Check if Collaborator has accepted invitation
+             * Also check if it is not a Sender
+             */
             if ($collaborator->user->id && $collaborator->user->id != $sender->id) {
                 $userModel = $collaborator->user;
                 $userModel->notify($event, $data, $sender);
             }
         }
 
-        /** Push notification to sender's channel */
+        /**
+         * Push notification to Sender's channel
+         */
         $sender->notify($event, $data, $sender);
     }
 }

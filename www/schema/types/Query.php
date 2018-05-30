@@ -11,7 +11,6 @@ use App\Components\Api\Models\{
 use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,
-    ResolveInfo,
     Type
 };
 
@@ -31,82 +30,105 @@ class Query extends ObjectType
                 return [
                     'user' => [
                         'type' => Types::user(),
-                        'description' => 'Return User by id',
+                        'description' => 'Get User\'s data',
                         'args' => [
-                            'id' => Type::nonNull(Type::id()),
-                            'foldersLimit' => [
-                                'type' => Type::int(),
-                                'defaultValue' => 0
-                            ],
-                            'foldersSkip' => [
-                                'type' => Type::int(),
-                                'defaultValue' => 0
+                            'id' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'User\'s Id'
                             ]
                         ],
                         'resolve' => function ($root, $args) {
-                            $user = new User($args['id']);
+                            /** Get filled User model */
+                            $userModel = new User($args['id']);
 
-                            $limit = $args['foldersLimit'];
-                            $skip = $args['foldersSkip'];
-
-                            if ($user->id && $limit !== null) {
-                                $user->fillFolders($limit, $skip);
-                            }
-
-                            return $user;
+                            return $userModel;
                         }
                     ],
 
                     'folder' => [
                         'type' => Types::folder(),
-                        'description' => 'Return Folder by id',
+                        'description' => 'Get Folder\'s data',
                         'args' => [
-                            'ownerId' => Type::nonNull(Type::id()),
-                            'id' => Type::nonNull(Type::id())
+                            'id' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Folder\'s Id',
+                            ],
+                            'ownerId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Folder Owner\'s Id',
+                            ]
                         ],
-                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
-                            $folder = new Folder($args['ownerId'], $args['id']);
+                        'resolve' => function ($root, $args) {
+                            /** Get filled Folder model */
+                            $folderModel = new Folder($args['ownerId'], $args['id']);
 
-                            $selectedFields = $info->getFieldSelection();
-
-                            if (in_array('collaborators', $selectedFields)) {
-                                $folder->fillCollaborators();
+                            if (!$folderModel->hasUserAccess($GLOBALS['user']->id)) {
+                                throw new \Exception('Access denied');
                             }
 
-                            if (in_array('owner', $selectedFields)) {
-                                $folder->fillOwner();
-                            }
-
-                            return $folder;
+                            return $folderModel;
                         }
                     ],
 
                     'note' => [
                         'type' => Types::note(),
-                        'description' => 'Return Note by id',
+                        'description' => 'Get Note\'s data',
                         'args' => [
-                            'authorId' => Type::nonNull(Type::id()),
-                            'folderId' => Type::nonNull(Type::id()),
-                            'id' => Type::nonNull(Type::id())
-                        ],
-                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
-                            $note = new Note($args['authorId'], $args['folderId'], $args['id']);
-
-                            return $note;
-                        }
-                    ],
-                    'collaborator' => [
-                        'type' => Types::collaborator(),
-                        'description' => 'Return Collaborator',
-                        'args' => [
-                            'ownerId' => Type::nonNull(Type::id()),
-                            'folderId' => Type::nonNull(Type::id()),
-                            'token' => Type::nonNull(Type::string())
+                            'authorId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Folder Owner\'s Id',
+                            ],
+                            'folderId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Folder\'s Id',
+                            ],
+                            'id' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Note\'s Id',
+                            ]
                         ],
                         'resolve' => function ($root, $args) {
-                            $folder = new Folder($args['ownerId'], $args['folderId']);
+                            /** Get filled Note model */
+                            $noteModel = new Note($args['authorId'], $args['folderId'], $args['id']);
 
-                            return new Collaborator($folder, $args['token']);
+                            /**
+                             * Get Note's Folder and check access
+                             */
+                            $noteModel->fillFolderData();
+                            if (!$noteModel->folder->hasUserAccess($GLOBALS['user']->id)) {
+                                throw new \Exception('Access denied');
+                            }
+                            unset($noteModel->folder);
+
+                            return $noteModel;
+                        }
+                    ],
+
+                    'collaborator' => [
+                        'type' => Types::collaborator(),
+                        'description' => 'Get Collaborator\'s data',
+                        'args' => [
+                            'ownerId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Folder Owner\'s Id',
+                            ],
+                            'folderId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Folder\'s Id',
+                            ],
+                            'token' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'Collaborator\'s token',
+                            ]
+                        ],
+                        'resolve' => function ($root, $args) {
+                            $folderModel = new Folder($args['ownerId'], $args['folderId']);
+
+                            if (!$folderModel->hasUserAccess($GLOBALS['user']->id)) {
+                                throw new \Exception('Access denied');
+                            }
+
+                            return new Collaborator($folderModel, $args['token']);
                         }
                     ],
                 ];

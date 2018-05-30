@@ -2,6 +2,7 @@
 
 namespace App\Schema\Types;
 
+use App\Components\Api\Models as Models;
 use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,
@@ -18,31 +19,44 @@ class Note extends ObjectType
     public function __construct()
     {
         $config = [
+            'name' => 'NoteType',
+            'description' => 'Note\'s data',
             'fields' => function () {
                 return [
                     'id' => [
                         'type' => Type::id(),
-                        'description' => 'Note\'s unique identifier',
+                        'description' => 'Unique identifier',
                     ],
                     'title' => [
                         'type' => Type::string(),
-                        'description' => 'Note\'s public title',
+                        'description' => 'Title',
                     ],
                     'content' => [
                         'type' => Type::string(),
-                        'description' => 'Note\'s content in the JSON-format',
+                        'description' => 'Content in the JSON-format',
                     ],
                     'dtCreate' => [
                         'type' => Type::int(),
-                        'description' => 'Note\'s creation timestamp',
+                        'description' => 'Creation timestamp',
                     ],
                     'dtModify' => [
                         'type' => Type::int(),
-                        'description' => 'Note\'s last modification timestamp',
+                        'description' => 'Last modification timestamp',
                     ],
                     'author' => [
                         'type' => Types::user(),
-                        'description' => 'Note\'s author',
+                        'description' => 'User who owens Folder with Note',
+                        'resolve' => function ($note, $args) {
+                            /**
+                             * Create an empty Note model based on author and folder
+                             */
+                            $noteModel = new Models\Note($note->authorId, $note->folderId);
+
+                            /** Get Note's author */
+                            $noteModel->fillAuthor();
+
+                            return $noteModel->author;
+                        }
                     ],
                     'isRemoved' => [
                         'type' => Type::boolean(),

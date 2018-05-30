@@ -17,6 +17,8 @@ use GraphQL\Server\{
     StandardServer
 };
 use GraphQL\Type\Schema;
+use GraphQL\Validator\DocumentValidator;
+use GraphQL\Validator\Rules\QueryDepth;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -62,8 +64,16 @@ class Api
         $config = ServerConfig::create()
             ->setSchema($this->schema)
             ->setErrorFormatter(function ($e) {
+                /**
+                 * Log error
+                 */
                 $message = sprintf("%s in %s:%s\n%s", $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
                 $this->logger->error($message);
+
+                /**
+                 * Catch errors with Hawk
+                 */
+                \Hawk\HawkCatcher::catchException($e);
 
                 return FormattedError::createFromException($e);
             });
@@ -106,6 +116,12 @@ class Api
          * Save request to the logs
          */
         $this->logger->debug($request->getBody());
+
+        /**
+         * Set request max depth level
+         */
+        $rule = new QueryDepth(Config::get('MAX_QUERY_DEPTH'));
+        DocumentValidator::addRule($rule);
 
         /** @var ExecutionResult|ExecutionResult[] $result */
         $result = $this->server->executePsrRequest($request);

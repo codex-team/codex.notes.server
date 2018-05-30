@@ -4,7 +4,6 @@ namespace App\Components\Api\Models;
 
 use App\Components\Base\Models\Mongo;
 use App\Components\Notify\Notify;
-use App\Components\Sockets\Sockets;
 use App\System\Config;
 use MongoDB\BSON\ObjectId;
 
@@ -67,7 +66,7 @@ class User extends Base
     /**
      * User's folders
      *
-     * @var array
+     * @var Folder[]
      */
     public $folders = [];
 
@@ -161,13 +160,8 @@ class User extends Base
             ->find($query, $options);
 
         foreach ($mongoResponse as $folder) {
-            if (!empty($folder['isShared']) && $folder['isShared']) {
-                /** Get real Folder if this element is a link */
-                $folderModel = new Folder($folder['ownerId'], $folder['id']);
-            } else {
-                /** Create Folder model from this data */
-                $folderModel = new Folder($this->id, null, $folder);
-            }
+            /** Create Folder model from this data */
+            $folderModel = new Folder($this->id, $folder['id']);
 
             $this->folders[] = $folderModel;
         }

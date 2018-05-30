@@ -1,0 +1,22 @@
+query Folder($id: ID!, $ownerId: ID!){
+  folder (id: $id, ownerId: $ownerId) {
+      id
+      title
+      dtCreate
+      dtModify
+      isShared
+      isRemoved
+      isRoot
+      owner {
+          id
+          name
+      }
+      notes {
+          id
+          title
+      }
+      collaborators {
+          email
+      }
+    }
+}

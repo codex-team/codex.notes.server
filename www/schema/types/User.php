@@ -2,6 +2,8 @@
 
 namespace App\Schema\Types;
 
+use App\Components\Api\Models as Models;
+use App\Components\Middleware\Auth;
 use App\Schema\Types;
 use GraphQL\Type\Definition\{
     ObjectType,
@@ -18,51 +20,76 @@ class User extends ObjectType
     public function __construct()
     {
         $config = [
+            'name' => 'UserType',
+            'description' => 'User\'s data',
             'fields' => function () {
                 return [
                     'id' => [
                         'type' => Type::id(),
-                        'description' => 'User\'s unique identifier',
+                        'description' => 'Unique identifier',
                     ],
                     'name' => [
                         'type' => Type::string(),
-                        'description' => 'User\'s nickname',
+                        'description' => 'Full name',
                     ],
                     'email' => [
                         'type' => Type::string(),
-                        'description' => 'User\'s email address',
+                        'description' => 'Email address',
                     ],
                     'photo' => [
                         'type' => Type::string(),
-                        'description' => 'User\'s avatar',
+                        'description' => 'Photo URL',
                     ],
                     'googleId' => [
                         'type' => Type::string(),
-                        'description' => 'User\'s google id',
+                        'description' => 'Google ID',
                     ],
                     'dtReg' => [
                         'type' => Type::int(),
-                        'description' => 'User\'s register timestamp',
+                        'description' => 'Timestamp of registration',
                     ],
                     'dtModify' => [
                         'type' => Type::int(),
-                        'description' => 'User\'s last modification timestamp',
+                        'description' => 'Last modification timestamp',
                     ],
                     'folders' => [
                         'type' => Type::listOf(Types::folder()),
-                        'description' => 'User\'s folders',
-
-                        /** @todo make it work */
+                        'description' => 'Folders list',
                         'args' => [
                             'limit' => [
                                 'type' => Type::int(),
-                                'defaultValue' => 0
+                                'description' => 'Folders limit',
+                                'defaultValue' => null
                             ],
                             'skip' => [
                                 'type' => Type::int(),
-                                'defaultValue' => 0
+                                'description' => 'Skip that number of Folders',
+                                'defaultValue' => null
                             ]
                         ],
+                        'resolve' => function ($user, $args) {
+                            if (!Auth::checkUserAccess($user->id)) {
+                                throw new \Exception('Access denied');
+                            }
+
+
+                            /**
+                             * Create an empty User model
+                             */
+                            $userModel = new Models\User();
+
+                            /** Set User's id */
+                            $userModel->id = $user->id;
+
+                            $limit = $args['limit'];
+                            $skip = $args['skip'];
+
+                            if ($userModel->id) {
+                                $userModel->fillFolders($limit, $skip);
+                            }
+
+                            return $userModel->folders;
+                        }
                     ],
                 ];
             }

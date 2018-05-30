@@ -19,9 +19,9 @@ class Sockets
         $deviceId = null;
 
         try {
-            $deviceId = $GLOBALS['user']['device-id'];
+            $deviceId = $GLOBALS['device-id'];
         } catch (\Exception $e) {
-            Log::instance()->alert('Cannot $deviceId from global var $user');
+            Log::instance()->alert('Cannot $deviceId from $GLOBALS');
         }
 
         $data = [

@@ -2,12 +2,8 @@
 
 namespace App\Tests;
 
-use App\Components\Api\Models\Folder;
-use App\Components\Api\Models\User;
-use App\Components\Base\Models\Mongo;
 use App\Tests\Helpers\GraphQl;
 use App\Tests\Helpers\WebTestCase;
-use MongoDB\BSON\ObjectId;
 
 /**
  * Class ApiFolderTest
@@ -27,165 +23,178 @@ class ApiFolderTest extends WebTestCase
     public function setup()
     {
         parent::setup();
-        $this->dropCollection();
-        $this->initDb();
-    }
 
-    /**
-     * Initialize database with test user and folder
-     */
-    private function initDb()
-    {
-        $this->testUser = new User();
-        $this->testUser->sync([
-            'name' => 'JohnDoe',
-            'email' => 'JohnDoe@ifmo.su',
-            'dtReg' => 1517651704
-        ]);
-
-        $id = (string) new ObjectId();
-        $this->testFolder = new Folder($this->testUser->id, $id);
-        $this->testFolder->sync([
-            'id' => $id,
-            'title' => 'new folder',
-            'dtCreate' => 1517651704,
-            'dtModify' => 1517651704,
-            'isShared' => false,
-            'isRemoved' => false
-        ]);
-    }
-
-    /**
-     * Drop collections from test database
-     */
-    private function dropCollection()
-    {
-        $db = Mongo::connect();
-        foreach ($db->listCollections() as $collectionInfo) {
-            $db->selectCollection($collectionInfo->getName())->drop();
-        }
-    }
-
-    /**
-     * Compare model and array structure
-     *
-     * @param $folderModel
-     * @param $folder
-     */
-    private function compare($folderModel, $folder)
-    {
-        // check if initial and saved models are equal
-        $this->assertEquals($folderModel->id, $folder['id']);
-        $this->assertEquals($folderModel->title, $folder['title']);
-        $this->assertEquals($folderModel->ownerId, $folder['owner']['id']);
-        $this->assertEquals($folderModel->dtCreate, $folder['dtCreate']);
-        $this->assertEquals($folderModel->dtModify, $folder['dtModify']);
-        $this->assertEquals($folderModel->isShared, $folder['isShared']);
-        $this->assertEquals($folderModel->isRemoved, $folder['isRemoved']);
-    }
-
-    /**
-     * Test Folder Model – Get test folder
-     *
-     * Find test folder with model
-     */
-    public function testGetFolder()
-    {
-        $folder = new Folder($this->testUser->id, $this->testFolder->id);
-
-        $this->assertEquals($this->testFolder->id, $folder->id);
+        $this->testUser = $GLOBALS['VIRTUAL_CLIENT_1']->getUserData();
+        $this->testFolder = $GLOBALS['VIRTUAL_CLIENT_1']->getFolderData();
     }
 
     /**
      * Test API Mutation – Create new folder
      *
-     * Create folder with GraphQl request and find it with model
+     * Create folder with GraphQl request
      */
     public function testCreateFolder()
     {
-        $folderId = (string) new ObjectId();
+        $data = $this->sendGraphql(GraphQl::MUTATION, 'Folder', [
+            'id' => $this->testFolder['id'],
+            'ownerId' => $this->testUser['id'],
+            'title' => $this->testFolder['title'],
+            'dtCreate' => $this->testFolder['dtCreate'],
+            'dtModify' => $this->testFolder['dtModify'],
+            'isShared' => $this->testFolder['isShared'],
+            'isRemoved' => $this->testFolder['isRemoved']
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
-        $data = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewFolder', [
-            'id' => $folderId,
-            'ownerId' => $this->testUser->id,
-            'title' => 'new folder',
-            'dtCreate' => 1517651704,
-            'dtModify' => 1517651704,
-            'isShared' => false,
-            'isRemoved' => false
-        ]);
+        $this->assertArrayNotHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
 
         $this->assertArrayHasKey('folder', $data);
         $this->assertArrayHasKey('owner', $data['folder']);
 
-        $folder = $data['folder'];
+        $this->assertEquals($this->testFolder['id'], $data['folder']['id']);
+        $this->assertEquals($this->testFolder['title'], $data['folder']['title']);
+        $this->assertEquals($this->testUser['id'], $data['folder']['owner']['id']);
 
-        // get Folder from DB by model
-        $folderModel = new Folder($this->testUser->id, $folderId);
-
-        // check if initial and saved models are equal
-        $this->compare($folderModel, $folder);
+        $this->testFolder = $data['folder'];
     }
 
     /**
-     * Test API Mutation – Find folder
-     *
-     * Find existing folder with GraphQl request
+     * Test API Query – Get Folder
      */
-    public function testFindFolder()
+    public function testGetFolder()
     {
-        $data = $this->sendGraphql(GraphQl::QUERY, 'GetFolder', [
-            'id' => $this->testFolder->id,
-            'ownerId' => $this->testUser->id
-        ]);
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => $this->testFolder['id'],
+            'ownerId' => $this->testUser['id']
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
+        $this->assertArrayNotHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('folder', $data);
         $this->assertArrayHasKey('owner', $data['folder']);
 
-        $folder = $data['folder'];
+        $this->assertEquals($this->testFolder['id'], $data['folder']['id']);
+        $this->assertEquals($this->testFolder['title'], $data['folder']['title']);
+        $this->assertEquals($this->testUser['id'], $data['folder']['owner']['id']);
 
-        // check if initial and found models are equal
-        $this->compare($this->testFolder, $folder);
+        $this->testFolder = $data['folder'];
     }
 
     /**
-     * Test API Mutation – Create new folder and find it
-     *
-     * Create new folder and find it with GraphQl requests
+     * Test API Query – Get unexisted Folder
      */
-    public function testCreateAndFindFolder()
+    public function testGetUnexsitedFolderWithBadFolderId()
     {
-        $folderId = (string) new ObjectId();
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => '000000000000000000000000',
+            'ownerId' => $this->testUser['id']
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
-        $data = $this->sendGraphql(GraphQl::MUTATION, 'CreateNewFolder', [
-            'id' => $folderId,
-            'ownerId' => $this->testUser->id,
-            'title' => 'test folder',
-            'dtCreate' => 1517651704,
-            'dtModify' => 1517651704,
-            'isShared' => false,
-            'isRemoved' => false
-        ]);
 
-        $createdFolder = $data['folder'];
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
 
-        $this->assertArrayHasKey('owner', $createdFolder);
+        $this->assertArrayHasKey('folder', $data);
+        $this->assertEmpty($data['folder']['id']);
+        $this->assertEmpty($data['folder']['title']);
+    }
 
-        $data = $this->sendGraphql(GraphQl::QUERY, 'GetFolder', [
-            'id' => $folderId,
-            'ownerId' => $this->testUser->id
-        ]);
+    /**
+     * Test API Query – Get unexisted Folder
+     */
+    public function testGetUnexsitedFolderWithBadUserId()
+    {
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => $this->testFolder['id'],
+            'ownerId' => '000000000000000000000000'
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
 
-        $foundFolder = $data['folder'];
 
-        $this->assertArrayHasKey('owner', $foundFolder);
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
 
-        // check if initial and found models are equal
-        $this->assertEquals($createdFolder['id'], $foundFolder['id']);
-        $this->assertEquals($createdFolder['title'], $foundFolder['title']);
-        $this->assertEquals($createdFolder['owner']['id'], $foundFolder['owner']['id']);
-        $this->assertEquals($createdFolder['dtCreate'], $foundFolder['dtCreate']);
-        $this->assertEquals($createdFolder['dtModify'], $foundFolder['dtModify']);
-        $this->assertEquals($createdFolder['isShared'], $foundFolder['isShared']);
-        $this->assertEquals($createdFolder['isRemoved'], $foundFolder['isRemoved']);
+        $this->assertArrayHasKey('folder', $data);
+        $this->assertEmpty($data['folder']['id']);
+        $this->assertEmpty($data['folder']['title']);
+    }
+
+    /**
+     * Test API Query – Get unexisted Folder
+     */
+    public function testGetUnexsitedFolderWithBadUserIdAndFolderId()
+    {
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => '000000000000000000000000',
+            'ownerId' => '000000000000000000000000'
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
+
+
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('folder', $data);
+        $this->assertEmpty($data['folder']['id']);
+        $this->assertEmpty($data['folder']['title']);
+    }
+
+    /**
+     * Test API Query – Get not own Folder
+     */
+    public function testGetNotOwnFolder()
+    {
+        /**
+         * Use second User's JWT who has no access to this folder
+         */
+        $jwtUser2 = $GLOBALS['VIRTUAL_CLIENT_2']->getJWT();
+
+        $data = $this->sendGraphql(GraphQl::QUERY, 'Folder', [
+            'id' => $this->testFolder['id'],
+            'ownerId' => $this->testUser['id']
+        ], $jwtUser2);
+
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('folder', $data);
+
+        $this->assertEquals(null, $data['folder']);
+    }
+
+    /**
+     * Test API Mutation – Update Folder's title
+     */
+    public function testUpdateFolder()
+    {
+        $folderNewTitle = 'renamed folder';
+
+        $data = $this->sendGraphql(GraphQl::MUTATION, 'Folder', [
+            'id' => $this->testFolder['id'],
+            'ownerId' => $this->testUser['id'],
+            'title' => $folderNewTitle,
+            'dtCreate' => $this->testFolder['dtCreate'],
+            'dtModify' => $this->testFolder['dtModify'] + 1,
+            'isShared' => $this->testFolder['isShared'],
+            'isRemoved' => $this->testFolder['isRemoved']
+        ], $GLOBALS['VIRTUAL_CLIENT_1']->getJWT());
+
+        $this->assertArrayNotHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
+        $data = $data['data'];
+
+        $this->assertArrayHasKey('folder', $data);
+        $this->assertArrayHasKey('owner', $data['folder']);
+
+        $this->assertEquals($this->testFolder['id'], $data['folder']['id']);
+        $this->assertEquals($folderNewTitle, $data['folder']['title']);
+        $this->assertEquals($this->testUser['id'], $data['folder']['owner']['id']);
+
+        $this->testFolder = $data['folder'];
     }
 }

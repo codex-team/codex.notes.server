@@ -17,10 +17,10 @@ use App\Components\Base\Models\Exceptions\{
 use App\Components\Middleware\Auth;
 use App\Components\Notify\Notify;
 use App\Schema\Types;
+use App\System\Config;
 use App\System\Log;
 use GraphQL\Type\Definition\{
     ObjectType,
-    ResolveInfo,
     Type
 };
 
@@ -42,33 +42,36 @@ class Mutation extends ObjectType
                         'type' => Types::user(),
                         'description' => 'Sync User',
                         'args' => [
-                            'id' => Type::nonNull(Type::id()),
-                            'name' => Type::nonNull(Type::string()),
-                            'email' => Type::nonNull(Type::string()),
-                            'photo' => Type::string(),
-                            'dtReg' => Type::int(),
-                            'dtModify' => Type::int()
+                            'id' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Unique identifier'
+                            ],
+                            'name' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'Full name'
+                            ],
+                            'email' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'Email address'
+                            ],
+                            'photo' => [
+                                'type' => Type::string(),
+                                'description' => 'Photo URL'
+                            ],
+                            'dtModify' => [
+                                'type' => Type::int(),
+                                'description' => 'Timestamp of last modification'
+                            ]
                         ],
-                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
-                            try {
-                                if (!Auth::checkUserAccess($args['id'])) {
-                                    throw new AuthException('Access denied');
-                                }
-
-                                $user = new User();
-                                $user->sync($args);
-
-                                $selectedFields = $info->getFieldSelection();
-                                if (in_array('folders', $selectedFields)) {
-                                    $user->fillFolders();
-                                }
-
-                                return $user;
-                            } catch (\Exception $e) {
-                                \Hawk\HawkCatcher::catchException($e);
-
-                                return;
+                        'resolve' => function ($root, $args) {
+                            if (!Auth::checkUserAccess($args['id'])) {
+                                throw new AuthException('Access denied');
                             }
+
+                            $user = new User();
+                            $user->sync($args);
+
+                            return $user;
                         }
                     ],
 
@@ -107,55 +110,45 @@ class Mutation extends ObjectType
                             'isRoot' => [
                                 'description' => 'Is this Folder a User\'s Root Folder',
                                 'type' => Type::boolean()
-                            ]
+                            ],
                         ],
-                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
-                            try {
-                                Log::instance()->debug('FOLDER MUTATION');
-                                /** Get real Folder */
-                                $folder = new Folder($args['ownerId'], $args['id']);
+                        'resolve' => function ($root, $args) {
+                            /**
+                             * Get real Folder
+                             */
+                            $folder = new Folder($args['ownerId'], $args['id']);
 
-                                /** Check access to this Folder */
-                                $isFolderOwner = Auth::checkUserAccess($folder->ownerId);
-                                if (!$isFolderOwner) {
-                                    $isCollaborator = $folder->hasUserAccess(Auth::userId());
-                                    if (!$isCollaborator) {
-                                        throw new AuthException('Access denied');
-                                    }
+                            /** Check access to this Folder */
+                            $isFolderOwner = Auth::checkUserAccess($folder->ownerId);
+                            if (!$isFolderOwner) {
+                                $isCollaborator = $folder->hasUserAccess(Auth::userId());
+                                if (!$isCollaborator) {
+                                    throw new AuthException('Access denied');
                                 }
-
-                                /**
-                                 * Do not save old data
-                                 */
-                                if ($folder->dtModify < $args['dtModify']) {
-                                    /** Set event name */
-                                    $eventName = Notify::FOLDER_UPDATE;
-                                    if ($folder->title != $args['title']) {
-                                        $eventName = Notify::FOLDER_RENAME;
-                                    }
-
-                                    $folder->sync($args);
-
-                                    /** Send notifies only in folder was renamed case */
-                                    if ($eventName == Notify::FOLDER_RENAME) {
-                                        /** Send notifies */
-                                        $sender = Auth::getUser();
-                                        $folder->notifyCollaborators(Notify::FOLDER_UPDATE, $folder, $sender);
-                                    }
-                                } else {
-                                    Log::instance()->debug(`[Folder Mutation]: do not run folder->sync cause dtModify {$args['dtModify']} is not greater than saved note's dtModify {$folder->dtModify} in DB`);
-                                }
-
-                                return $folder;
-                            } catch (\Exception $e) {
-                                Log::instance()->warning('[Mutation Folder] Can not sync Folder', [
-                                    'error' => $e->getMessage(),
-                                ]);
-
-                                \Hawk\HawkCatcher::catchException($e);
-
-                                return;
                             }
+
+                            /**
+                             * Do not save old data
+                             */
+                            if ($folder->dtModify < $args['dtModify'] || Config::get('IGNORE_DTMODIFY_IN_MUTATIONS')) {
+                                /** Set event name */
+                                $eventName = Notify::FOLDER_UPDATE;
+                                if ($folder->title != $args['title']) {
+                                    $eventName = Notify::FOLDER_RENAME;
+                                }
+                                $folder->sync($args);
+
+                                /** Send notifies only in folder was renamed case */
+                                if ($eventName == Notify::FOLDER_RENAME) {
+                                    /** Send notifies */
+                                    $sender = Auth::getUser();
+                                    $folder->notifyCollaborators(Notify::FOLDER_UPDATE, $folder, $sender);
+                                }
+                            } else {
+                                Log::instance()->debug(`[Folder Mutation]: do not run folder->sync cause dtModify {$args['dtModify']} is not greater than saved note's dtModify {$folder->dtModify} in DB`);
+                            }
+
+                            return $folder;
                         }
                     ],
 
@@ -163,56 +156,73 @@ class Mutation extends ObjectType
                         'type' => Types::note(),
                         'description' => 'Sync Note',
                         'args' => [
-                            'id' => Type::nonNull(Type::id()),
-                            'authorId' => Type::nonNull(Type::id()),
-                            'folderId' => Type::nonNull(Type::id()),
-                            'title' => Type::nonNull(Type::string()),
-                            'content' => Type::nonNull(Type::string()),
-                            'dtCreate' => Type::int(),
-                            'dtModify' => Type::int(),
-                            'isRemoved' => Type::boolean()
+                            'id' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Identifier'
+                            ],
+                            'authorId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Author Id used to define Folder'
+                            ],
+                            'folderId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Folder\'s identifier'
+                            ],
+                            'title' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'Note Title'
+                            ],
+                            'content' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'Content in the JSON-format'
+                            ],
+                            'dtCreate' => [
+                                'type' => Type::int(),
+                                'description' => 'Creation timestamp'
+                            ],
+                            'dtModify' => [
+                                'type' => Type::int(),
+                                'description' => 'Last modification timestamp'
+                            ],
+                            'isRemoved' => [
+                                'type' => Type::boolean(),
+                                'description' => 'Removed status: true if Note marked as removed'
+                            ],
                         ],
-                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
-                            try {
-                                if (!Auth::checkUserAccess($args['authorId'])) {
-                                    throw new AuthException('Access denied');
-                                }
-
-                                /**
-                                 * Get target Folder
-                                 *
-                                 * We need to get Folder's Owner.
-                                 * If this Folder is Shared, we'll get a real Owner to get right collection
-                                 */
-                                $folder = new Folder($args['authorId'],
-                                    $args['folderId']);
-
-                                if (is_null($folder->id)) {
-                                    throw new NoteException('Incorrect Folder passed');
-                                }
-
-                                $note = new Note($folder->ownerId, $folder->id, $args['id']);
-
-                                /**
-                                 * Do not save old data
-                                 */
-                                if ($note->dtModify < $args['dtModify']) {
-                                    $note->sync($args);
-
-                                    /** Send notifies */
-                                    $sender = Auth::getUser();
-                                    $folder->notifyCollaborators(Notify::NOTE_UPDATE,
-                                        $note, $sender);
-                                } else {
-                                    Log::instance()->debug(`[Note Mutation]: do not run note->sync cause dtModify {$args['dtModify']} is not greater than saved note's dtModify {$note->dtModify} in DB`);
-                                }
-
-                                return $note;
-                            } catch (\Exception $e) {
-                                \Hawk\HawkCatcher::catchException($e);
-
-                                return;
+                        'resolve' => function ($root, $args) {
+                            if (!Auth::checkUserAccess($args['authorId'])) {
+                                throw new AuthException('Access denied');
                             }
+
+                            /**
+                             * Get target Folder
+                             *
+                             * We need to get Folder's Owner.
+                             * If this Folder is Shared, we'll get a real Owner to get right collection
+                             */
+                            $folder = new Folder($args['authorId'], $args['folderId']);
+
+                            if (is_null($folder->id)) {
+                                throw new NoteException('Incorrect Folder passed');
+                            }
+
+                            $note = new Note($folder->ownerId, $folder->id, $args['id']);
+
+                            /**
+                             * Do not save old data
+                             */
+                            if ($note->dtModify < $args['dtModify'] || Config::get('IGNORE_DTMODIFY_IN_MUTATIONS')) {
+                                $note->sync($args);
+
+                                /** Send notifies */
+                                $sender = Auth::getUser();
+                                $folder->notifyCollaborators(Notify::NOTE_UPDATE,
+                                    $note, $sender);
+                            } else {
+                                Log::instance()->debug(`[Note Mutation]: do not run note->sync cause dtModify {$args['dtModify']} is not greater than saved note's dtModify {$note->dtModify} in DB`);
+                            }
+
+                            return $note;
                         }
                     ],
 
@@ -220,8 +230,11 @@ class Mutation extends ObjectType
                         'type' => Types::collaborator(),
                         'description' => 'Add new collaborator and send invitation email',
                         'args' => [
+                            /**
+                             * @todo can we get rid of this variable
+                             */
                             'id' => [
-                                'description' => 'Collaborator\'s id',
+                                'description' => 'Collaborator\'s id. Created on local machine',
                                 'type' => Type::nonNull(Type::id()),
                             ],
                             'email' => [
@@ -239,133 +252,121 @@ class Mutation extends ObjectType
                             'dtInvite' => [
                                 'description' => 'Date of an invitation sending',
                                 'type' => Type::int(),
+                                'defaultValue' => time()
                             ],
                         ],
                         'resolve' => function ($root, $args) {
-                            try {
-                                /** Auth check */
-                                if (!Auth::checkUserAccess($args['ownerId'])) {
-                                    throw new AuthException('Access denied');
-                                }
-
-                                /** Get original Folder */
-                                $originalFolder = new Folder($args['ownerId'], $args['folderId']);
-
-                                /**
-                                 * If Folder has no Collaborators then it has not been shared yet
-                                 */
-                                if (!$originalFolder->collaborators) {
-                                    $ownerUserModel = new User($args['ownerId']);
-
-                                    /** Need to identify Collaborator in DB */
-                                    $inviteTokenForOwner = Collaborator::getInvitationToken(
-                                        $ownerUserModel->id, $originalFolder->id, $ownerUserModel->email
-                                    );
-
-                                    $ownerCollaboratorData = [
-                                        'id' => $ownerUserModel->id,        // doesn't matter
-                                        'email' => $ownerUserModel->email,
-                                        'ownerId' => $ownerUserModel->id,
-                                        'folderId' => $originalFolder->id,
-                                        'dtInvite' => time(),
-                                        'userId' => $ownerUserModel->id,
-                                        'token' => $inviteTokenForOwner
-                                    ];
-
-                                    /** We should add Owner as a Collaborator */
-                                    $ownerCollaboratorModel = new Collaborator($originalFolder);
-                                    $ownerCollaboratorModel->sync($ownerCollaboratorData);
-
-                                    /** No need to send invite email to Owner */
-                                }
-
-                                $args['token'] = Collaborator::getInvitationToken($args['ownerId'], $args['folderId'], $args['email']);
-
-                                $collaborator = new Collaborator($originalFolder);
-                                $collaborator->sync($args);
-                                $collaborator->sendInvitationEmail();
-
-                                /** Send notifies */
-                                $sender = Auth::getUser();
-                                $originalFolder->notifyCollaborators(Notify::COLLABORATOR_INVITE, $collaborator, $sender);
-                                $sender->notify(Notify::COLLABORATOR_INVITE, $collaborator, $sender);
-
-                                return $collaborator;
-                            } catch (\Exception $e) {
-                                Log::instance()->warning('[Mutation Invite] Can not send an Invitation', [
-                                    'error' => $e->getMessage(),
-                                ]);
-
-                                \Hawk\HawkCatcher::catchException($e);
-
-                                return;
+                            /** Auth check */
+                            if (!Auth::checkUserAccess($args['ownerId'])) {
+                                throw new AuthException('Access denied');
                             }
+
+                            /** Get original Folder */
+                            $originalFolder = new Folder($args['ownerId'], $args['folderId']);
+
+                            /**
+                             * If Folder has no Collaborators then it has not been shared yet
+                             */
+                            if (!$originalFolder->collaborators) {
+                                $ownerUserModel = new User($args['ownerId']);
+
+                                /** Need to identify Collaborator in DB */
+                                $inviteTokenForOwner = Collaborator::getInvitationToken(
+                                    $ownerUserModel->id, $originalFolder->id, $ownerUserModel->email
+                                );
+
+                                $ownerCollaboratorData = [
+                                    'id' => $ownerUserModel->id,        // doesn't matter
+                                    'email' => $ownerUserModel->email,
+                                    'ownerId' => $ownerUserModel->id,
+                                    'folderId' => $originalFolder->id,
+                                    'dtInvite' => time(),
+                                    'userId' => $ownerUserModel->id,
+                                    'token' => $inviteTokenForOwner
+                                ];
+
+                                /** We should add Owner as a Collaborator */
+                                $ownerCollaboratorModel = new Collaborator($originalFolder);
+                                $ownerCollaboratorModel->sync($ownerCollaboratorData);
+
+                                /** No need to send invite email to Owner */
+                            }
+
+                            $args['token'] = Collaborator::getInvitationToken($args['ownerId'], $args['folderId'], $args['email']);
+
+                            $collaborator = new Collaborator($originalFolder);
+                            $collaborator->sync($args);
+
+                            if (!Config::get('DO_NOT_SEND_EMAIL')) {
+                                $collaborator->sendInvitationEmail();
+                            }
+
+                            /** Send notifies */
+                            $sender = Auth::getUser();
+                            $originalFolder->notifyCollaborators(Notify::COLLABORATOR_INVITE, $collaborator, $sender);
+
+                            return $collaborator;
                         }
                     ],
 
                     'join' => [
                         'type' => Types::collaborator(),
-                        'description' => 'Sync Collaborator',
+                        'description' => 'Accept invitation to join shared Folder',
                         'args' => [
-                            'userId' => Type::nonNull(Type::id()),
-                            'token' => Type::nonNull(Type::string()),
-                            'ownerId' => Type::nonNull(Type::id()),
-                            'folderId' => Type::nonNull(Type::id())
+                            'userId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Collaborator User\'s identifier'
+                            ],
+                            'token' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'Invitation token'
+                            ],
+                            'ownerId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Folder\'s owner identifier'
+                            ],
+                            'folderId' => [
+                                'type' => Type::nonNull(Type::id()),
+                                'description' => 'Folder\'s identifier'
+                            ],
                         ],
-                        'resolve' => function ($root, $args, $context, ResolveInfo $info) {
-                            try {
-                                if (!Auth::checkUserAccess($args['userId'])) {
-                                    throw new AuthException('Access denied');
-                                }
-
-                                /**
-                                 * Add a Collaborator to the Shared Folder
-                                 */
-                                $originalFolder = new Folder($args['ownerId'], $args['folderId']);
-
-                                if (!$originalFolder->ownerId || !$originalFolder->id) {
-                                    throw new CollaboratorException('Folder does not exist');
-                                }
-
-                                $collaborator = new Collaborator($originalFolder, $args['token']);
-
-                                if (!$collaborator->exists()) {
-                                    throw new CollaboratorException('Collaborator does not exists');
-                                }
-
-                                if ($collaborator->userId) {
-                                    throw new CollaboratorException('This join link has already been used');
-                                }
-
-                                $collaborator->sync($args);
-
-                                /**
-                                 * Accept an Invitation
-                                 * Save Shared Folder to the Acceptor's Folders collection
-                                 */
-                                if (!empty($args['userId'])) {
-                                    $collaborator->saveFolder($originalFolder);
-                                }
-
-                                $selectedFields = $info->getFieldSelection();
-                                if (isset($selectedFields['user'])) {
-                                    $collaborator->fillUser();
-                                }
-
-                                /** Send notifies */
-                                $sender = Auth::getUser();
-                                $originalFolder->notifyCollaborators(Notify::COLLABORATOR_JOIN, $collaborator, $sender);
-
-                                return $collaborator;
-                            } catch (CollaboratorException $e) {
-                                Log::instance()->warning('[Mutation Join] Can not proccess joining', [
-                                    'error' => $e->getMessage(),
-                                ]);
-
-                                \Hawk\HawkCatcher::catchException($e);
-
-                                return;
+                        'resolve' => function ($root, $args) {
+                            if (!Auth::checkUserAccess($args['userId'])) {
+                                throw new AuthException('Access denied');
                             }
+
+                            /**
+                             * Add a Collaborator to the Shared Folder
+                             */
+                            $originalFolder = new Folder($args['ownerId'], $args['folderId']);
+
+                            if (!$originalFolder->ownerId || !$originalFolder->id) {
+                                throw new CollaboratorException('Folder does not exist');
+                            }
+
+                            $collaborator = new Collaborator($originalFolder, $args['token']);
+
+                            if (!$collaborator->exists()) {
+                                throw new CollaboratorException('Collaborator does not exists');
+                            }
+
+                            if ($collaborator->userId) {
+                                throw new CollaboratorException('This join link has already been used');
+                            }
+
+                            $collaborator->sync($args);
+
+                            /**
+                             * Accept an Invitation
+                             * Save Shared Folder to the Acceptor's Folders collection
+                             */
+                            $collaborator->saveFolder($originalFolder);
+
+                            /** Send notifies */
+                            $sender = Auth::getUser();
+                            $originalFolder->notifyCollaborators(Notify::COLLABORATOR_JOIN, $collaborator, $sender);
+
+                            return $collaborator;
                         }
                     ]
                 ];

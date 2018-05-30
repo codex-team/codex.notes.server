@@ -1,0 +1,11 @@
+mutation User($id: ID!, $name: String!, $email: String!, $photo: String, $dtModify: Int) {
+  user(id: $id, name: $name, email: $email, photo: $photo, dtModify: $dtModify) {
+    id
+    email
+    name
+    photo
+    googleId
+    dtReg
+    dtModify
+  }
+}

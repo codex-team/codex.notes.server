@@ -2,6 +2,8 @@
 
 namespace App\Tests\Helpers;
 
+use App\System\Config;
+
 /**
  * Class WebTestCase
  *
@@ -22,6 +24,12 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         // Ensure no cache Router
         $this->app = $this->getSlimInstance();
         $this->client = new WebTestClient($this->app);
+
+        /**
+         * Data's for different Users
+         */
+        $GLOBALS['VIRTUAL_CLIENT_1'] = $GLOBALS['VIRTUAL_CLIENT_1'] ?? new Data(true);
+        $GLOBALS['VIRTUAL_CLIENT_2'] = $GLOBALS['VIRTUAL_CLIENT_2'] ?? new Data();
     }
 
     /**
@@ -42,6 +50,10 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
          * Set routes
          */
         include PROJECTROOT . 'public/routes.php';
+
+        if (!empty(Config::get('HAWK_TOKEN'))) {
+            \Hawk\HawkCatcher::instance(Config::get('HAWK_TOKEN'));
+        }
 
         return $app;
     }
@@ -71,22 +83,33 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
      * @param string $type – query or migration
      * @param string $name – operation name equals to .graphql base filename
      * @param array  $data – array of variables
+     * @param string $jwt  - user's jwt
      *
      * @return array – response data
      */
-    public function sendGraphql(string $type, string $name, array $data): array
+    public function sendGraphql(string $type, string $name, array $data, string $jwt): array
     {
         $request = GraphQl::request($type, $name, $data);
-        $output = $this->client->post('/graphql', $request);
 
-        // check auth
-        $this->assertFalse($this->client->response->isForbidden(), 'Auth Error (403).');
+        if ($jwt) {
+            $optionalHeaders = [
+                'HTTP_AUTHORIZATION' => 'Bearer ' . $jwt
+            ];
+        }
 
-        // check json output structure
+        $output = $this->client->post('/graphql', $request, $optionalHeaders);
+
+        /**
+         * Check Auth
+         */
+        $this->assertTrue($this->client->response->isOk());
+
+        /**
+         * Check json output structure
+         */
         $data = json_decode($output, true);
         $this->assertEquals(json_last_error(), JSON_ERROR_NONE);
-        $this->assertArrayHasKey('data', $data);
 
-        return $data['data'];
+        return $data;
     }
 }

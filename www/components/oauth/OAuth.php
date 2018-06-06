@@ -207,7 +207,7 @@ class OAuth
             Log::instance()->warning('[OAuth] Generating JWT was failed because of ' . $e->getMessage());
 
             \Hawk\HawkCatcher::catchException($e, [
-                'profileInfo' => $profileInfo
+                'profileInfo' => json_encode($profileInfo)
             ]);
 
             throw new \Exception('Cannot generate JWT');

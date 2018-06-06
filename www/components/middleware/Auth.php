@@ -66,13 +66,18 @@ class Auth
                 $GLOBALS['user']['device-id'] = $deviceIdHeader[0];
             }
         } catch (AuthException $e) {
+            Log::instance()->notice(sprintf("[Auth] %s", $e->getMessage()));
+            \Hawk\HawkCatcher::catchException($e);
+
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, $e->getMessage());
         } catch (\UnexpectedValueException $e) {
             Log::instance()->notice(sprintf("[Auth] %s", $e->getMessage()));
+            \Hawk\HawkCatcher::catchException($e);
 
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is invalid');
         } catch (\DomainException $e) {
             Log::instance()->notice(sprintf("[Auth] %s", $e->getMessage()));
+            \Hawk\HawkCatcher::catchException($e);
 
             return $res->withStatus(HTTP::CODE_UNAUTHORIZED, 'JWT is invalid');
         }

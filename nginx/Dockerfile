@@ -1,8 +1,8 @@
-FROM ubuntu:latest
+FROM ubuntu:16.04
 
 MAINTAINER CodeX Team <github.com/codex-team>
 
-ENV NGINX_VERSION 1.12.2
+ENV NGINX_VERSION 1.13.1
 
 RUN apt-get update
 RUN apt-get install -y \

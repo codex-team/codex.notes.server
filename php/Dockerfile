@@ -1,10 +1,10 @@
-FROM php:7.1-fpm
+FROM php:7.1-fpm-stretch
 
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
-        libpng12-dev \
+        libpng-dev \
         libssl-dev \
     && pecl install mongodb \
     && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/ext-mongodb.ini \

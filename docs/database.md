@@ -1,6 +1,6 @@
 # Database
 
-![](https://capella.pics/5be4ad62-0b30-4348-aa0d-838279bf46cd)
+![](./images/5be4ad62-0b30-4348-aa0d-838279bf46cd.jpeg)
 
 ## Collections
 
@@ -39,7 +39,7 @@ where `sharer_id` — current user
 
 ## Invite a collaborator
 
-![](https://capella.pics/59ccf892-e5c6-4bfe-8b64-d50f2fac55c4)
+![](./images/59ccf892-e5c6-4bfe-8b64-d50f2fac55c4.jpeg)
 
 ### 1. Add an email to the `collaborators:<owner_id>:<folder_id>`
 

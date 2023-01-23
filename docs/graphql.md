@@ -171,7 +171,7 @@ Use this tools for sending queries and discover the Graph.
 - https://insomnia.rest
 - or Chrome Extension [GraphiQL](https://chrome.google.com/webstore/detail/chromeiql/fkkiamalmpiidkljmicmjfbieiclmeij)
 
-![](https://capella.pics/03778dbd-0872-4812-aebd-ba400651fe67/resize/1300)
+![](./images/query-sample.jpeg)
 
 ## How to view logs
 
@@ -185,13 +185,13 @@ tail logs/log_YYYY-MM-DD.txt
 
 If `.env` contains `DEBUG=TRUE`, you will see GraphQL errors in the answer:
 
-![](https://capella.pics/05b1b1c0-4482-45f0-b6eb-1f177764dece/resize/1300)
+![](./images/error-sample.jpeg)
 
 if there are `DEBUG=FALSE`, answer will be `Internal server error` and you can find error-message in the logs.
 
 ## Versioning
 
-API [versioning](https://capella.pics/05b1b1c0-4482-45f0-b6eb-1f177764dece/resize/1300) provided by `@deprecated` directive.
+API [versioning](./images/error-sample.jpeg) provided by `@deprecated` directive.
 
 ## What to do next
 
